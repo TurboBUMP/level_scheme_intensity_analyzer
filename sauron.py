@@ -31,8 +31,8 @@ def Energy(x, m, q, mean, sigma , amplitude):
     
 def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title=""):
 
-    fig, ax = plt.subplots(1,1,figsize=(7,3))
-    ax.bar(hist[int(mean-window):int(mean+window),0], hist[int(mean-window):int(mean+window),1])
+#    fig, ax = plt.subplots(1,1,figsize=(7,3))
+#    ax.bar(hist[int(mean-window):int(mean+window),0], hist[int(mean-window):int(mean+window),1])
     
     try:
         
@@ -53,7 +53,7 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title=""):
         print("I: ", I)
         parameters = [0,0,0,0,0]
 
-    plt.show()
+#    plt.show()
     return parameters, I
 
 
