@@ -1,0 +1,1 @@
+Integral Diff, TRANSITION,GATE, m, q, mean, sigma, amplitude
