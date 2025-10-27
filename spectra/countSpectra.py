@@ -3,6 +3,8 @@
 # This python script counts how many .dat file are present in the spectra sub-directories and if, for 
 # any gamma-ray transition in the excel file, there is the corresponding .dat somewhere in one of 
 # the sub-directories
+# It is useful only to check if every necessary gated spectra was produced and correctly stored in the
+# corresponding directory
 # 
 
 import os
