@@ -65,6 +65,9 @@ _lvlScheme.reset_index()
 #     It also plots the histogram and the fitted function (if any!)
 #
 
+def Gauss(x, mean, sigma, amplitude):
+    return np.asarray(amplitude * np.exp(-(x-mean)**2/(2*sigma**2)))
+
 def Energy(x, m, q, mean, sigma , amplitude):
     return np.asarray(amplitude * np.exp(-(x-mean)**2/(2*sigma**2)) + m*x + q )#+ c1*np.exp(c2*(x-mean))*(1-(np.exp(c3*(x-mean)**2)/(2*sigma**2))))
     
@@ -79,7 +82,7 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="
         appo = np.linspace(int(mean-window),int(mean+window),500)
         ax.plot(appo, Energy(appo, parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]),color="darkorange")
         I_diff = int(quad(Energy,int(mean-window),int(mean+window),args=(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]))[0]-np.sum(hist[int(mean-window):int(mean+window),1]))
-        I = quad(Energy,int(mean-window),int(mean+window),args=(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]))[0]
+        I = quad(Gauss,int(mean-window),int(mean+window),args=(parameters[2], parameters[3], parameters[4]))[0]
         #print("I: ", I)
         #print("parameters: ", parameters)
 
@@ -93,6 +96,7 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="
     ax.set_title(plot_title)
     plt.savefig(fig_dir + plot_title.replace(" ","-") + '.png', dpi=300)
     plt.close()
+
     return parameters, I_diff, I
 
 

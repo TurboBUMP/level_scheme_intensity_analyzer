@@ -30,7 +30,17 @@ while :; do
 
       break
       ;;
-    
+    -h|--help)
+      echo "Usage: ./replay.sh [OPTION]"
+      echo "Example: ./replay.sh -r"
+      echo "\n"
+      echo "-h | --help                 print this help message"
+      echo "-r | --redo-all-fit         replay.sh will recalculate all the fit calling sauron.py (default -j 1)"
+      echo "-j N                        if -r is specified use -j N to run sauron.py on N parallel processes"
+      echo "\n"
+      exit
+      ;;
+
     *)
       echo "Creating unified output file: output.txt ..."
       break
