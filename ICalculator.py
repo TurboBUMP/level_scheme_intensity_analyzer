@@ -69,33 +69,33 @@ def find_incoming(energy_level):
 # This function take the gammaray energy as argument and ... [TO BE COMPLETED]
 def gammaray_intensity_calc(gammaray_energy):
 
-    gammaray_list = np.asarray(intensity_file[intensity_file['TRANSITION'].isin([gammaray_energy])]['GATE'])
+    gate_list = np.asarray(intensity_file[intensity_file['TRANSITION'].isin([gammaray_energy])]['GATE'])
     gammaray_intensity_list = np.asarray(intensity_file[intensity_file['TRANSITION'].isin([gammaray_energy])]['Integral'])
-    gammaray_efficiency = np.asarray(efficiency(gammaray_list,args=fit_parameters))
-    gate_efficiency = efficiency(gammaray_energy,args=fit_parameters)
-    weighted_efficiency_list = gammaray_intensity_list * gammaray_efficiency
+    gate_efficiency_list = np.asarray(efficiency(gate_list,args=fit_parameters))
+    gammaray_efficiency = efficiency(gammaray_energy,args=fit_parameters)
+    weighted_efficiency_list = gammaray_intensity_list * gate_efficiency_list
 
-    return weighted_efficiency_list.sum() * gate_efficiency
+    return weighted_efficiency_list.sum() * gammaray_efficiency
 
-# This function take the energy level as argument and return two np.array: 
-# 1- array containing the outgoing gammaray list
-# 2- array containing the outgoing gammaray intensity list
-def level_outgoing_intensity_calc(energy_level):
-
-    outgoing_gammaray_list = find_outgoing(energy_level)
-    outgoing_gammaray_intensity_list = np.asarray([gammaray_intensity_calc(gammaray) for gammaray in outgoing_gammaray_list])
-
-    return outgoing_gammaray_list, outgoing_gammaray_intensity_list
-
-# This function take the energy level as argument and return two np.array: 
-# 1- array containing the incoming gammaray list
-# 2- array containing the incoming gammaray intensity list
-def level_incoming_intensity_calc(energy_level):
-
-    incoming_gammaray_list = find_incoming(energy_level)
-    incoming_gammaray_intensity_list = np.asarray([gammaray_intensity_calc(gammaray) for gammaray in incoming_gammaray_list])
-
-    return incoming_gammaray_list, incoming_gammaray_intensity_list
+## This function take the energy level as argument and return two np.array: 
+## 1- array containing the outgoing gammaray list
+## 2- array containing the outgoing gammaray intensity list
+#def level_outgoing_intensity_calc(energy_level):
+#
+#    outgoing_gammaray_list = find_outgoing(energy_level)
+#    outgoing_gammaray_intensity_list = np.asarray([gammaray_intensity_calc(gammaray) for gammaray in outgoing_gammaray_list])
+#
+#    return outgoing_gammaray_list, outgoing_gammaray_intensity_list
+#
+## This function take the energy level as argument and return two np.array: 
+## 1- array containing the incoming gammaray list
+## 2- array containing the incoming gammaray intensity list
+#def level_incoming_intensity_calc(energy_level):
+#
+#    incoming_gammaray_list = find_incoming(energy_level)
+#    incoming_gammaray_intensity_list = np.asarray([gammaray_intensity_calc(gammaray) for gammaray in incoming_gammaray_list])
+#
+#    return incoming_gammaray_list, incoming_gammaray_intensity_list
 
 #############################################
 
@@ -104,11 +104,11 @@ def level_incoming_intensity_calc(energy_level):
 ################## MAIN #####################
 
 if __name__ == '__main__':
-    print("Hello World!")
 
-#    I_out = level_outgoing_intensity_calc(1883.516)[1].sum()
-#    print(I_out)
-#    I_in = level_incoming_intensity_calc(1883.516)[1].sum()
-#    print(I_in)
-#
-    print(gammaray_intensity_calc(726.49))
+    with open('intensity_output.txt','w') as f:
+
+        for gammaray in lvl_scheme['Egamma-LITERATURE']:
+
+            intensity = gammaray_intensity_calc(gammaray)
+            print(gammaray, ' ', intensity, file=f)
+
