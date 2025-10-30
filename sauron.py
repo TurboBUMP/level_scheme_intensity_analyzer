@@ -9,13 +9,13 @@
 # 
 # spectra
 #
-#   --> 1157.0208
-#       -->energy1.dat
-#       -->energy2.dat
+#   --> level_energy_1
+#       gate_energy_1.dat
+#       gate_energy_2.dat
 #
 #   --> level_energy_2
-#       -->energy3.dat
-#       -->energy4.dat
+#       gate_energy_3.dat
+#       gate_energy_4.dat
 #
 # The excel file must contain three columns stating for each transition: [start level, gamma ray energy, stop level]
 # The first line must contain the name of each column to let Pandas be able to initialise the dataFrame properly. 
@@ -40,9 +40,11 @@ import os
 from os.path import isdir,join
 import argparse
 
-parser = argparse.ArgumentParser(description='1 argument is required but 0 were given!')
-
-parser.add_argument('pos_arg', type=str, help='path to the directory containing the spectra')
+parser = argparse.ArgumentParser(prog='SAURON', description='Search and Fit peaks program')
+parser.add_argument('path', type=str, help='path to the directory containing the spectra')
+parser.add_argument('-g','--gate', type=float, default=-1, help='energy of the gate that you want to use for the fit')
+parser.add_argument('-p', '--peak', type=float, default=-1, help='energy of the peak that you want to fit')
+parser.add_argument('--param', nargs=5, metavar=('m','q','mean','sigma','amplitude'), type=float, default=None, help='first guess for the fit parameters')
 args = parser.parse_args()
 
 import pandas as pd
@@ -78,14 +80,16 @@ def Gauss(x, mean, sigma, amplitude):
 def GaussPol1(x, m, q, mean, sigma , amplitude):
     return np.asarray(amplitude * np.exp(-(x-mean)**2/(2*sigma**2)) + m*x + q )#+ c1*np.exp(c2*(x-mean))*(1-(np.exp(c3*(x-mean)**2)/(2*sigma**2))))
     
-def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir=""):
+def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="", par=[]):
+    if(par==None):
+        par=[-0.1,q,mean,sigma,amplitude]
 
     fig, ax = plt.subplots(1,1,figsize=(7,3))
     ax.bar(hist[int(mean-window):int(mean+window),0], hist[int(mean-window):int(mean+window),1])
     
     try:
         
-        parameters, _ = curve_fit(GaussPol1, hist[int(mean-window):int(mean+window),0], hist[int(mean-window):int(mean+window),1], p0=[-0.1,q,mean,sigma,amplitude])
+        parameters, _ = curve_fit(GaussPol1, hist[int(mean-window):int(mean+window),0], hist[int(mean-window):int(mean+window),1], p0=par)
         appo = np.linspace(int(mean-window),int(mean+window),500)
         ax.plot(appo, GaussPol1(appo, parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]),color="darkorange")
         I_diff = int(quad(GaussPol1,int(mean-window),int(mean+window),args=(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]))[0]-np.sum(hist[int(mean-window):int(mean+window),1]))
@@ -99,11 +103,15 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="
         I = 0
         parameters = [0,0,0,0,0]
 
-#    plt.show()
+    
     ax.set_title(plot_title)
     plt.savefig(fig_dir + plot_title.replace(" ","-") + '.png', dpi=300)
-    plt.close()
+    
+    if (args.peak != -1):
+        plt.show()
 
+    plt.close()
+    
     return parameters, I_diff, I
 
 
@@ -112,37 +120,61 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="
 # The name of the directory containing the gated spectra refered to one level should be equal to the energy of the level (i.e.: 1157.0208/)
 # Spectra are already gated and their name should match the pattern: GammaRayEnergy.dat
 
-if isdir(join(os.getcwd(),'spectra',args.pos_arg)):
 
-    print('Now processing ' + args.pos_arg + ' ...')
+if __name__ == '__main__':
+
+    if (args.peak != -1):
         
-    if not args.pos_arg.endswith('/'):
-        spectra_directory = os.getcwd() + '/spectra/' + args.pos_arg + '/'
+        print('Fitting only selected peak: ', args.peak)
+
+        if not args.path.endswith('/'):
+            spectra_directory = os.getcwd() + '/spectra/' + args.path + '/'
+        else:
+            spectra_directory = os.getcwd() + '/spectra/' + args.path
+           
+        file = str(args.gate) + '.dat'
+        filename = spectra_directory + file 
+
+        energyLevel = float(args.path.replace('/',''))
+        h = np.genfromtxt(filename)
+        subsetLevelScheme = _lvlScheme[_lvlScheme['LevelLITERATURE'] == energyLevel]
+        gammaray = args.peak
+        
+        rFit, I_diff, I = FitGauss(h, h[0][1] ,gammaray, 2, h[int(gammaray)][1], window=6, plot_title=file.replace(".dat","") + " " + str(gammaray), fig_dir=spectra_directory, par=args.param)
+        print(int(I_diff), ",", I, ",", gammaray, ",", file.replace('.dat',''), ",", rFit[0],",",rFit[1],",",rFit[2],",",rFit[3],",",rFit[4])
+        
     else:
-        spectra_directory = os.getcwd() + '/spectra/' + args.pos_arg
-    
-    with open(spectra_directory + args.pos_arg + '.' + 'out.txt', 'w') as f: # create the output file where fit results are stored
-        
-        print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
-        
-        for file in sorted(os.listdir(spectra_directory)):
-        
-            filename = spectra_directory+file
- 
-            if filename.endswith(".dat"):
-                
-                energyLevel = float(args.pos_arg.replace('/',''))
-                h = np.genfromtxt(filename)
-                subsetLevelScheme = _lvlScheme[_lvlScheme['LevelLITERATURE'] == energyLevel]
-                
-                for index, gammaray in subsetLevelScheme.iterrows():
-                    print(index," ", gammaray)
 
-                    if((gammaray['Egamma-LITERATURE'],float(file.replace('.dat',''))) in gammaray_to_be_skipped):
-                        print(1000000, ",", 0, ",", gammaray['Egamma-LITERATURE'], ",", file.replace('.dat',''), ",", 0,",",0,",",0,",",0,",",0,file=f)
-                    else:
-                        rFit, I_diff, I = FitGauss(h, h[0][1] ,gammaray['Egamma-LITERATURE'], 2, h[int(gammaray['Egamma-LITERATURE'])][1], window=6, plot_title=file.replace(".dat","") + " " + str(gammaray['Egamma-LITERATURE']), fig_dir=spectra_directory)
-                        print(int(I_diff), ",", I, ",", gammaray['Egamma-LITERATURE'], ",", file.replace('.dat',''), ",", rFit[0],",",rFit[1],",",rFit[2],",",rFit[3],",",rFit[4],file=f)
-
-else:
-    pass
+        if isdir(join(os.getcwd(),'spectra',args.path)):
+        
+            print('Now processing ' + args.path + ' ...')
+             
+            if not args.path.endswith('/'):
+                spectra_directory = os.getcwd() + '/spectra/' + args.path + '/'
+            else:
+                spectra_directory = os.getcwd() + '/spectra/' + args.path
+            
+            with open(spectra_directory + args.path + '.' + 'out.txt', 'w') as f: # create the output file where fit results are stored
+                
+                print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
+                
+                for file in sorted(os.listdir(spectra_directory)):
+                
+                    filename = spectra_directory+file
+         
+                    if filename.endswith(".dat"):
+                        
+                        energyLevel = float(args.path.replace('/',''))
+                        h = np.genfromtxt(filename)
+                        subsetLevelScheme = _lvlScheme[_lvlScheme['LevelLITERATURE'] == energyLevel]
+                        
+                        for index, gammaray in subsetLevelScheme.iterrows():
+        
+                            if((gammaray['Egamma-LITERATURE'],float(file.replace('.dat',''))) in gammaray_to_be_skipped):
+                                print(1000000, ",", 0, ",", gammaray['Egamma-LITERATURE'], ",", file.replace('.dat',''), ",", 0,",",0,",",0,",",0,",",0,file=f)
+                            else:
+                                rFit, I_diff, I = FitGauss(h, h[0][1] ,gammaray['Egamma-LITERATURE'], 2, h[int(gammaray['Egamma-LITERATURE'])][1], window=6, plot_title=file.replace(".dat","") + " " + str(gammaray['Egamma-LITERATURE']), fig_dir=spectra_directory)
+                                print(int(I_diff), ",", I, ",", gammaray['Egamma-LITERATURE'], ",", file.replace('.dat',''), ",", rFit[0],",",rFit[1],",",rFit[2],",",rFit[3],",",rFit[4],file=f)
+        
+        else:
+            pass
