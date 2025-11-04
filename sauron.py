@@ -34,18 +34,17 @@ _stop_level_column = 6
 # 'gammaray_to_be_skipped' is a list of pairs that stores all the pairs of gate-and-spectra that (for some reasons)
 # need to be skipped.
 # Each pair should be inserted as (gammaray_energy, gate_energy)
-#gammaray_to_be_skipped = [(263.53,887.5)]
-gammaray_to_be_skipped = []
+gammaray_to_be_skipped = [(1157.004,4932.8)]
 
 import os
-from os.path import isdir,join
+from os.path import isfile,isdir,join
 import argparse
 
 parser = argparse.ArgumentParser(prog='SAURON',
                                  description='Search and Fit peaks program')
 parser.add_argument('path', 
                     type=str, 
-                    help='path to the directory containing the spectra')
+                    help='[REQUIRED] path to the directory containing the spectra')
 parser.add_argument('-g',
                     '--gate', 
                     type=float, 
@@ -71,7 +70,6 @@ import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 from scipy.optimize import curve_fit
 from scipy.integrate import quad
-
 
 # Step 1
 # Load the excel file in a pandas dataframe using only the columns specified at the beggining of the file with 
@@ -133,9 +131,12 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="
     if (savefig_flag==True):
         plt.savefig(fig_dir + plot_title.replace(" ","-") + '.png', dpi=300)
     if (savefig_flag==False):
-        if (input('Do you want to save the figure? (the fit params will not be automatically stored in the output.txt file\n')):
-            plt.savefig(fig_dir + plot_title.replace(" ","-") + 'png', dpi=300)
+        choice = input('Do you want to save the figure? [Y/n] ')
+        if (choice.lower()=='y' or choice.lower()!='n'):
+            print(f'saving figure to {fig_dir + plot_title.replace(" ","-") + '.png'}')
+            plt.savefig(fig_dir + plot_title.replace(" ","-") + '.png', dpi=300)
         else:
+            print('WARNING: Figure will NOT be saved')
             pass
     
     if (args.peak != -1):
@@ -171,89 +172,126 @@ if __name__ == '__main__':
         subsetLevelScheme = _lvlScheme[_lvlScheme['LevelLITERATURE'] == energyLevel]
         gammaray = args.peak
 
-        rFit, I_diff, I = FitGauss(h, 
-                                   h[0][1] ,
-                                   gammaray, 
-                                   2, 
-                                   h[int(gammaray)][1], 
-                                   window=6, 
-                                   plot_title=file.replace(".dat","") + " " + str(gammaray), 
-                                   fig_dir=spectra_directory, 
-                                   par=args.param)
-        
-        print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
-        print(int(I_diff), ",",
-              I, ",",
-              gammaray, ",",
-              file.replace('.dat',''), ",",
-              rFit[0],",",
-              rFit[1],",",
-              rFit[2],",",
-              rFit[3],",",
-              rFit[4])
-        
+        with open(spectra_directory + file.replace('.dat','') + '-' + str(gammaray) + '.' + 'out.txt', 'w') as f:
+ 
+            rFit, I_diff, I = FitGauss(h, 
+                                       h[0][1] ,
+                                       gammaray, 
+                                       2, 
+                                       h[int(gammaray)][1], 
+                                       window=6, 
+                                       plot_title=file.replace(".dat","") + " " + str(gammaray), 
+                                       fig_dir=spectra_directory, 
+                                       par=args.param)
+            choice = input('Do you wanto to save fit results? [Y/n] ')
+            if (choice.lower()=='y' or choice.lower() != 'n'):
+                
+                print(f'Saving fit results to {f.name}')
+                print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude',file=f)
+                print(int(I_diff), ",",
+                      I, ",",
+                      gammaray, ",",
+                      file.replace('.dat',''), ",",
+                      rFit[0],",",
+                      rFit[1],",",
+                      rFit[2],",",
+                      rFit[3],",",
+                      rFit[4],
+                      file=f)
+
+            elif(choice.lower()=='n'):
+
+                print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
+                print(int(I_diff), ",",
+                      I, ",",
+                      gammaray, ",",
+                      file.replace('.dat',''), ",",
+                      rFit[0],",",
+                      rFit[1],",",
+                      rFit[2],",",
+                      rFit[3],",",
+                      rFit[4])
+            else:
+                print('WARNING: Invalid answer. Fit results printed on screen')
+                print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude")
+                print(int(I_diff), ",",
+                      I, ",",
+                      gammaray, ",",
+                      file.replace('.dat',''), ",",
+                      rFit[0],",",
+                      rFit[1],",",
+                      rFit[2],",",
+                      rFit[3],",",
+                      rFit[4])
+            
+
     else:
 
-        if isdir(join(os.getcwd(),'spectra',args.path)):
-        
+        if (isdir(join(os.getcwd(),'spectra',args.path))):
             print('Now processing ' + args.path + ' ...')
-             
+
             if not args.path.endswith('/'):
                 spectra_directory = os.getcwd() + '/spectra/' + args.path + '/'
             else:
                 spectra_directory = os.getcwd() + '/spectra/' + args.path
             
-            with open(spectra_directory + args.path + '.' + 'out.txt', 'w') as f: # create the output file where fit results are stored
-                
-                print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
-                
-                for file in sorted(os.listdir(spectra_directory)):
-                
-                    filename = spectra_directory+file
+            for file in sorted(os.listdir(spectra_directory)):
+            
+                filename = spectra_directory+file
          
-                    if filename.endswith(".dat"):
-                        
-                        energyLevel = float(args.path.replace('/',''))
-                        h = np.genfromtxt(filename)
-                        subsetLevelScheme = _lvlScheme[_lvlScheme['LevelLITERATURE'] == energyLevel]
-                        
-                        for index, gammaray in subsetLevelScheme.iterrows():
-        
-                            if((gammaray['Egamma-LITERATURE'],float(file.replace('.dat',''))) in gammaray_to_be_skipped):
+                if filename.endswith(".dat"):
+                    
+                    energyLevel = float(args.path.replace('/',''))
+                    h = np.genfromtxt(filename)
+                    subsetLevelScheme = _lvlScheme[_lvlScheme['LevelLITERATURE'] == energyLevel]
+                    
+                    for index, gammaray in subsetLevelScheme.iterrows():
 
-                                print(1000000, ",", 
-                                      0, ",", 
-                                      gammaray['Egamma-LITERATURE'], ",", 
-                                      file.replace('.dat',''), ",", 
-                                      0,",",
-                                      0,",",
-                                      0,",",
-                                      0,",",
-                                      0,
-                                      file=f)
+                        if(isfile(spectra_directory+file.replace('.dat','') + '-' + str(gammaray['Egamma-LITERATURE']) + '.' + 'out.txt')):
+                            pass
 
-                            else:
-                                rFit, I_diff, I = FitGauss(h, 
-                                                           h[0][1], 
-                                                           gammaray['Egamma-LITERATURE'],
-                                                           2, 
-                                                           h[int(gammaray['Egamma-LITERATURE'])][1], 
-                                                           window=6, 
-                                                           plot_title=file.replace(".dat","") + " " + str(gammaray['Egamma-LITERATURE']), 
-                                                           fig_dir=spectra_directory, 
-                                                           savefig=True)
-                                print(int(I_diff),
-                                      ",",
-                                      I, 
-                                      ",",
-                                      gammaray['Egamma-LITERATURE'], ",",
-                                      file.replace('.dat',''), ",",
-                                      rFit[0],",",
-                                      rFit[1],",",
-                                      rFit[2],",",
-                                      rFit[3],",",
-                                      rFit[4],
-                                      file=f)
+                        else:
+
+                            with open(spectra_directory + file.replace('.dat','') + '-' + str(gammaray['Egamma-LITERATURE']) + '.' + 'out.txt', 'w') as f:
+                                
+                                if((gammaray['Egamma-LITERATURE'],float(file.replace('.dat',''))) in gammaray_to_be_skipped):
+
+                                    print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
+                                    print(gammaray['Egamma-LITERATURE'],float(file.replace('.dat','')))
+                                    print(1000000, ",", 
+                                          0, ",", 
+                                          gammaray['Egamma-LITERATURE'], ",", 
+                                          file.replace('.dat',''), ",", 
+                                          0,",",
+                                          0,",",
+                                          0,",",
+                                          0,",",
+                                          0,
+                                          file=f)
+
+                                else:
+                                    print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
+                                    rFit, I_diff, I = FitGauss(h, 
+                                                               h[0][1], 
+                                                               gammaray['Egamma-LITERATURE'],
+                                                               2, 
+                                                               h[int(gammaray['Egamma-LITERATURE'])][1], 
+                                                               window=6, 
+                                                               plot_title=file.replace(".dat","") + " " + str(gammaray['Egamma-LITERATURE']), 
+                                                               fig_dir=spectra_directory, 
+                                                               savefig_flag=True)
+                                    print(int(I_diff),
+                                          ",",
+                                          I, 
+                                          ",",
+                                          gammaray['Egamma-LITERATURE'], ",",
+                                          file.replace('.dat',''), ",",
+                                          rFit[0],",",
+                                          rFit[1],",",
+                                          rFit[2],",",
+                                          rFit[3],",",
+                                          rFit[4],
+                                          file=f)
         
         else:
             pass

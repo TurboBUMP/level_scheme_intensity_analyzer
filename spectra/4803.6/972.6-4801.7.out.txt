@@ -1,0 +1,2 @@
+Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude
+-337 , 0 , 4801.7 , 972.6 , 0 , 0 , 0 , 0 , 0
