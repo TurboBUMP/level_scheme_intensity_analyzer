@@ -34,7 +34,9 @@ _stop_level_column = 6
 # 'gammaray_to_be_skipped' is a list of pairs that stores all the pairs of gate-and-spectra that (for some reasons)
 # need to be skipped.
 # Each pair should be inserted as (gammaray_energy, gate_energy)
-gammaray_to_be_skipped = [(1157.004,4932.8)]
+gammaray_to_be_skipped = [(1157.004,4932.8),
+                          (1126.078,3731.0),
+                          (2656.44,2435.3)]
 
 import os
 from os.path import isfile,isdir,join
@@ -74,7 +76,7 @@ from scipy.integrate import quad
 # Step 1
 # Load the excel file in a pandas dataframe using only the columns specified at the beggining of the file with 
 
-_lvlScheme = pd.read_excel("../44Ca_ILL/intensities44CaCompressed.ods",
+_lvlScheme = pd.read_excel('../44Ca_ILL/intensities44CaCompressed.ods',
                            sheet_name=0,
                            usecols=[_start_level_colum,_gamma_ray_energy_column,_stop_level_column])
 _lvlScheme.reset_index()
@@ -97,7 +99,7 @@ def Gauss(x, mean, sigma, amplitude):
 def GaussPol1(x, m, q, mean, sigma , amplitude):
     return np.asarray(amplitude * np.exp(-(x-mean)**2/(2*sigma**2)) + m*x + q )#+ c1*np.exp(c2*(x-mean))*(1-(np.exp(c3*(x-mean)**2)/(2*sigma**2))))
     
-def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="", par=None, savefig_flag=False):
+def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title='', fig_dir='', par=None, savefig_flag=False):
     if(par==None):
         par=[-0.1,q,mean,sigma,amplitude]
 
@@ -106,14 +108,14 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="
     
     try:
         
-        parameters, _ = curve_fit(GaussPol1, 
+        parameters, cov = curve_fit(GaussPol1, 
                                   hist[int(mean-window):int(mean+window),0], 
                                   hist[int(mean-window):int(mean+window),1], 
                                   p0=par)
         appo = np.linspace(int(mean-window),int(mean+window),500)
         ax.plot(appo, 
                 GaussPol1(appo, parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]),
-                color="darkorange")
+                color='darkorange')
         I_diff = int(quad(GaussPol1,int(mean-window),int(mean+window),args=(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]))[0]-np.sum(hist[int(mean-window):int(mean+window),1]))
         I = quad(Gauss,
                  int(mean-window),int(mean+window),
@@ -123,17 +125,22 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="
         I_diff = int(-np.sum(hist[int(mean-window):int(mean+window),1]))
         I = 0
         parameters = [0,0,0,0,0]
+        cov = [[0,0,0,0,0],
+                [0,0,0,0,0],
+                [0,0,0,0,0],
+                [0,0,0,0,0],
+                [0,0,0,0,0]]
 
     
     ax.set_title(plot_title)
 
     if (savefig_flag==True):
-        plt.savefig(fig_dir + plot_title.replace(" ","-") + '.png', dpi=300)
+        plt.savefig(fig_dir + plot_title.replace(' ','-') + '.png', dpi=300)
     if (savefig_flag==False):
         choice = input('Do you want to save the figure? [Y/n] ')
         if (choice.lower()=='y' or choice.lower()!='n'):
-            print(f'saving figure to {fig_dir + plot_title.replace(" ","-") + '.png'}')
-            plt.savefig(fig_dir + plot_title.replace(" ","-") + '.png', dpi=300)
+            print(f'saving figure to {fig_dir + plot_title.replace(' ','-') + '.png'}')
+            plt.savefig(fig_dir + plot_title.replace(' ','-') + '.png', dpi=300)
         else:
             print('WARNING: Figure will NOT be saved')
             pass
@@ -143,7 +150,7 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="
 
     plt.close()
     
-    return parameters, I_diff, I
+    return parameters, cov, I_diff, I
 
 
 # Step 3
@@ -173,55 +180,72 @@ if __name__ == '__main__':
 
         with open(spectra_directory + file.replace('.dat','') + '-' + str(gammaray) + '.' + 'out.txt', 'w') as f:
  
-            rFit, I_diff, I = FitGauss(h, 
+            rFit, rCov, I_diff, I = FitGauss(h, 
                                        h[0][1] ,
                                        gammaray, 
                                        2, 
                                        h[int(gammaray)][1], 
                                        window=6, 
-                                       plot_title=file.replace(".dat","") + " " + str(gammaray), 
+                                       plot_title=file.replace('.dat','') + ' ' + str(gammaray), 
                                        fig_dir=spectra_directory, 
                                        par=args.param)
             choice = input('Do you wanto to save fit results? [Y/n] ')
             if (choice.lower()=='y' or choice.lower() != 'n'):
                 
                 print(f'Saving fit results to {f.name}')
-                print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude',file=f)
-                print(int(I_diff), ",",
-                      I, ",",
-                      gammaray, ",",
-                      file.replace('.dat',''), ",",
-                      rFit[0],",",
-                      rFit[1],",",
-                      rFit[2],",",
-                      rFit[3],",",
-                      rFit[4],
+                print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude',file=f)
+                print(int(I_diff), ',',
+                      I, ',',
+                      gammaray, ',',
+                      file.replace('.dat',''), ',',
+                      rFit[0],',',
+                      rFit[1],',',
+                      rFit[2],',',
+                      rFit[3],',',
+                      rFit[4],',',
+                      rCov[0][0],',',
+                      rCov[1][1],',',
+                      rCov[2][2],',',
+                      rCov[3][3],',',
+                      rCov[4][4],',',
                       file=f)
 
             elif(choice.lower()=='n'):
 
-                print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
-                print(int(I_diff), ",",
-                      I, ",",
-                      gammaray, ",",
-                      file.replace('.dat',''), ",",
-                      rFit[0],",",
-                      rFit[1],",",
-                      rFit[2],",",
-                      rFit[3],",",
-                      rFit[4])
+                print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude',file=f)
+                print(int(I_diff), ',',
+                      I, ',',
+                      gammaray, ',',
+                      file.replace('.dat',''), ',',
+                      rFit[0],',',
+                      rFit[1],',',
+                      rFit[2],',',
+                      rFit[3],',',
+                      rFit[4],',',
+                      rCov[0][0],',',
+                      rCov[1][1],',',
+                      rCov[2][2],',',
+                      rCov[3][3],',',
+                      rCov[4][4],',',
+                      )
             else:
                 print('WARNING: Invalid answer. Fit results printed on screen')
-                print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude")
-                print(int(I_diff), ",",
-                      I, ",",
-                      gammaray, ",",
-                      file.replace('.dat',''), ",",
-                      rFit[0],",",
-                      rFit[1],",",
-                      rFit[2],",",
-                      rFit[3],",",
-                      rFit[4])
+                print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude')
+                print(int(I_diff), ',',
+                      I, ',',
+                      gammaray, ',',
+                      file.replace('.dat',''), ',',
+                      rFit[0],',',
+                      rFit[1],',',
+                      rFit[2],',',
+                      rFit[3],',',
+                      rFit[4],',',
+                      rCov[0][0],',',
+                      rCov[1][1],',',
+                      rCov[2][2],',',
+                      rCov[3][3],',',
+                      rCov[4][4],',',
+                      )
             
 
     else:
@@ -238,7 +262,7 @@ if __name__ == '__main__':
             
                 filename = spectra_directory+file
          
-                if filename.endswith(".dat"):
+                if filename.endswith('.dat'):
                     
                     energyLevel = float(args.path.replace('/',''))
                     h = np.genfromtxt(filename)
@@ -252,27 +276,32 @@ if __name__ == '__main__':
                         else:
                             with open(spectra_directory + file.replace('.dat','') + '-' + str(gammaray['Egamma-LITERATURE']) + '.' + 'out.txt', 'w') as f:
                                 
-                                print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
-                                rFit, I_diff, I = FitGauss(h, 
+                                print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude',file=f)
+                                rFit, rCov, I_diff, I = FitGauss(h, 
                                                            h[0][1], 
                                                            gammaray['Egamma-LITERATURE'],
                                                            2, 
                                                            h[int(gammaray['Egamma-LITERATURE'])][1], 
                                                            window=6, 
-                                                           plot_title=file.replace(".dat","") + " " + str(gammaray['Egamma-LITERATURE']), 
+                                                           plot_title=file.replace('.dat','') + ' ' + str(gammaray['Egamma-LITERATURE']), 
                                                            fig_dir=spectra_directory, 
                                                            savefig_flag=True)
                                 print(int(I_diff),
-                                      ",",
+                                      ',',
                                       I, 
-                                      ",",
-                                      gammaray['Egamma-LITERATURE'], ",",
-                                      file.replace('.dat',''), ",",
-                                      rFit[0],",",
-                                      rFit[1],",",
-                                      rFit[2],",",
-                                      rFit[3],",",
-                                      rFit[4],
+                                      ',',
+                                      gammaray['Egamma-LITERATURE'], ',',
+                                      file.replace('.dat',''), ',',
+                                      rFit[0],',',
+                                      rFit[1],',',
+                                      rFit[2],',',
+                                      rFit[3],',',
+                                      rFit[4],',',
+                                      rCov[0][0],',',
+                                      rCov[1][1],',',
+                                      rCov[2][2],',',
+                                      rCov[3][3],',',
+                                      rCov[4][4],',',
                                       file=f)
         
         else:

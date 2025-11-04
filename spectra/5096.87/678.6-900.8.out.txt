@@ -1,2 +1,2 @@
-Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude
-0 , -1.6183327782503324e-17 , 900.8 , 678.6 , 1.250006886077984 , -1028.6728641369675 , 848.100537002737 , 4.805872577118933 , -2085.7218259050596
+Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude
+0 , -1.6183327782503324e-17 , 900.8 , 678.6 , 1.250006886077984 , -1028.6728641369675 , 848.100537002737 , 4.805872577118933 , -2085.7218259050596 , inf , inf , inf , inf , inf ,
