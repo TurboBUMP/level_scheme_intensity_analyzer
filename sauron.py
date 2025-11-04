@@ -97,7 +97,7 @@ def Gauss(x, mean, sigma, amplitude):
 def GaussPol1(x, m, q, mean, sigma , amplitude):
     return np.asarray(amplitude * np.exp(-(x-mean)**2/(2*sigma**2)) + m*x + q )#+ c1*np.exp(c2*(x-mean))*(1-(np.exp(c3*(x-mean)**2)/(2*sigma**2))))
     
-def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="", par=[], savefig_flag=False):
+def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="", par=None, savefig_flag=False):
     if(par==None):
         par=[-0.1,q,mean,sigma,amplitude]
 
@@ -120,7 +120,6 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title="", fig_dir="
                  args=(parameters[2], parameters[3], parameters[4]))[0]
 
     except: 
-       
         I_diff = int(-np.sum(hist[int(mean-window):int(mean+window),1]))
         I = 0
         parameters = [0,0,0,0,0]
@@ -247,51 +246,34 @@ if __name__ == '__main__':
                     
                     for index, gammaray in subsetLevelScheme.iterrows():
 
-                        if(isfile(spectra_directory+file.replace('.dat','') + '-' + str(gammaray['Egamma-LITERATURE']) + '.' + 'out.txt')):
+                        if((gammaray['Egamma-LITERATURE'],float(file.replace('.dat',''))) in gammaray_to_be_skipped):
                             pass
 
                         else:
-
                             with open(spectra_directory + file.replace('.dat','') + '-' + str(gammaray['Egamma-LITERATURE']) + '.' + 'out.txt', 'w') as f:
                                 
-                                if((gammaray['Egamma-LITERATURE'],float(file.replace('.dat',''))) in gammaray_to_be_skipped):
-
-                                    print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
-                                    print(gammaray['Egamma-LITERATURE'],float(file.replace('.dat','')))
-                                    print(1000000, ",", 
-                                          0, ",", 
-                                          gammaray['Egamma-LITERATURE'], ",", 
-                                          file.replace('.dat',''), ",", 
-                                          0,",",
-                                          0,",",
-                                          0,",",
-                                          0,",",
-                                          0,
-                                          file=f)
-
-                                else:
-                                    print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
-                                    rFit, I_diff, I = FitGauss(h, 
-                                                               h[0][1], 
-                                                               gammaray['Egamma-LITERATURE'],
-                                                               2, 
-                                                               h[int(gammaray['Egamma-LITERATURE'])][1], 
-                                                               window=6, 
-                                                               plot_title=file.replace(".dat","") + " " + str(gammaray['Egamma-LITERATURE']), 
-                                                               fig_dir=spectra_directory, 
-                                                               savefig_flag=True)
-                                    print(int(I_diff),
-                                          ",",
-                                          I, 
-                                          ",",
-                                          gammaray['Egamma-LITERATURE'], ",",
-                                          file.replace('.dat',''), ",",
-                                          rFit[0],",",
-                                          rFit[1],",",
-                                          rFit[2],",",
-                                          rFit[3],",",
-                                          rFit[4],
-                                          file=f)
+                                print("Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude",file=f)
+                                rFit, I_diff, I = FitGauss(h, 
+                                                           h[0][1], 
+                                                           gammaray['Egamma-LITERATURE'],
+                                                           2, 
+                                                           h[int(gammaray['Egamma-LITERATURE'])][1], 
+                                                           window=6, 
+                                                           plot_title=file.replace(".dat","") + " " + str(gammaray['Egamma-LITERATURE']), 
+                                                           fig_dir=spectra_directory, 
+                                                           savefig_flag=True)
+                                print(int(I_diff),
+                                      ",",
+                                      I, 
+                                      ",",
+                                      gammaray['Egamma-LITERATURE'], ",",
+                                      file.replace('.dat',''), ",",
+                                      rFit[0],",",
+                                      rFit[1],",",
+                                      rFit[2],",",
+                                      rFit[3],",",
+                                      rFit[4],
+                                      file=f)
         
         else:
             pass

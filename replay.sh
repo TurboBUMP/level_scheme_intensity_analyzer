@@ -20,7 +20,9 @@ while :; do
               ((i++ == 0)) && wait
               ./sauron.py $dir &
             done
+            wait
           fi
+          REWRITE_OUTPUT=1
           break
           ;;
         *)
@@ -28,8 +30,6 @@ while :; do
           exit
           ;;
       esac
-
-      REWRITE_OUTPUT=1
 
       break
       ;;
@@ -71,13 +71,15 @@ while :; do
       echo "-h | --help                 print this help message"
       echo "-sf|--single-folder         replay.sh will recalculate the fit calling sauron.py on all the spectra of the specified sub-folder"
       echo "-r | --redo-all-fit         replay.sh will recalculate all the fit calling sauron.py (default -j 1)"
-      echo "-j N                        if -r is specified use -j N to run sauron.py on N parallel processes"
+      echo "  -j N                      if -r is specified use -j N to run sauron.py on N parallel processes"
+      echo "-c | --clear-all-output     replay.sh will delete all output files"
       echo "\n"
       exit
       ;;
 
     *)
       echo "Creating unified output file: output.txt ..."
+      REWRITE_OUTPUT=1
       break
       ;;
   esac
