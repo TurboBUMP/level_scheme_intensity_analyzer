@@ -178,20 +178,19 @@ if __name__ == '__main__':
         subsetLevelScheme = _lvlScheme[_lvlScheme['LevelLITERATURE'] == energyLevel]
         gammaray = args.peak
 
-        with open(spectra_directory + file.replace('.dat','') + '-' + str(gammaray) + '.' + 'out.txt', 'w') as f:
+        rFit, rCov, I_diff, I = FitGauss(h, 
+                                   h[0][1] ,
+                                   gammaray, 
+                                   2, 
+                                   h[int(gammaray)][1], 
+                                   window=6, 
+                                   plot_title=file.replace('.dat','') + ' ' + str(gammaray), 
+                                   fig_dir=spectra_directory, 
+                                   par=args.param)
+        choice = input('Do you wanto to save fit results? [Y/n] ')
+        if (choice.lower()=='y' or choice.lower() != 'n'):
  
-            rFit, rCov, I_diff, I = FitGauss(h, 
-                                       h[0][1] ,
-                                       gammaray, 
-                                       2, 
-                                       h[int(gammaray)][1], 
-                                       window=6, 
-                                       plot_title=file.replace('.dat','') + ' ' + str(gammaray), 
-                                       fig_dir=spectra_directory, 
-                                       par=args.param)
-            choice = input('Do you wanto to save fit results? [Y/n] ')
-            if (choice.lower()=='y' or choice.lower() != 'n'):
-                
+            with open(spectra_directory + file.replace('.dat','') + '-' + str(gammaray) + '.' + 'out.txt', 'w') as f:    
                 print(f'Saving fit results to {f.name}')
                 print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude',file=f)
                 print(int(I_diff), ',',
@@ -210,42 +209,42 @@ if __name__ == '__main__':
                       rCov[4][4],',',
                       file=f)
 
-            elif(choice.lower()=='n'):
+        elif(choice.lower()=='n'):
 
-                print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude',file=f)
-                print(int(I_diff), ',',
-                      I, ',',
-                      gammaray, ',',
-                      file.replace('.dat',''), ',',
-                      rFit[0],',',
-                      rFit[1],',',
-                      rFit[2],',',
-                      rFit[3],',',
-                      rFit[4],',',
-                      rCov[0][0],',',
-                      rCov[1][1],',',
-                      rCov[2][2],',',
-                      rCov[3][3],',',
-                      rCov[4][4],',',
-                      )
-            else:
-                print('WARNING: Invalid answer. Fit results printed on screen')
-                print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude')
-                print(int(I_diff), ',',
-                      I, ',',
-                      gammaray, ',',
-                      file.replace('.dat',''), ',',
-                      rFit[0],',',
-                      rFit[1],',',
-                      rFit[2],',',
-                      rFit[3],',',
-                      rFit[4],',',
-                      rCov[0][0],',',
-                      rCov[1][1],',',
-                      rCov[2][2],',',
-                      rCov[3][3],',',
-                      rCov[4][4],',',
-                      )
+            print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude')
+            print(int(I_diff), ',',
+                  I, ',',
+                  gammaray, ',',
+                  file.replace('.dat',''), ',',
+                  rFit[0],',',
+                  rFit[1],',',
+                  rFit[2],',',
+                  rFit[3],',',
+                  rFit[4],',',
+                  rCov[0][0],',',
+                  rCov[1][1],',',
+                  rCov[2][2],',',
+                  rCov[3][3],',',
+                  rCov[4][4],',',
+                  )
+        else:
+            print('WARNING: Invalid answer. Fit results printed on screen')
+            print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude')
+            print(int(I_diff), ',',
+                  I, ',',
+                  gammaray, ',',
+                  file.replace('.dat',''), ',',
+                  rFit[0],',',
+                  rFit[1],',',
+                  rFit[2],',',
+                  rFit[3],',',
+                  rFit[4],',',
+                  rCov[0][0],',',
+                  rCov[1][1],',',
+                  rCov[2][2],',',
+                  rCov[3][3],',',
+                  rCov[4][4],',',
+                  )
             
 
     else:
