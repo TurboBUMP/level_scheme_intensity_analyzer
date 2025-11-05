@@ -142,6 +142,9 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title='', fig_dir='
     
     ax.set_title(plot_title)
 
+    if (args.peak != -1):
+        plt.show()
+
     if (savefig_flag==True):
         plt.savefig(fig_dir + plot_title.replace(' ','-') + '.png', dpi=300)
     if (savefig_flag==False):
@@ -152,11 +155,6 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title='', fig_dir='
         else:
             print('WARNING: Figure will NOT be saved')
             pass
-    
-    if (args.peak != -1):
-        plt.show()
-
-    plt.close()
     
     return parameters, cov, I_diff, I
 
