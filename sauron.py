@@ -36,7 +36,9 @@ _stop_level_column = 6
 # Each pair should be inserted as (gammaray_energy, gate_energy)
 gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1126.078,3731.0),
-                          (2656.44,2435.3)]
+                          (2656.44,2435.3),
+                          (1417.0,1107.98),
+                          (1417.0,1582.8)]
 
 import os
 from os.path import isfile,isdir,join
@@ -63,6 +65,12 @@ parser.add_argument('--param',
                     type=float, 
                     default=None, 
                     help='first guess for the fit parameters')
+parser.add_argument('-w',
+                    '--window',
+#                    metavar='window',
+                    type=int,
+                    default=6,
+                    help='window amplitude')
 args = parser.parse_args()
 
 import pandas as pd
@@ -183,7 +191,7 @@ if __name__ == '__main__':
                                    gammaray, 
                                    2, 
                                    h[int(gammaray)][1], 
-                                   window=6, 
+                                   window=args.window, 
                                    plot_title=file.replace('.dat','') + ' ' + str(gammaray), 
                                    fig_dir=spectra_directory, 
                                    par=args.param)
@@ -206,7 +214,7 @@ if __name__ == '__main__':
                       rCov[1][1],',',
                       rCov[2][2],',',
                       rCov[3][3],',',
-                      rCov[4][4],',',
+                      rCov[4][4],
                       file=f)
 
         elif(choice.lower()=='n'):
@@ -225,7 +233,7 @@ if __name__ == '__main__':
                   rCov[1][1],',',
                   rCov[2][2],',',
                   rCov[3][3],',',
-                  rCov[4][4],',',
+                  rCov[4][4]
                   )
         else:
             print('WARNING: Invalid answer. Fit results printed on screen')
@@ -243,7 +251,7 @@ if __name__ == '__main__':
                   rCov[1][1],',',
                   rCov[2][2],',',
                   rCov[3][3],',',
-                  rCov[4][4],',',
+                  rCov[4][4]
                   )
             
 
@@ -300,7 +308,7 @@ if __name__ == '__main__':
                                       rCov[1][1],',',
                                       rCov[2][2],',',
                                       rCov[3][3],',',
-                                      rCov[4][4],',',
+                                      rCov[4][4],
                                       file=f)
         
         else:
