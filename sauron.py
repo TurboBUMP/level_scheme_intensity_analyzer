@@ -96,6 +96,13 @@ parser.add_argument('-w',
                     type=int,
                     default=20,
                     help='window amplitude')
+parser.add_argument('-l',
+                    '--limit',
+                    nargs=2,
+                    metavar=('lower','upper'),
+                    type=int,
+                    default=None,
+                    help='lower and upper limit for asymmetric fit window - it has priority on -w')
 args = parser.parse_args()
 
 import pandas as pd
@@ -132,30 +139,34 @@ def Gauss(x, mean, sigma, amplitude):
 def GaussPol1(x, m, q, mean, sigma , amplitude):
     return np.asarray(amplitude * np.exp(-(x-mean)**2/(2*sigma**2)) + m*x + q )#+ c1*np.exp(c2*(x-mean))*(1-(np.exp(c3*(x-mean)**2)/(2*sigma**2))))
     
-def FitGauss(hist, q, mean, sigma, amplitude, window=20, plot_title='', fig_dir='', par=None, savefig_flag=False):
+def FitGauss(hist, q, mean, sigma, amplitude, window=20, limit=None, plot_title='', fig_dir='', par=None, savefig_flag=False):
+    if(limit is not None):
+        lower, upper = limit
+    else:
+        lower = upper = window
     if(par==None):
         par=[-0.1,q,mean,sigma,amplitude]
 
     fig, ax = plt.subplots(1,1,figsize=(7,3))
-    ax.bar(hist[int(mean-window):int(mean+window),0], hist[int(mean-window):int(mean+window),1])
+    ax.bar(hist[int(mean-lower):int(mean+upper),0], hist[int(mean-lower):int(mean+upper),1])
     
     try:
         
         parameters, cov = curve_fit(GaussPol1, 
-                                  hist[int(mean-window):int(mean+window),0], 
-                                  hist[int(mean-window):int(mean+window),1], 
+                                  hist[int(mean-lower):int(mean+upper),0], 
+                                  hist[int(mean-lower):int(mean+upper),1], 
                                   p0=par)
-        appo = np.linspace(int(mean-window),int(mean+window),500)
+        appo = np.linspace(int(mean-lower),int(mean+upper),500)
         ax.plot(appo, 
                 GaussPol1(appo, parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]),
                 color='darkorange')
-        I_diff = int(quad(GaussPol1,int(mean-window),int(mean+window),args=(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]))[0]-np.sum(hist[int(mean-window):int(mean+window),1]))
+        I_diff = int(quad(GaussPol1,int(mean-lower),int(mean+upper),args=(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]))[0]-np.sum(hist[int(mean-lower):int(mean+upper),1]))
         I = quad(Gauss,
-                 int(mean-window),int(mean+window),
+                 int(mean-lower),int(mean+upper),
                  args=(parameters[2], parameters[3], parameters[4]))[0]
 
     except: 
-        I_diff = int(-np.sum(hist[int(mean-window):int(mean+window),1]))
+        I_diff = int(-np.sum(hist[int(mean-lower):int(mean+upper),1]))
         I = 0
         parameters = [0,0,0,0,0]
         cov = [[0,0,0,0,0],
@@ -216,7 +227,8 @@ if __name__ == '__main__':
                                    gammaray, 
                                    2, 
                                    h[int(gammaray)][1], 
-                                   window=args.window, 
+                                   window=args.window,
+                                   limit=args.limit,
                                    plot_title=file.replace('.dat','') + ' ' + str(gammaray), 
                                    fig_dir=spectra_directory, 
                                    par=args.param)
@@ -330,7 +342,8 @@ if __name__ == '__main__':
                                                            gammaray['Egamma-LITERATURE'],
                                                            2, 
                                                            h[int(gammaray['Egamma-LITERATURE'])][1], 
-                                                           window=20, 
+                                                           window=20,
+                                                           limit=args.limit,
                                                            plot_title=file.replace('.dat','') + ' ' + str(gammaray['Egamma-LITERATURE']), 
                                                            fig_dir=spectra_directory, 
                                                            savefig_flag=True)
