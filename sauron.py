@@ -94,7 +94,7 @@ parser.add_argument('-w',
                     '--window',
 #                    metavar='window',
                     type=int,
-                    default=6,
+                    default=20,
                     help='window amplitude')
 args = parser.parse_args()
 
@@ -132,7 +132,7 @@ def Gauss(x, mean, sigma, amplitude):
 def GaussPol1(x, m, q, mean, sigma , amplitude):
     return np.asarray(amplitude * np.exp(-(x-mean)**2/(2*sigma**2)) + m*x + q )#+ c1*np.exp(c2*(x-mean))*(1-(np.exp(c3*(x-mean)**2)/(2*sigma**2))))
     
-def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title='', fig_dir='', par=None, savefig_flag=False):
+def FitGauss(hist, q, mean, sigma, amplitude, window=20, plot_title='', fig_dir='', par=None, savefig_flag=False):
     if(par==None):
         par=[-0.1,q,mean,sigma,amplitude]
 
@@ -330,7 +330,7 @@ if __name__ == '__main__':
                                                            gammaray['Egamma-LITERATURE'],
                                                            2, 
                                                            h[int(gammaray['Egamma-LITERATURE'])][1], 
-                                                           window=6, 
+                                                           window=20, 
                                                            plot_title=file.replace('.dat','') + ' ' + str(gammaray['Egamma-LITERATURE']), 
                                                            fig_dir=spectra_directory, 
                                                            savefig_flag=True)
