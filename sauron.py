@@ -167,12 +167,12 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title='', fig_dir='
         plt.show()
 
     if (savefig_flag==True):
-        plt.savefig(fig_dir + plot_title.replace(' ','-') + '.png', dpi=300)
+        fig.savefig(fig_dir + plot_title.replace(' ','-') + '.png', dpi=300)
     if (savefig_flag==False):
         choice = input('Do you want to save the figure? [Y/n] ')
         if (choice.lower()=='y' or choice.lower()!='n'):
             print(f'saving figure to {fig_dir + plot_title.replace(' ','-') + '.png'}')
-            plt.savefig(fig_dir + plot_title.replace(' ','-') + '.png', dpi=300)
+            fig.savefig(fig_dir + plot_title.replace(' ','-') + '.png', dpi=300)
         else:
             print('WARNING: Figure will NOT be saved')
             pass
