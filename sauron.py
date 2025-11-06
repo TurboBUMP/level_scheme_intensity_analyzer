@@ -37,8 +37,29 @@ _stop_level_column = 6
 gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1126.078,3731.0),
                           (2656.44,2435.3),
+                          (1417.0,475.2),
+                          (1417.0,894.2),
                           (1417.0,1107.98),
-                          (1417.0,1582.8)]
+                          (1417.0,1582.8),
+                          (1417.0,1995.8),
+                          (1417.0,2291.4),
+                          (263.53,1244.75),
+                          (263.53,1276),
+                          (263.53,1494.6),
+                          (651.353,1575.9),
+                          (263.53,1788.5),
+                          (263.53,1989.17),
+                          (651.353,1989.17),
+                          (263.53,2033.8),
+                          (1024.738,2033.8),
+                          (263.53,2088),
+                          (651.353,2150.9),
+                          (263.53,2150.9),
+                          (263.53,2193.2),
+                          (263.53,3672.8),
+                          (1024.738,605.8),
+                          (263.53,887.5),
+                          (2200.1,2037.9)]
 
 import os
 from os.path import isfile,isdir,join
@@ -155,7 +176,9 @@ def FitGauss(hist, q, mean, sigma, amplitude, window=6, plot_title='', fig_dir='
         else:
             print('WARNING: Figure will NOT be saved')
             pass
-    
+            
+    plt.close()
+
     return parameters, cov, I_diff, I
 
 
@@ -199,26 +222,41 @@ if __name__ == '__main__':
             with open(spectra_directory + file.replace('.dat','') + '-' + str(gammaray) + '.' + 'out.txt', 'w') as f:    
                 print(f'Saving fit results to {f.name}')
                 print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude',file=f)
-                print(int(I_diff), ',',
-                      I, ',',
-                      gammaray, ',',
-                      file.replace('.dat',''), ',',
-                      rFit[0],',',
-                      rFit[1],',',
-                      rFit[2],',',
-                      rFit[3],',',
-                      rFit[4],',',
-                      rCov[0][0],',',
-                      rCov[1][1],',',
-                      rCov[2][2],',',
-                      rCov[3][3],',',
-                      rCov[4][4],
-                      file=f)
+                
+                if I_diff != 0:
+                    arrow_good_fit = '--->'
+                else:
+                    arrow_good_fit = '    '
+
+                    print(arrow_good_fit,
+                          int(I_diff), ',',
+                          I, ',',
+                          gammaray, ',',
+                          file.replace('.dat',''), ',',
+                          rFit[0],',',
+                          rFit[1],',',
+                          rFit[2],',',
+                          rFit[3],',',
+                          rFit[4],',',
+                          rCov[0][0],',',
+                          rCov[1][1],',',
+                          rCov[2][2],',',
+                          rCov[3][3],',',
+                          rCov[4][4],
+                          file=f)
 
         elif(choice.lower()=='n'):
 
             print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude')
-            print(int(I_diff), ',',
+
+            if I_diff != 0:
+                arrow_good_fit = '--->'
+            else:
+                arrow_good_fit = '    '
+
+
+            print(arrow_good_fit,
+                  int(I_diff), ',',
                   I, ',',
                   gammaray, ',',
                   file.replace('.dat',''), ',',
@@ -236,7 +274,8 @@ if __name__ == '__main__':
         else:
             print('WARNING: Invalid answer. Fit results printed on screen')
             print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude')
-            print(int(I_diff), ',',
+            print('    ',
+                  int(I_diff), ',',
                   I, ',',
                   gammaray, ',',
                   file.replace('.dat',''), ',',
@@ -291,7 +330,13 @@ if __name__ == '__main__':
                                                            plot_title=file.replace('.dat','') + ' ' + str(gammaray['Egamma-LITERATURE']), 
                                                            fig_dir=spectra_directory, 
                                                            savefig_flag=True)
-                                print(int(I_diff),
+                                if I_diff != 0:
+                                    arrow_good_fit = '--->'
+                                else:
+                                    arrow_good_fit = '    '
+
+                                print(arrow_good_fit,
+                                      int(I_diff),
                                       ',',
                                       I, 
                                       ',',
