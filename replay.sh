@@ -96,7 +96,7 @@ if [ $REWRITE_OUTPUT -eq 1 ]; then
     if [ -d spectra/${DIR} ];then 
       for file in $(ls spectra/$DIR | grep ".out.txt"); do
         echo "writing ${DIR}/${file} to output.txt"
-        cat ~/Desktop/Mordor/spectra/${DIR}/${file} | tee -a ./output.txt >> /dev/null
+        cat ~/Desktop/Mordor/spectra/${DIR}/${file} | column -s, -t | tee -a ./output.txt >> /dev/null
       done
     fi
   done;

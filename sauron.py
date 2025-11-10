@@ -87,10 +87,23 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (667.3,2154.6),
                           (2554.9,2154.6),
                           (667.3,2223.1),
-                          (2554.9,2223.1)]
-
+                          (2554.9,2223.1),
+                          (667.3,2282.2),
+                          (2554.9,2282.2),
+                          (2554.9,2957.6),
+                          (667.3,3138.4),
+                          (2554.9,3138.4),
+                          (667.2,646.5),
+                          (2554.9,646.5),
+                          (667.3,7418.8),
+                          (2554.9,7418.8),
+                          (3775.3,1250.2),
+                          (1119.7,1520.2),
+                          (475.2,1524.4),
+                          (1119.7,1524.4),
+                          (3775.3,1524.4)]
 import os
-from os.path import isfile,isdir,join
+from os.path import isfile,isdir
 import argparse
 
 parser = argparse.ArgumentParser(prog='SAURON',
@@ -263,78 +276,64 @@ if __name__ == '__main__':
                 print(f'Saving fit results to {f.name}')
                 print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude',file=f)
                 
-                if I_diff != 0:
-                    arrow_good_fit = '--->'
-                else:
-                    arrow_good_fit = '    '
-
-                    print(arrow_good_fit,
-                          int(I_diff), ',',
-                          I, ',',
-                          gammaray, ',',
-                          file.replace('.dat',''), ',',
-                          rFit[0],',',
-                          rFit[1],',',
-                          rFit[2],',',
-                          rFit[3],',',
-                          rFit[4],',',
-                          rCov[0][0],',',
-                          rCov[1][1],',',
-                          rCov[2][2],',',
-                          rCov[3][3],',',
-                          rCov[4][4],
-                          file=f)
+                print(int(I_diff),
+                    f'{I:.4f}',
+                    gammaray,
+                    file.replace('.dat',''),
+                    f'{rFit[0]:.4f}',
+                    f'{rFit[1]:.4f}',
+                    f'{rFit[2]:.4f}',
+                    f'{rFit[3]:.4f}',
+                    f'{rFit[4]:.4f}',
+                    f'{rCov[0][0]:.4f}',
+                    f'{rCov[1][1]:.4f}',
+                    f'{rCov[2][2]:.4f}',
+                    f'{rCov[3][3]:.4f}',
+                    f'{rCov[4][4]:.4f}',
+                    file=f,sep=',')
 
         elif(choice.lower()=='n'):
 
             print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude')
 
-            if I_diff != 0:
-                arrow_good_fit = '--->'
-            else:
-                arrow_good_fit = '    '
-
-
-            print(arrow_good_fit,
-                  int(I_diff), ',',
-                  I, ',',
-                  gammaray, ',',
-                  file.replace('.dat',''), ',',
-                  rFit[0],',',
-                  rFit[1],',',
-                  rFit[2],',',
-                  rFit[3],',',
-                  rFit[4],',',
-                  rCov[0][0],',',
-                  rCov[1][1],',',
-                  rCov[2][2],',',
-                  rCov[3][3],',',
-                  rCov[4][4]
+            print(int(I_diff),
+                  f'{I:.4f}',
+                  gammaray,
+                  file.replace('.dat',''),
+                  f'{rFit[0]:.4f}',
+                  f'{rFit[1]:.4f}',
+                  f'{rFit[2]:.4f}',
+                  f'{rFit[3]:.4f}',
+                  f'{rFit[4]:.4f}',
+                  f'{rCov[0][0]:.4f}',
+                  f'{rCov[1][1]:.4f}',
+                  f'{rCov[2][2]:.4f}',
+                  f'{rCov[3][3]:.4f}',
+                  f'{rCov[4][4]:.4f}',sep=','
                   )
         else:
             print('WARNING: Invalid answer. Fit results printed on screen')
             print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude')
-            print('    ',
-                  int(I_diff), ',',
-                  I, ',',
-                  gammaray, ',',
-                  file.replace('.dat',''), ',',
-                  rFit[0],',',
-                  rFit[1],',',
-                  rFit[2],',',
-                  rFit[3],',',
-                  rFit[4],',',
-                  rCov[0][0],',',
-                  rCov[1][1],',',
-                  rCov[2][2],',',
-                  rCov[3][3],',',
-                  rCov[4][4]
+            print(int(I_diff),
+                  f'{I:.4f}',
+                  gammaray,
+                  file.replace('.dat',''),
+                  f'{rFit[0]:.4f}',
+                  f'{rFit[1]:.4f}',
+                  f'{rFit[2]:.4f}',
+                  f'{rFit[3]:.4f}',
+                  f'{rFit[4]:.4f}',
+                  f'{rCov[0][0]:.4f}',
+                  f'{rCov[1][1]:.4f}',
+                  f'{rCov[2][2]:.4f}',
+                  f'{rCov[3][3]:.4f}',
+                  f'{rCov[4][4]:.4f}',sep=','
                   )
             
 
     else:
 
-        if (isdir(join(os.getcwd(),'spectra',args.path))):
+        if (isdir(os.path.join(os.getcwd(),'spectra',args.path))):
             print('Now processing ' + args.path + ' ...')
 
             if not args.path.endswith('/'):
@@ -345,7 +344,7 @@ if __name__ == '__main__':
             for file in sorted(os.listdir(spectra_directory)):
             
                 filename = spectra_directory+file
-         
+            
                 if filename.endswith('.dat'):
                     
                     energyLevel = float(args.path.replace('/',''))
@@ -362,37 +361,30 @@ if __name__ == '__main__':
                                 
                                 print('Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude',file=f)
                                 rFit, rCov, I_diff, I = FitGauss(h, 
-                                                           h[0][1], 
-                                                           gammaray['Egamma-LITERATURE'],
-                                                           2, 
-                                                           h[int(gammaray['Egamma-LITERATURE'])][1], 
-                                                           window=20,
-                                                           limit=args.limit,
-                                                           plot_title=file.replace('.dat','') + ' ' + str(gammaray['Egamma-LITERATURE']), 
-                                                           fig_dir=spectra_directory, 
-                                                           savefig_flag=True)
-                                if I_diff != 0:
-                                    arrow_good_fit = '--->'
-                                else:
-                                    arrow_good_fit = '    '
+                                                            h[0][1], 
+                                                            gammaray['Egamma-LITERATURE'],
+                                                            2, 
+                                                            h[int(gammaray['Egamma-LITERATURE'])][1], 
+                                                            window=20,
+                                                            limit=args.limit,
+                                                            plot_title=file.replace('.dat','') + ' ' + str(gammaray['Egamma-LITERATURE']), 
+                                                            fig_dir=spectra_directory, 
+                                                            savefig_flag=True)
 
-                                print(arrow_good_fit,
-                                      int(I_diff),
-                                      ',',
-                                      I, 
-                                      ',',
-                                      gammaray['Egamma-LITERATURE'], ',',
-                                      file.replace('.dat',''), ',',
-                                      rFit[0],',',
-                                      rFit[1],',',
-                                      rFit[2],',',
-                                      rFit[3],',',
-                                      rFit[4],',',
-                                      rCov[0][0],',',
-                                      rCov[1][1],',',
-                                      rCov[2][2],',',
-                                      rCov[3][3],',',
-                                      rCov[4][4],
+                                print(int(I_diff),
+                                      f'{I:.4f}',
+                                      gammaray['Egamma-LITERATURE'],
+                                      file.replace('.dat',''),
+                                      f'{rFit[0]:.4f}',
+                                      f'{rFit[1]:.4f}',
+                                      f'{rFit[2]:.4f}',
+                                      f'{rFit[3]:.4f}',
+                                      f'{rFit[4]:.4f}',
+                                      f'{rCov[0][0]:.4f}',
+                                      f'{rCov[1][1]:.4f}',
+                                      f'{rCov[2][2]:.4f}',
+                                      f'{rCov[3][3]:.4f}',
+                                      f'{rCov[4][4]:.4f}',sep=',',
                                       file=f)
         
         else:
