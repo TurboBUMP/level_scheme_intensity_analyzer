@@ -1,2 +1,2 @@
-Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude
-0,0.0000,1119.7,1816.3,13.9192,-15226.9943,1108.0346,-0.0213,841.3903,inf,inf,inf,inf,inf
+Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude # Fit made with Cubix
+0,442.9674,1119.7,1816.3,0,0,1119.813,2.0994,198.2221,0,0,0.3453,1.4293,60.1841
