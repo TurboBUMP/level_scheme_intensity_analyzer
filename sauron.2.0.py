@@ -121,18 +121,21 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
 import os
 from os.path import isfile,isdir
 import argparse
+import time
 
 parser = argparse.ArgumentParser(prog='SAURON',
                                  description='Search and Fit peaks program')
 parser.add_argument('--run-all',
                     type=None,
                     default=None,
-                    help='If passed, sauron.py will run for the entire level scheme.'
-                        +'This will save time because the program won\'t have to reload'
-                        +'the csv file for every gammaray')
-parser.add_argument('path', 
+                    help='If passed, sauron.py will run for the entire level\
+                        scheme. This will save time because the program\
+                        won\'t have to reload the csv file for every\
+                        gammaray')
+parser.add_argument('level_directory', 
                     type=str, 
-                    help='[REQUIRED] path to the directory containing the spectra')
+                    help='[REQUIRED] name of the subdirectory'
+                        +' containing the target file')
 parser.add_argument('-g',
                     '--gate', 
                     type=float, 
@@ -166,56 +169,127 @@ from scipy.signal import find_peaks
 from scipy.optimize import curve_fit
 from scipy.integrate import quad
 
-# Here two functions are defined:
-#
-# --> GaussPol1(): is a gaussian function that calculates the energy corresponding to x (x can be array-like)
-#
-# --> FitGauss(): take and histogram as input and try to execute a fit of it using the GaussPol1() function and returns the best parameters found and
-#     the variable 'I_diff' (difference between the sum of the bin contents and the integral of the fitted funtion).
-#     'I_diff' is useful to evaluate the goodness of the fit.
-#     If the fit doesn't converge than the function return a set of the fitted parameters all equals to 0 (e.g. [0,0,0,0,0])
-#     It also plots the histogram and the fitted function (if any!)
-#
+
+###################### Functions ##############################################
+def LoadLevelScheme(_filename): 
+    _start=time.time()
+    print(f'Reading {_filename}')
+    _lvlScheme = pd.read_excel(_filename,
+                           sheet_name=0,
+                           usecols=[_start_level_colum,
+                                    _gamma_ray_energy_column,
+                                    _stop_level_column])
+    _lvlScheme.reset_index()
+    _stop=time.time()
+    print(f'File {_filename} loaded in {_stop-_start:.4f}s')
+    return _lvlScheme
 
 
-def Gauss(x,mean,sigma,amplitude):
-    return np.asarray(amplitude * np.exp(-(x-mean)**2/(2*sigma**2)))
+def Gauss(_x,_mean,_sigma,_amplitude):
+    ''' 
+
+    Gauss(): is a gaussian function that calculates the energy
+             corresponding to x (x can be array-like)
+
+    '''
+    return np.asarray(_amplitude * np.exp(-(_x-_mean)**2/(2*_sigma**2)))
 
 
-def GaussPol1(x,m,q,mean,sigma,amplitude):
-    return np.asarray(amplitude * np.exp(-(x-mean)**2/(2*sigma**2)) + m*x + q )#+ c1*np.exp(c2*(x-mean))*(1-(np.exp(c3*(x-mean)**2)/(2*sigma**2))))
+def GaussPol1(_x,_mean,_sigma,_amplitude,_m,_q):
+    ''' 
 
- 
-def FitGauss(hist,q,mean,amplitude,limit,par):
-    lower,upper=limit
-    lower=int(lower)
-    upper=int(upper)
+    GaussPol1(): is a gaussian function + a degree 1 polinomial that 
+                 calculates the energy corresponding to x 
+                 (x can be array-like)
+
+    '''
+    return np.asarray(Gauss(_x,_mean,_sigma,_amplitude) + _m*_x + _q)
+
+
+def FitGauss(_hist,_par_first_guess,_limit=[0,-1]):
+    ''' 
+
+    FitGauss(): As name suggests, this function do a gaussian fit of a
+                given histogram (hist).
+
+        Inputs: - (_hist) the histogram 
+                - (_par_first_guess) first guess
+                  of the parameters for the fitting function (curve_fit).
+
+        Returns: - (_best_parameters) the best parameters found with 
+                    curve_fit.
+                 - (_cov) covariance matrix of the best parameters
+                 - (_I) the sum of the bin contents inside the fit region
+                 - (_I_diff) the difference between (_I) and the integral
+                    of the function calculate inside (_limit). This value is 
+                    extremely helpfull to understand if a fit is good or not
+                 - zero for everything and 100000000 for (_I_diff) if 
+                    curve_fit cannot converge.
+
+    '''
+    _lower,_upper=_limit
+    _lower=int(_lower)
+    _upper=int(_upper)
     try:
-        parameters,cov=curve_fit(GaussPol1,
-                                 hist[lower:upper,0],
-                                 hist[lower:upper,1],
-                                 p0=par)
-        I=np.sum(hist[lower,upper,1])
-        I_diff=int(quad(GaussPol1,lower,upper,*parameters)[0]-I)
+        _best_parameters,_cov=curve_fit(GaussPol1,
+                                 _hist[_lower:_upper,0],
+                                 _hist[_lower:_upper,1],
+                                 p0=_par_first_guess)
+_I=np.sum(_hist[_lower:_upper,1])
+        _I_diff=int(_best_parameters[2]*_best_parameters[1]*np.sqrt(2*np.pi)-_I)
     except:
-        I=0
-        I_diff=1000000000
-        parameters=[0,0,0,0,0]
-        cov=[[0,0,0,0,0],
-             [0,0,0,0,0],
-             [0,0,0,0,0],
-             [0,0,0,0,0],
-             [0,0,0,0,0],]
-        
-    return parameters,cov,I_diff,I
+        _I=0
+        _I_diff=1000000000
+        _best_parameters=[0,0,0,0,0]
+        _cov=[[0,0,0,0,0],
+              [0,0,0,0,0],
+              [0,0,0,0,0],
+              [0,0,0,0,0],
+              [0,0,0,0,0]]
+
+    return _best_parameters,_cov,_I_diff,_I
 
 
-def FitSinglePeak(path,gate,peak,param,limit):
-    # The following line is just to make sure that the path ends with /
-    # ---> os.path.join() make it automatically
-    spectra_directory=os.path.join(os.getcwd()+parser_arguments.path,'')
+def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param,_limit):
+    ''' 
+    This functioon is a wrap to easily fit just one single gamma-ray peak
+    '''
+
+    _level_directory=os.path.join('spectra/'+_level_directory,'')
+    _filename=str(_gate_energy)+'.dat'
+    _hist = np.genfromtxt(_level_directory+_filename)
+    
+    results=FitGauss(_hist,_param,_limit)
+
+    return results
+
+
+def DrawFitResults(_hist,_limit,_results):
+
+    '''
+    This function draw the hist area between _limit and the fit corresponding
+    to _results
+    '''
+
+    _lower,_upper=_limit
+    _lower=int(_lower)
+    _upper=int(_upper)
+    _parameters,=_results
+    fig,ax=plt.subplots(1,1,figsize=(7,3))
+    _energy_axis=np.linspace(_lower,_upper,500)
+    ax.bar(_hist[_lower:_upper,0],_hist[_lower:upper,1])
+    ax.plot(_energy_axis,GaussPol1(_energy_axis,*_parameters))
+    plt.show()
+###################### END of Functions ########################################
 
 
 if __name__ == '__main__':
 
-    print(parser_arguments.limit)
+    level_scheme=LoadLevelScheme('../44Ca_ILL/intensities44CaCompressed.ods')
+    
+    results=FitSinglePeak(level_scheme,
+                          parser_arguments.level_directory,
+                          parser_arguments.gate,
+                          parser_arguments.peak,
+                          parser_arguments.param,
+                          parser_arguments.limit)
