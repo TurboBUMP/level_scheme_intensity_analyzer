@@ -1,22 +1,33 @@
 #!/usr/bin/python3
 
-# This program is meant to check gamma-ray intensity balance on a excel file 
-# containing all the transitions of a nucleus. The program must be called as 
-# ./sauron.py <name_of_directory> from the Mordor directory. 
-# Example: ./sauron.py 1157.0208
-#
-# It expects a directory named spectra containing all the subdirectories with 
-# the gated energy histograms. The directory-tree must be structured as follows:
+# Check gamma-ray intensity balance of a level-scheme loaded on an excel file 
+# containing all the transitions of a nucleus.
 # 
-# spectra
+# To use SAURON you need to specify if you want to run the fitting function
+# only on one single peak, on an entire single level or on the entire level
+# scheme.
+# To do so you can:
+#   ./sauron.py --redo-all
+#   ./sauron.py --single-level -d <folder>
+#   ./sauron.py -d <folder> -g <gate-energy>  -p <peak-energy> --param <parameters> --limit <limits>
 #
-#   --> level_energy_1
-#       gate_energy_1.dat
-#       gate_energy_2.dat
 #
-#   --> level_energy_2
-#       gate_energy_3.dat
-#       gate_energy_4.dat
+# Keep in mind that SAURON expects a directory named spectra/ containing all 
+# the subdirectories with the gated energy histograms. 
+# The directory-tree must be structured as follows:
+# 
+# --> <dir-spectra/>
+#
+#   --> <dir_1/>
+#           gate_energy_1.dat
+#           gate_energy_2.dat
+#
+#   --> <dir_2/>
+#           gate_energy_3.dat
+#           gate_energy_4.dat
+#
+# <dir> name must match the energy of the level (precisely): 
+# Example: directory 1157.0208 contains all file .dat relative to that level
 #
 # The excel file must contain three columns stating for each transition: 
 # [start level, gamma ray energy, stop level]
@@ -28,6 +39,7 @@
 #       _gamma_ray_energy_column = 2
 #       _stop_level_column = 3
 #
+# Here after you can specify you own columns number and the name of each column
 #
 
 start_level_colum = 0 
@@ -363,7 +375,7 @@ def FitSingleLevel(_level_scheme,_level_directory):
     '''
     os.chdir(spectra_directory)
     _energy_level=float(_level_directory)
-    _subset_level_scheme_mask=_level_scheme['LevelLITERATURE']==_energy_level
+    _subset_level_scheme_mask=_level_scheme[stalc_name]==_energy_level
     _subset_level_scheme=_level_scheme[_subset_level_scheme_mask]
     print(f'Now working on: {_level_directory}')
     for _filename in os.listdir(_level_directory):
@@ -371,10 +383,10 @@ def FitSingleLevel(_level_scheme,_level_directory):
             _gate_energy=_filename.replace('.dat','')
             _filename=os.path.join(_level_directory,_filename)
             for _index,_gammaray in _subset_level_scheme.iterrows():
-                if((_gammaray['Egamma-LITERATURE'],float(_gate_energy)) in gammaray_to_be_skipped):
+                if((_gammaray[grec_name],float(_gate_energy)) in gammaray_to_be_skipped):
                     pass
                 else:
-                    _peak=_gammaray['Egamma-LITERATURE']
+                    _peak=_gammaray[grec_name]
                     _results,*_=FitSinglePeak(_level_scheme,
                                               _level_directory,
                                               _gate_energy,
