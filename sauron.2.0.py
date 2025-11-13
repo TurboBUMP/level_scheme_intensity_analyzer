@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
-# This program is meant to check gamma-ray intensity balance on a excel file containing all the transitions of a nucleus.
-# The program must be called as ./sauron.py <name_of_directory> from the Mordor directory.
+# This program is meant to check gamma-ray intensity balance on a excel file 
+# containing all the transitions of a nucleus. The program must be called as 
+# ./sauron.py <name_of_directory> from the Mordor directory. 
 # Example: ./sauron.py 1157.0208
 #
-# It expects a directory named spectra containing all the subdirectories with the gated energy histograms.
-# The directory-tree must be structured as follows:
+# It expects a directory named spectra containing all the subdirectories with 
+# the gated energy histograms. The directory-tree must be structured as follows:
 # 
 # spectra
 #
@@ -17,8 +18,10 @@
 #       gate_energy_3.dat
 #       gate_energy_4.dat
 #
-# The excel file must contain three columns stating for each transition: [start level, gamma ray energy, stop level]
-# The first line must contain the name of each column to let Pandas be able to initialise the dataFrame properly. 
+# The excel file must contain three columns stating for each transition: 
+# [start level, gamma ray energy, stop level]
+# The first line must contain the name of each column to let Pandas be able to 
+# initialise the dataFrame properly. 
 # 
 # Example: 
 #       _start_level_colum = 1 
@@ -27,12 +30,19 @@
 #
 #
 
-_start_level_colum = 0 
-_gamma_ray_energy_column = 4
-_stop_level_column = 6 
+start_level_colum = 0 
+stalc_name='LevelLITERATURE'
 
-# 'gammaray_to_be_skipped' is a list of pairs that stores all the pairs of gate-and-spectra that (for some reasons)
-# need to be skipped.
+gamma_ray_energy_column = 4
+grec_name='Egamma-LITERATURE'
+
+stop_level_column = 6
+stplc_name='Level_final'
+
+spectra_directory='/home/massimiliano/Desktop/Mordor/spectra/'
+
+# 'gammaray_to_be_skipped' is a list of pairs that stores all the pairs of 
+# gate-and-spectra that (for some reasons) need to be skipped.
 # Each pair should be inserted as (gammaray_energy, gate_energy)
 gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1126.078,3731.0),
@@ -125,16 +135,24 @@ import time
 
 parser = argparse.ArgumentParser(prog='SAURON',
                                  description='Search and Fit peaks program')
-parser.add_argument('--run-all',
-                    type=None,
-                    default=None,
+parser.add_argument('-ra',
+                    '--run-all',
+                    nargs='*',
+                    action='store',
                     help='If passed, sauron.py will run for the entire level\
                         scheme. This will save time because the program\
                         won\'t have to reload the csv file for every\
                         gammaray')
-parser.add_argument('level_directory', 
+parser.add_argument('-sl',
+                    '--single-level',
+                    nargs='*',
+                    action='store',
+                    help='If passed SAURON will run for only the selected\
+                        level')
+parser.add_argument('-d',
+                    '--level-directory', 
                     type=str, 
-                    help='[REQUIRED] name of the subdirectory'
+                    help='name of the subdirectory'
                         +' containing the target file')
 parser.add_argument('-g',
                     '--gate', 
@@ -167,7 +185,7 @@ import matplotlib.pyplot as plt
 
 from scipy.signal import find_peaks
 from scipy.optimize import curve_fit
-from scipy.integrate import quad
+from scipy.integrate import quad,IntegrationWarning
 
 
 ###################### Functions ##############################################
@@ -176,12 +194,11 @@ def LoadLevelScheme(_filename):
     print(f'Reading {_filename}')
     _lvlScheme = pd.read_excel(_filename,
                            sheet_name=0,
-                           usecols=[_start_level_colum,
-                                    _gamma_ray_energy_column,
-                                    _stop_level_column])
+                           usecols=[start_level_colum,
+                                    gamma_ray_energy_column,
+                                    stop_level_column])
     _lvlScheme.reset_index()
     _stop=time.time()
-    print(f'File {_filename} loaded in {_stop-_start:.4f}s')
     return _lvlScheme
 
 
@@ -235,8 +252,10 @@ def FitGauss(_hist,_par_first_guess,_limit=[0,-1]):
                                  _hist[_lower:_upper,0],
                                  _hist[_lower:_upper,1],
                                  p0=_par_first_guess)
-_I=np.sum(_hist[_lower:_upper,1])
-        _I_diff=int(_best_parameters[2]*_best_parameters[1]*np.sqrt(2*np.pi)-_I)
+        _I_hist=np.sum(_hist[_lower:_upper,1])
+        _I_fit=quad(GaussPol1,_lower,_upper,args=tuple(_best_parameters))[0]
+        _I_diff=int(_I_fit-_I_hist)
+        _I=quad(Gauss,_lower,_upper,args=tuple(_best_parameters[0:3]))[0]
     except:
         _I=0
         _I_diff=1000000000
@@ -247,49 +266,159 @@ _I=np.sum(_hist[_lower:_upper,1])
               [0,0,0,0,0],
               [0,0,0,0,0]]
 
-    return _best_parameters,_cov,_I_diff,_I
+    return [_best_parameters,_cov,_I_diff,_I]
 
 
-def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param,_limit):
-    ''' 
-    This functioon is a wrap to easily fit just one single gamma-ray peak
-    '''
-
-    _level_directory=os.path.join('spectra/'+_level_directory,'')
-    _filename=str(_gate_energy)+'.dat'
-    _hist = np.genfromtxt(_level_directory+_filename)
-    
-    results=FitGauss(_hist,_param,_limit)
-
-    return results
-
-
-def DrawFitResults(_hist,_limit,_results):
+def DrawFitResults(_hist,_limit,_results,_show_flag=0):
 
     '''
-    This function draw the hist area between _limit and the fit corresponding
+    DrawFitResults(): draw the hist area between _limit and the fit corresponding
     to _results
     '''
 
     _lower,_upper=_limit
     _lower=int(_lower)
     _upper=int(_upper)
-    _parameters,=_results
-    fig,ax=plt.subplots(1,1,figsize=(7,3))
+    _parameters,*_=_results
+    _fig,_ax=plt.subplots(1,1,figsize=(7,3))
     _energy_axis=np.linspace(_lower,_upper,500)
-    ax.bar(_hist[_lower:_upper,0],_hist[_lower:upper,1])
-    ax.plot(_energy_axis,GaussPol1(_energy_axis,*_parameters))
-    plt.show()
+    _ax.bar(_hist[_lower:_upper,0],_hist[_lower:_upper,1])
+    _ax.plot(_energy_axis,GaussPol1(_energy_axis,*_parameters),color='darkorange')
+    if _show_flag:
+        plt.show()
+    plt.close()
+
+    return _fig,_ax
+
+
+def SaveFitResults(_level_directory,_gate_energy,_peak,_results):
+    os.chdir(spectra_directory)
+    _output_filename=os.path.join(_level_directory,str(_gate_energy)+'-'+str(_peak)+'.out.txt.prova')
+    _best_parameters,_cov,_I_diff,_I=_results
+    with open(_output_filename,'w') as _f:
+        print('Integral Diff,Integral,TRANSITION,GATE,\
+               mean,sigma,amplitude,m,q,\
+               err_mean,err_sigma,err_amplitude,err_m,err_q',
+              file=_f)
+        print(f'{_I_diff:.4f}',
+              f'{_I:.4f}',
+              f'{_peak:.4f}',
+              f'{float(_gate_energy):.4f}',
+              f'{_best_parameters[0]:.4f}',
+              f'{_best_parameters[1]:.4f}',
+              f'{_best_parameters[2]:.4f}',
+              f'{_best_parameters[3]:.4f}',
+              f'{_best_parameters[4]:.4f}',
+              f'{_cov[0][0]:.4f}',
+              f'{_cov[1][1]:.4f}',
+              f'{_cov[2][2]:.4f}',
+              f'{_cov[3][3]:.4f}',
+              f'{_cov[4][4]:.4f}',
+              sep=',',
+              file=_f)
+
+
+def SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax):
+    _fig.savefig(os.path.join(_level_directory,
+                              str(_gate_energy)+'-'+str(_peak)+'.png'),dpi=300)
+
+
+def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
+                  _limit=None,_called_directly=0):
+    ''' 
+    FitSinglePeak(): wrap FitGauss() and runs it for the one selected peak.
+    '''
+    os.chdir(spectra_directory)
+    _level_directory=os.path.join(_level_directory,'')
+    _filename=str(_gate_energy)+'.dat'
+    _hist = np.genfromtxt(_level_directory+_filename)
+    if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
+    if _limit==None: _limit=[_peak-20,_peak+20]
+    _results=FitGauss(_hist,_param,_limit)
+    _fig,_ax=DrawFitResults(_hist,_limit,_results,_show_flag=_called_directly)
+    if _called_directly==1:
+        if choice:=input('Do you want to save the results? [Y/n] ')!='n':
+            SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+            SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
+        else:
+            print(f'\nFit Results\n \
+                Mean: {_results[0][0]:.4f}\n \
+                Sigma: {_results[0][1]:.4f}\n \
+                Amplitude: {_results[0][2]:.4f}\n \
+                m: {_results[0][3]:.4f}\n \
+                q: {_results[0][4]:.4f}\n \
+                I_diff: {_results[2]:.4f}\n \
+                I: {_results[3]:.4f}')
+    else:
+        SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+        SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
+
+
+    return _results
+
+
+def FitSingleLevel(_level_scheme,_level_directory):
+    '''
+    FitSingleLevel(): wrap FitGauss() and runs it for the one selected level.
+    '''
+    os.chdir(spectra_directory)
+    _energy_level=float(_level_directory)
+    _subset_level_scheme_mask=_level_scheme['LevelLITERATURE']==_energy_level
+    _subset_level_scheme=_level_scheme[_subset_level_scheme_mask]
+    print(f'Now working on: {_level_directory}')
+    for _filename in os.listdir(_level_directory):
+        if _filename.endswith('.dat'):
+            _gate_energy=_filename.replace('.dat','')
+            _filename=os.path.join(_level_directory,_filename)
+            for _index,_gammaray in _subset_level_scheme.iterrows():
+                _peak=_gammaray['Egamma-LITERATURE']
+                _results,*_=FitSinglePeak(_level_scheme,
+                                          _level_directory,
+                                          _gate_energy,
+                                          _peak,
+                                          _called_directly=0)
+
+def FitEntireLevelScheme(_level_scheme):
+    os.chdir(spectra_directory)
+    for _level_directory in os.listdir():
+        if isdir(_level_directory):
+            FitSingleLevel(_level_scheme,_level_directory)
+
+
 ###################### END of Functions ########################################
 
 
 if __name__ == '__main__':
 
+    start_load_time=time.time()
     level_scheme=LoadLevelScheme('../44Ca_ILL/intensities44CaCompressed.ods')
-    
-    results=FitSinglePeak(level_scheme,
-                          parser_arguments.level_directory,
-                          parser_arguments.gate,
-                          parser_arguments.peak,
-                          parser_arguments.param,
-                          parser_arguments.limit)
+    stop_load_time=time.time()
+
+    if parser_arguments.run_all is not None:
+        start_calc_time=time.time()
+        FitEntireLevelScheme(level_scheme)
+        stop_calc_time=time.time()
+    elif parser_arguments.single_level is not None:
+        start_calc_time=time.time()
+        FitSingleLevel(level_scheme,
+                       parser_arguments.level_directory)
+        stop_calc_time=time.time()
+    else:
+        start_calc_time=time.time()
+        FitSinglePeak(level_scheme,
+                      parser_arguments.level_directory,
+                      parser_arguments.gate,
+                      parser_arguments.peak,
+                      parser_arguments.param,
+                      parser_arguments.limit,
+                      1)
+        stop_calc_time=time.time()
+
+    print('\n')
+    print(f'****************************************')
+    print(f'     ----      Loading time: {stop_load_time-start_load_time:.4f} s')
+    print(f'     ----      Fit time: {stop_calc_time-start_calc_time:.4f} s')
+    print(f'     ----      Total time: {stop_load_time-start_calc_time:.4f} s')
+    print(f'****************************************')
+    print('\n')
+
