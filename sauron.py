@@ -371,7 +371,7 @@ def FitSingleLevel(_level_scheme,_level_directory):
             _gate_energy=_filename.replace('.dat','')
             _filename=os.path.join(_level_directory,_filename)
             for _index,_gammaray in _subset_level_scheme.iterrows():
-                if((_gammaray,_gate_energy) is in gammaray_to_be_skipped):
+                if((_gammaray['Egamma-LITERATURE'],float(_gate_energy)) in gammaray_to_be_skipped):
                     pass
                 else:
                     _peak=_gammaray['Egamma-LITERATURE']
