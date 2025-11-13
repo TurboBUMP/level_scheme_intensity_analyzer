@@ -5,86 +5,41 @@
 # Use -j N to specify the number of parallel process to use 
 #
 
-REWRITE_OUTPUT=1
+REWRITE_OUTPUT=0
 #
-#while :; do
-#  case "$1" in
-#    -r|--redo-all-fit)
-#
-#      case "$2" in 
-#        -j)
-#          if [[ "$3" =~ "^[0-9]+$" ]]; then
-#            echo "Recalculating all Fit with ${3} parallel sessions"
-#            for dir in $(ls spectra/); do
-#              ((i = i % "$3"))
-#              ((i++ == 0)) && wait
-#              ./sauron.py $dir &
-#            done
-#            wait
-#          fi
-#          REWRITE_OUTPUT=1
-#          break
-#          ;;
-#        *)
-#          echo "Wrong input parameters! Quitting ..."
-#          exit
-#          ;;
-#      esac
-#
-#      break
-#      ;;
-#
-#    -sf|--single-folder)
-#
-#      if [ -d spectra/"$2" ]; then
-#        ./sauron.py $2
-#        REWRITE_OUTPUT=1
-#      else
-#        echo "${2} is not a valid directory --> Exit"
-#        break 
-#        exit
-#      fi
-#
-#      break
-#      ;;
-#
-#    -c|--clear-all-output)
-#      echo "Clearing all output.txt file"
-#      for DIR in $(ls spectra); do
-#        if [ -d spectra/${DIR} ]; then
-#          for file in $(ls spectra/${DIR} | grep ".out.txt");do
-#            echo "deleting file ${DIR}/${file}"
-#            rm ~/Desktop/Mordor/spectra/${DIR}/${file}
-#          done
-#        fi
-#      done
-#
-#      break
-#      exit
-#      ;;
-#
-#    -h|--help)
-#      echo "Usage: ./replay.sh [OPTION]"
-#      echo "Example: ./replay.sh -r"
-#      echo "Example 2: ./replay.sh -s 1157.0208"
-#      echo "\n"
-#      echo "-h | --help                 print this help message"
-#      echo "-sf|--single-folder         replay.sh will recalculate the fit calling sauron.py on all the spectra of the specified sub-folder"
-#      echo "-r | --redo-all-fit         replay.sh will recalculate all the fit calling sauron.py (default -j 1)"
-#      echo "  -j N                      if -r is specified use -j N to run sauron.py on N parallel processes"
-#      echo "-c | --clear-all-output     replay.sh will delete all output files"
-#      echo "\n"
-#      exit
-#      ;;
-#
-#    *)
-#      echo "Creating unified output file: output.txt ..."
-#      REWRITE_OUTPUT=1
-#      break
-#      ;;
-#  esac
-#  shift
-#done
+while :; do
+  case "$1" in
+    -c|--clear-all-output)
+      echo "Clearing all output.txt file"
+      for DIR in $(ls spectra); do
+        if [ -d spectra/${DIR} ]; then
+          for file in $(ls spectra/${DIR} | grep ".out.txt");do
+            echo "deleting file ${DIR}/${file}"
+            rm ~/Desktop/Mordor/spectra/${DIR}/${file}
+          done
+        fi
+      done
+
+      break
+      exit
+      ;;
+
+    -h|--help)
+      echo "\n"
+      echo "-h | --help                 print this help message"
+      echo "-c | --clear-all-output     replay.sh will delete all output files"
+      echo "\n"
+      exit
+      ;;
+
+    *)
+      echo "Creating unified output file: output.txt ..."
+      REWRITE_OUTPUT=1
+      break
+      ;;
+  esac
+  shift
+done
 
 if [ $REWRITE_OUTPUT -eq 1 ]; then
   if [ -f output.txt ]; then
@@ -92,7 +47,6 @@ if [ $REWRITE_OUTPUT -eq 1 ]; then
     rm output.txt
   fi
   
-  echo "sonoqui"
   for DIR in $(ls spectra); do 
     if [ -d spectra/${DIR} ];then 
       for file in $(ls spectra/$DIR | grep ".out.txt"); do

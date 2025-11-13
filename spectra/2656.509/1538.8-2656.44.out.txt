@@ -1,2 +1,0 @@
-Integral Diff,Integral,TRANSITION,GATE,m,q,mean,sigma,amplitude,err_m,err_q,err_mean,err_sigma,err_amplitude
-0,1903.0786,2656.44,1538.8,1.7597,-4531.0559,2656.3500,1.6117,471.0687,0.3642,2569178.4798,0.0159,0.0173,1044.1359
