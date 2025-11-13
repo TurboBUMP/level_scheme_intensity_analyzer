@@ -87,23 +87,23 @@ REWRITE_OUTPUT=1
 #done
 
 if [ $REWRITE_OUTPUT -eq 1 ]; then
-  if [ -f output_prova.txt ]; then
-    echo "--> output_prova.txt already existing\n --> deleting old one\n"
-    rm output_prova.txt
+  if [ -f output.txt ]; then
+    echo "--> output.txt already existing\n --> deleting old one\n"
+    rm output.txt
   fi
   
   echo "sonoqui"
   for DIR in $(ls spectra); do 
     if [ -d spectra/${DIR} ];then 
-      for file in $(ls spectra/$DIR | grep ".out.txt.prova"); do
-        echo "writing ${DIR}/${file} to output_prova.txt"
-        cat ~/Desktop/Mordor/spectra/${DIR}/${file} | column -s, -t | tee -a ./output_prova.txt >> /dev/null
+      for file in $(ls spectra/$DIR | grep ".out.txt"); do
+        echo "writing ${DIR}/${file} to output.txt"
+        cat ~/Desktop/Mordor/spectra/${DIR}/${file} | column -s, -t | tee -a ./output.txt >> /dev/null
       done
     fi
   done;
 fi
 
-sed -e '2,${/Integral/d}' -i output_prova.txt
+sed -e '2,${/Integral/d}' -i output.txt
 
 wait
 exit
