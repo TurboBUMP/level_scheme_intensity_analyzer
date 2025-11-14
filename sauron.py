@@ -202,6 +202,15 @@ from scipy.integrate import quad,IntegrationWarning
 
 ###################### Functions ##############################################
 def LoadLevelScheme(_filename): 
+    '''
+
+    LoadLevelScheme(): load the excel file named '_filename' into a pandas
+    dataFrame using the three columns and their names defined at the beginning
+    of the code.
+    This function is EXTREMELY SLOW. In a future version of the program it will
+    be substitude with another function (maybe something from numpy)
+
+    '''
     _start=time.time()
     print(f'Reading {_filename}')
     _lvlScheme = pd.read_excel(_filename,
@@ -218,7 +227,7 @@ def Gauss(_x,_mean,_sigma,_amplitude):
     ''' 
 
     Gauss(): is a gaussian function that calculates the energy
-             corresponding to x (x can be array-like)
+    corresponding to x (x can be array-like)
 
     '''
     return np.asarray(_amplitude * np.exp(-(_x-_mean)**2/(2*_sigma**2)))
@@ -227,9 +236,8 @@ def Gauss(_x,_mean,_sigma,_amplitude):
 def GaussPol1(_x,_mean,_sigma,_amplitude,_m,_q):
     ''' 
 
-    GaussPol1(): is a gaussian function + a degree 1 polinomial that 
-                 calculates the energy corresponding to x 
-                 (x can be array-like)
+    GaussPol1(): is a gaussian function + a degree 1 polinomial that
+    calculates the energy corresponding to x (x can be array-like)
 
     '''
     return np.asarray(Gauss(_x,_mean,_sigma,_amplitude) + _m*_x + _q)
@@ -239,7 +247,7 @@ def FitGauss(_hist,_par_first_guess,_limit=[0,-1]):
     ''' 
 
     FitGauss(): As name suggests, this function do a gaussian fit of a
-                given histogram (hist).
+    given histogram (hist).
 
         Inputs: - (_hist) the histogram 
                 - (_par_first_guess) first guess
@@ -252,7 +260,7 @@ def FitGauss(_hist,_par_first_guess,_limit=[0,-1]):
                  - (_I_diff) the difference between (_I) and the integral
                     of the function calculate inside (_limit). This value is 
                     extremely helpfull to understand if a fit is good or not
-                 - zero for everything and 100000000 for (_I_diff) if 
+                 - zero for everything and 1000000000 for (_I_diff) if 
                     curve_fit cannot converge.
 
     '''
@@ -281,21 +289,37 @@ def FitGauss(_hist,_par_first_guess,_limit=[0,-1]):
     return [_best_parameters,_cov,_I_diff,_I]
 
 
-def DrawFitResults(_hist,_limit,_results,_show_flag=0):
+def DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=0):
 
     '''
-    DrawFitResults(): draw the hist area between _limit and the fit corresponding
-    to _results
-    '''
 
+    DrawFitResults():   draw the hist area inside [_limit] and the fit
+                        corresponding to _results.
+    
+        Inputs: - (_hist) the histogram to draw
+                - (_level_directory) level energy to set the title
+                - (_gate_energy) gate energy to set the title
+                - (_peak) peak energy to set the title
+                - (_limit) lower and upper limit to draw the histogram
+                  and the fit.
+                - (_results) gaussian function parameters
+                - (_shoe_flag) this flag is used to suppres the plt.show()
+                  function when running SAURON wiht --run-all option.
+
+    '''
     _lower,_upper=_limit
     _lower=int(_lower)
     _upper=int(_upper)
     _parameters,*_=_results
     _fig,_ax=plt.subplots(1,1,figsize=(7,3))
     _energy_axis=np.linspace(_lower,_upper,500)
+    _ax.set_title(f'LEVEL: {_level_directory.replace('/','')}'
+                  +f' # GATE: {_gate_energy}'
+                  +f' # TRANSITION: {_peak}')
     _ax.bar(_hist[_lower:_upper,0],_hist[_lower:_upper,1])
-    _ax.plot(_energy_axis,GaussPol1(_energy_axis,*_parameters),color='darkorange')
+    _ax.plot(_energy_axis,
+             GaussPol1(_energy_axis,*_parameters),
+             color='darkorange')
     if _show_flag:
         plt.show()
     plt.close()
@@ -304,13 +328,27 @@ def DrawFitResults(_hist,_limit,_results,_show_flag=0):
 
 
 def SaveFitResults(_level_directory,_gate_energy,_peak,_results):
+    '''
+    SaveFitResults(): function that save the fit results on the appropriate
+    output file.
+    It is called every time a fit is performed and, if SAURON, is called in
+    single-peak mode, it asks the user if they want to store the results.
+    The answer is valide also for the fit .png image.
+
+        Inputs: - (_level_directory) directory where to save the output file.
+                - (_gate_energy) energy of the gate used to set the
+                  the output filename.
+                - (_peak) energy of the peak used to set the output filename
+                - (_results) results of the fit to be printed on the output
+                  file.
+    '''
     os.chdir(spectra_directory)
     _output_filename=os.path.join(_level_directory,str(_gate_energy)+'-'+str(_peak)+'.out.txt')
     _best_parameters,_cov,_I_diff,_I=_results
     with open(_output_filename,'w') as _f:
-        print('Integral Diff,Integral,TRANSITION,GATE,\
-               mean,sigma,amplitude,m,q,\
-               err_mean,err_sigma,err_amplitude,err_m,err_q',
+        print('Integral Diff,Integral,TRANSITION,GATE,'
+               +'mean,sigma,amplitude,m,q,'
+               +'err_mean,err_sigma,err_amplitude,err_m,err_q',
               file=_f)
         print(f'{_I_diff:.4f}',
               f'{_I:.4f}',
@@ -331,14 +369,38 @@ def SaveFitResults(_level_directory,_gate_energy,_peak,_results):
 
 
 def SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax):
+    '''
+
+    SaveFigReuslts(): just a wrap for plt.savefig()
+
+    '''
     _fig.savefig(os.path.join(_level_directory,
                               str(_gate_energy)+'-'+str(_peak)+'.png'),dpi=300)
 
 
 def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
                   _limit=None,_called_directly=0):
-    ''' 
+    '''
+
     FitSinglePeak(): wrap FitGauss() and runs it for the one selected peak.
+    
+        Inputs: - (_level_scheme) a pandas dataFrame with the entire level
+                  level scheme stored inside.
+                - (_level_directory) directory containing the .dat file of a
+                  specific pair of gate and gamma ray.
+                - (_gate_energy) energy of the gate.
+                - (_peak) energy of the peak to fit.
+                - (_param) initial guess of the fit parameters.
+                - (_limit) upper and lower limit of the fiting region.
+                - (_called_directly) this is a flag to check if the user is
+                  doing a single fit (in this case the main() will call
+                  this function directly) or if they are doing more than
+                  one fit (in this case the main() will call thi function
+                  from inside FitSingleLevel() or from inside 
+                  FitEntireLevelScheme().
+
+        Returns: - (_reuslts) results of the FitGauss() function call.
+
     '''
     os.chdir(spectra_directory)
     _level_directory=os.path.join(_level_directory,'')
@@ -347,7 +409,7 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
     if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
     if _limit==None: _limit=[_peak-20,_peak+20]
     _results=FitGauss(_hist,_param,_limit)
-    _fig,_ax=DrawFitResults(_hist,_limit,_results,_show_flag=_called_directly)
+    _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
     if _called_directly==1:
         if choice:=input('Do you want to save the results? [Y/n] ')!='n':
             SaveFitResults(_level_directory,_gate_energy,_peak,_results)
@@ -371,7 +433,13 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
 
 def FitSingleLevel(_level_scheme,_level_directory):
     '''
+
     FitSingleLevel(): wrap FitGauss() and runs it for the one selected level.
+    
+        Inputs(): - (_level_scheme) the pandas dataFrame containing the level
+                    scheme.
+                  - (_level_directory) the directory to be analysed.
+
     '''
     os.chdir(spectra_directory)
     _energy_level=float(_level_directory)
@@ -393,7 +461,17 @@ def FitSingleLevel(_level_scheme,_level_directory):
                                               _peak,
                                               _called_directly=0)
 
+
 def FitEntireLevelScheme(_level_scheme):
+    '''
+
+        FitEntireLevelScheme(): call FitSingleLevel() on every level directory
+        present inside the spectra/ folder.
+    
+            Inputs(): - (_level_scheme) the pandas dataFrame containing the 
+                        level scheme.
+
+    '''
     os.chdir(spectra_directory)
     for _level_directory in os.listdir():
         if isdir(_level_directory):
@@ -405,10 +483,15 @@ def FitEntireLevelScheme(_level_scheme):
 
 if __name__ == '__main__':
 
+    # First step - load the level scheme ----> EXTREMELY SLOW
+    # need to change read_excel() with something faster
     start_load_time=time.time()
     level_scheme=LoadLevelScheme('../44Ca_ILL/intensities44CaCompressed.ods')
     stop_load_time=time.time()
 
+    # Second step - check if the user wants to run the code for every gammaray
+    # (first if()), for one single level (second if()) or for one single
+    # transition (third if()).
     if parser_arguments.run_all is not None:
         start_calc_time=time.time()
         FitEntireLevelScheme(level_scheme)
@@ -429,6 +512,7 @@ if __name__ == '__main__':
                       1)
         stop_calc_time=time.time()
 
+    # Tird step - calculate execution times
     load_time=stop_load_time-start_load_time
     calc_time=stop_calc_time-start_calc_time
     total_time=stop_load_time-start_load_time
