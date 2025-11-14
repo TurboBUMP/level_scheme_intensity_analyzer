@@ -429,11 +429,15 @@ if __name__ == '__main__':
                       1)
         stop_calc_time=time.time()
 
+    load_time=stop_load_time-start_load_time
+    calc_time=stop_calc_time-start_calc_time
+    total_time=stop_load_time-start_load_time
+
     print('\n')
     print(f'****************************************')
-    print(f'     ----      Loading time: {stop_load_time-start_load_time:.4f} s')
-    print(f'     ----      Fit time: {stop_calc_time-start_calc_time:.4f} s')
-    print(f'     ----      Total time: {stop_load_time-start_calc_time:.4f} s')
+    print(f'  ----  Loading time: {load_time//60:.0f} m {load_time-load_time//60:.0f} s')
+    print(f'  ----  Fit time: {calc_time//60:.0f} m {calc_time-calc_time//60:.0f} s')
+    print(f'  ----  Total time: {total_time//60:.0f} m {total_time-total_time//60:.0f} s')
     print(f'****************************************')
     print('\n')
 
