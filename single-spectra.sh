@@ -52,3 +52,16 @@
 ./sauron.py -d 3913.8 -g 2758.5 -p 202.1 --param 202 1 100 -0.1 0 --limit 198 205
 ./sauron.py -d 3913.8 -g 651.07 -p 202.1 --param 202 1 100 -0.1 0 --limit 198 205
 ./sauron.py -d 3913.8 -g 651.07 -p 1630.4 --param 1630 1 100 -0.1 0 --limit 1610 1640
+./sauron.py -d 4196.1 -g 1353.1 -p 894.2 --param 894 1 200 0.1 0.1 --limit 889 910 
+./sauron.py -d 4196.1 -g 1397.4 -p 519.7 --param 519 1 200 0.1 0.1 --limit 516 525
+./sauron.py -d 4196.1 -g 1397.4 -p 1912.18 --param 1912 1 200 0.1 0.1 --limit 1910 1919
+./sauron.py -d 4196.1 -g 1579.6 -p 519.7 --param 519 1 200 0.1 0.1 --limit 516 523
+./sauron.py -d 4196.1 -g 1579.6 -p 4196.1 --param 4196 1 20 0.1 0.1 --limit 4193 4200
+./sauron.py -d 4196.1 -g 2477.0 -p 894.2 --param 894 1 20 0.1 0.1 --limit 891 896
+./sauron.py -d 4196.1 -g 2477.0 -p 519.7 --param 519 1 200 0.1 0.1 --limit 515 523
+./sauron.py -d 4196.1 -g 6935.2 -p 519.7 --param 519 1 200 0.1 0.1 --limit 516 530
+./sauron.py -d 4196.1 -g 6935.2 -p 483.4 --param 483 1 200 0.1 0.1 --limit 480 487
+./sauron.py -d 4196.1 -g 900.8 -p 519.7 --param 519 1 200 0.1 0.1 --limit 516 521
+./sauron.py -d 4315.22 -g 1418.1 -p 1007.7 --param 1007 1 600 0.1 0.1 --limit 1005 1013
+./sauron.py -d 4358.44 -g 1142.9 -p 682.34 --param 682 1 100 0 1 --limit 677 685
+./sauron.py -d 4358.44 -g 1416.7 -p 646.5 --param 646 1 100 0 1 --limit 640 650
