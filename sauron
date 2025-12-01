@@ -599,7 +599,7 @@ if __name__ == '__main__':
     # First step - load the level scheme ----> EXTREMELY SLOW
     # need to change read_excel() with something faster
     start_load_time=time.time()
-    level_scheme=LoadLevelScheme('../44Ca_ILL/intensities44CaCompressed.ods')
+    level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods')
     stop_load_time=time.time()
 
     # Second step - check if the user wants to run the code for every gammaray
