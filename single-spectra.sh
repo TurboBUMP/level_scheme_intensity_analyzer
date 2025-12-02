@@ -75,3 +75,29 @@ sauron -d 4409.176 -g 1324.0 -p 747.63 --param 747 1 100 1 0 --limit 737 758
 sauron -d 4409.176 -g 6721 -p 747.63 --param 747 1 100 1 0 --limit 739 752
 sauron -d 4479.9 -g 6651.3 -p 703.4 --param 703 2 50 0 0 --limit 701 706
 sauron -d 4584.08 -g 704.5 -p 1226.9 --param 1226.9 1 100 0 0 --limit 1224 1231
+sauron -d 4650.3 -g 898.0 -p 1349.4 --param 1349 3 300 1 0 --limit 1340 1357
+sauron -d 4650.3 -g 898.0 -p 989.0 --param 988 3 300 1 0 --limit 980 992
+sauron -d 4650.3 -g 898.0 -p 874.3 --param 874 1 500 1 0 --limit 871 879
+sauron -d 4650.3 -g 6480.2 -p 989.0 --param 989 1 500 1 0 --limit 978 1000
+sauron -d 4803.6 -g 6328.3 -p 1141.1 --param 1141 2 500 1 0 --limit 1130 1150
+sauron -d 4803.6 -g 972.6 -p 1494.6 --param 1494 3 100 1 0 --limit 1474 1499
+sauron -d 4803.6 -g 972.6 -p 2145.52 --param 2145 3 100 1 0 --limit 2125 2147
+sauron -d 4803.6 -g 972.6 -p 1141.1 --param 1141 3 100 1 0 --limit 1130 1150
+sauron -d 4884.02 -g 1050.9 -p 1222.5 --para 1222 2 100 1 0 --limi 1218 1242
+sauron -d 5096.87 -g 1753.1 -p 1173.9 --param 1174 2 150 1 0 --limit 1165 1180
+sauron -d 5096.87 -g 476.8 -p 697.6 --limit 690 701
+sauron -d 5096.87 -g 476.8 -p 532.1 --limit 528 538
+sauron -d 5096.87 -g 678.6 -p 1173.9 --limit 1170 1179
+sauron -d 5230.33 -g 545.3 -p 1922.4 --limit 1917 1926
+sauron -d 5289.25 -g 444.5 -p 1196.7 --param 1197 3 2000 1 0 --limit 1194 1202
+sauron -d 5289.25 -g 444.5 -p 1366.1 --param 1366 3 2000 1 0 --limit 1360 1370
+sauron -d 5289.25 -g 444.5 -p 2244.2 --limit 2241 2264
+sauron -d 5300.5 -g 1549.0 -p 4143.8 --param 4144 2 100 1 0 --limit 4139 4149
+sauron -d 5573.9 -g 5557.7 -p 1649.9 --limit 1629 1655
+sauron -d 5573.9 -g 5557.7 -p 2264.6 --limit 2259 2285
+sauron -d 5573.9 -g 5557.7 -p 476.8 --limit 472 481
+sauron -d 5775.76 -g 5355.7 -p 678.6 --limit 658 682
+sauron -d 5775.76 -g 5355.7 -p 545.3 --limit 540 552
+sauron -d 5775.76 -g 5355.7 -p 1606.6 --limit 1602 1612
+sauron -d 5775.76 -g 5355.7 -p 1209.6 --limit 1203 1216
+sauron -d 5783.15 -g 5348.1 -p 1867.4 --limit 1863 1872
