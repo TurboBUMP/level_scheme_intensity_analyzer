@@ -45,10 +45,10 @@
 start_level_colum = 0 
 stalc_name='LevelLITERATURE'
 
-gamma_ray_energy_column = 4
+gamma_ray_energy_column = 5
 grec_name='Egamma-LITERATURE'
 
-stop_level_column = 6
+stop_level_column = 7
 stplc_name='Level_final'
 
 spectra_directory='/home/massimiliano/Desktop/Mordor/spectra/'
