@@ -45,6 +45,9 @@
 start_level_colum = 0 
 stalc_name='LevelLITERATURE'
 
+primary_colum = 4
+pc_name = 'Primary?'
+
 gamma_ray_energy_column = 5
 grec_name='Egamma-LITERATURE'
 
@@ -386,6 +389,7 @@ def LoadLevelScheme(_filename):
     _lvlScheme = pd.read_excel(_filename,
                            sheet_name=0,
                            usecols=[start_level_colum,
+                                    primary_colum,
                                     gamma_ray_energy_column,
                                     stop_level_column])
     _lvlScheme.reset_index()
@@ -600,6 +604,93 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
 
     return _results
 
+def FitSinglePrimaryPeak(_level_scheme,_param=None,_limit=None):
+    '''
+
+    FitSinglePeak(): wrap FitGauss() and runs it for the one selected peak.
+    
+        Inputs: - (_level_scheme) a pandas dataFrame with the entire level
+                  level scheme stored inside.
+                - (_level_directory) directory containing the .dat file of a
+                  specific pair of gate and gamma ray.
+                - (_gate_energy) energy of the gate.
+                - (_peak) energy of the peak to fit.
+                - (_param) initial guess of the fit parameters.
+                - (_limit) upper and lower limit of the fiting region.
+                - (_called_directly) this is a flag to check if the user is
+                  doing a single fit (in this case the main() will call
+                  this function directly) or if they are doing more than
+                  one fit (in this case the main() will call thi function
+                  from inside FitSingleLevel() or from inside 
+                  FitEntireLevelScheme().
+
+        Returns: - (_reuslts) results of the FitGauss() function call.
+
+    '''
+    os.chdir(spectra_directory) #così mi trovo dentro la cartella spectra/.
+    _primary_level_scheme=_level_scheme[_level_scheme[pc_name]=='YES']
+
+    # Here cycling over all the primary gammarays
+    for _index,_primary_gammaray in _primary_level_scheme.iterrows():
+        _ending_level=_primary_gammaray[stplc_name]
+        for _secondary_index,_secondary_gammaray in _level_scheme[_level_scheme[stalc_name]==_ending_level].iterrows():
+            if((_primary_gammaray[grec_name],_secondary_gammaray[grec_name]) in gammaray_to_be_skipped):
+                pass
+            else:
+                os.chdir(os.path.join(spectra_directory,str(_secondary_gammaray[stplc_name])))
+                _hist=np.genfromtxt(str(_secondary_gammaray[grec_name])+'.dat')
+                _peak=_primary_gammaray[grec_name]
+                _level_directory=str(_primary_gammaray[stalc_name])
+                _gate_energy=_secondary_gammaray[grec_name]
+                _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
+                _limit=[_peak-20,_peak+20]
+                _results=FitGauss(_hist,_param,_limit)
+                #print(f'Results for {_primary_gammaray[grec_name]}')
+                #print(f'\nFit Results\n \
+                #    Mean: {_results[0][0]:.4f}\n \
+                #    Sigma: {_results[0][1]:.4f}\n \
+                #    Amplitude: {_results[0][2]:.4f}\n \
+                #    m: {_results[0][3]:.4f}\n \
+                #    q: {_results[0][4]:.4f}\n \
+                #    I_diff: {_results[2]:.4f}\n \
+                #    I: {_results[3]:.4f}')
+
+                _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=0)
+                SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+                SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
+
+
+    #_primary_level_directory=os.path.join(_level_directory,'') # questa è la cartella 11131.6
+    #_final_level=_level_scheme[_level_scheme[grec_name]==_peak][stplc_name]
+    #print(_peak," finisce su ",final_level)
+    ##_filename=str(_gate_energy)+'.dat'
+    #_hist = np.genfromtxt()
+    #if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
+    #if _limit==None: _limit=[_peak-20,_peak+20]
+    #_results=FitGauss(_hist,_param,_limit)
+    #_fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
+    #if _called_directly==1:
+    #    if choice:=input('Do you want to save the results? [Y/n] ')!='n':
+    #        SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+    #        SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
+    #    else:
+    #        print(f'\nFit Results\n \
+    #            Mean: {_results[0][0]:.4f}\n \
+    #            Sigma: {_results[0][1]:.4f}\n \
+    #            Amplitude: {_results[0][2]:.4f}\n \
+    #            m: {_results[0][3]:.4f}\n \
+    #            q: {_results[0][4]:.4f}\n \
+    #            I_diff: {_results[2]:.4f}\n \
+    #            I: {_results[3]:.4f}')
+    #else:
+    #    SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+    #    SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
+
+
+    #return _results
+
+
+
 
 def FitSingleLevel(_level_scheme,_level_directory):
     '''
@@ -659,6 +750,7 @@ if __name__ == '__main__':
     level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods')
     stop_load_time=time.time()
 
+    #FitSinglePrimaryPeak(level_scheme)
     # Second step - check if the user wants to run the code for every gammaray
     # (first if()), for one single level (second if()) or for one single
     # transition (third if()).
