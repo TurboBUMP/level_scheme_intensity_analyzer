@@ -632,8 +632,10 @@ def FitSinglePrimaryPeak(_level_scheme):
     # Here cycling over all the primary gammarays
     for _index,_primary_gammaray in _primary_level_scheme.iterrows():
         _ending_level=_primary_gammaray[stplc_name]
-        print(f'{_primary_gammaray[grec_name]} finisce sul {_primary_gammaray[stplc_name]}')
-
+        for _secondary_index,_secondary_gamma_ray in _level_scheme[_level_scheme[stalc_name]==_ending_level].iterrows():
+            os.chdir(os.path.join(spectra_directory,str(_secondary_gamma_ray[stplc_name])))
+            _hist=np.genfromtxt(str(_secondary_gamma_ray[grec_name])+'.dat')
+            print(f'{_secondary_gamma_ray[grec_name]} si trova in {os.path.join(spectra_directory,str(_secondary_gamma_ray[stplc_name]))}')
 
 
     #_primary_level_directory=os.path.join(_level_directory,'') # questa è la cartella 11131.6
