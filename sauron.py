@@ -750,7 +750,7 @@ if __name__ == '__main__':
     level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods')
     stop_load_time=time.time()
 
-    #FitSinglePrimaryPeak(level_scheme)
+    #FitSinglePrimaryPeak(level_scheme) # Uncomment this line and comment all the following to fit alle the primary gammarays
     # Second step - check if the user wants to run the code for every gammaray
     # (first if()), for one single level (second if()) or for one single
     # transition (third if()).
