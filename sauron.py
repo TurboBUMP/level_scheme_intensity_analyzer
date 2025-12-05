@@ -604,7 +604,7 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
 
     return _results
 
-def FitSinglePrimaryPeak(_level_scheme):
+def FitSinglePrimaryPeak(_level_scheme,_param=None,_limit=None):
     '''
 
     FitSinglePeak(): wrap FitGauss() and runs it for the one selected peak.
@@ -629,13 +629,35 @@ def FitSinglePrimaryPeak(_level_scheme):
     '''
     os.chdir(spectra_directory) #così mi trovo dentro la cartella spectra/.
     _primary_level_scheme=_level_scheme[_level_scheme[pc_name]=='YES']
+
     # Here cycling over all the primary gammarays
     for _index,_primary_gammaray in _primary_level_scheme.iterrows():
         _ending_level=_primary_gammaray[stplc_name]
-        for _secondary_index,_secondary_gamma_ray in _level_scheme[_level_scheme[stalc_name]==_ending_level].iterrows():
-            os.chdir(os.path.join(spectra_directory,str(_secondary_gamma_ray[stplc_name])))
-            _hist=np.genfromtxt(str(_secondary_gamma_ray[grec_name])+'.dat')
-            print(f'{_secondary_gamma_ray[grec_name]} si trova in {os.path.join(spectra_directory,str(_secondary_gamma_ray[stplc_name]))}')
+        for _secondary_index,_secondary_gammaray in _level_scheme[_level_scheme[stalc_name]==_ending_level].iterrows():
+            if((_primary_gammaray[grec_name],_secondary_gammaray[grec_name]) in gammaray_to_be_skipped):
+                pass
+            else:
+                os.chdir(os.path.join(spectra_directory,str(_secondary_gammaray[stplc_name])))
+                _hist=np.genfromtxt(str(_secondary_gammaray[grec_name])+'.dat')
+                _peak=_primary_gammaray[grec_name]
+                _level_directory=str(_primary_gammaray[stalc_name])
+                _gate_energy=_secondary_gammaray[grec_name]
+                _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
+                _limit=[_peak-20,_peak+20]
+                _results=FitGauss(_hist,_param,_limit)
+                #print(f'Results for {_primary_gammaray[grec_name]}')
+                #print(f'\nFit Results\n \
+                #    Mean: {_results[0][0]:.4f}\n \
+                #    Sigma: {_results[0][1]:.4f}\n \
+                #    Amplitude: {_results[0][2]:.4f}\n \
+                #    m: {_results[0][3]:.4f}\n \
+                #    q: {_results[0][4]:.4f}\n \
+                #    I_diff: {_results[2]:.4f}\n \
+                #    I: {_results[3]:.4f}')
+
+                _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=0)
+                SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+                SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
 
 
     #_primary_level_directory=os.path.join(_level_directory,'') # questa è la cartella 11131.6
@@ -728,40 +750,40 @@ if __name__ == '__main__':
     level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods')
     stop_load_time=time.time()
 
-    FitSinglePrimaryPeak(level_scheme)
+    #FitSinglePrimaryPeak(level_scheme)
     # Second step - check if the user wants to run the code for every gammaray
     # (first if()), for one single level (second if()) or for one single
     # transition (third if()).
-    #if parser_arguments.run_all is not None:
-    #    start_calc_time=time.time()
-    #    FitEntireLevelScheme(level_scheme)
-    #    stop_calc_time=time.time()
-    #elif parser_arguments.single_level is not None:
-    #    start_calc_time=time.time()
-    #    FitSingleLevel(level_scheme,
-    #                   parser_arguments.level_directory)
-    #    stop_calc_time=time.time()
-    #else:
-    #    start_calc_time=time.time()
-    #    FitSinglePeak(level_scheme,
-    #                  parser_arguments.level_directory,
-    #                  parser_arguments.gate,
-    #                  parser_arguments.peak,
-    #                  parser_arguments.param,
-    #                  parser_arguments.limit,
-    #                  1)
-    #    stop_calc_time=time.time()
+    if parser_arguments.run_all is not None:
+        start_calc_time=time.time()
+        FitEntireLevelScheme(level_scheme)
+        stop_calc_time=time.time()
+    elif parser_arguments.single_level is not None:
+        start_calc_time=time.time()
+        FitSingleLevel(level_scheme,
+                       parser_arguments.level_directory)
+        stop_calc_time=time.time()
+    else:
+        start_calc_time=time.time()
+        FitSinglePeak(level_scheme,
+                      parser_arguments.level_directory,
+                      parser_arguments.gate,
+                      parser_arguments.peak,
+                      parser_arguments.param,
+                      parser_arguments.limit,
+                      1)
+        stop_calc_time=time.time()
 
-    ## Tird step - calculate execution times
-    #load_time=stop_load_time-start_load_time
-    #calc_time=stop_calc_time-start_calc_time
-    #total_time=stop_calc_time-start_load_time
+    # Tird step - calculate execution times
+    load_time=stop_load_time-start_load_time
+    calc_time=stop_calc_time-start_calc_time
+    total_time=stop_calc_time-start_load_time
 
-    #print('\n')
-    #print(f'****************************************')
-    #print(f'  ----  Loading time: {load_time//60:.0f} m {load_time-load_time//60:.0f} s')
-    #print(f'  ----  Fit time: {calc_time//60:.0f} m {calc_time-calc_time//60:.0f} s')
-    #print(f'  ----  Total time: {total_time//60:.0f} m {total_time-total_time//60:.0f} s')
-    #print(f'****************************************')
-    #print('\n')
+    print('\n')
+    print(f'****************************************')
+    print(f'  ----  Loading time: {load_time//60:.0f} m {load_time-load_time//60:.0f} s')
+    print(f'  ----  Fit time: {calc_time//60:.0f} m {calc_time-calc_time//60:.0f} s')
+    print(f'  ----  Total time: {total_time//60:.0f} m {total_time-total_time//60:.0f} s')
+    print(f'****************************************')
+    print('\n')
 
