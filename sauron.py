@@ -533,11 +533,11 @@ def SaveFitResults(_level_directory,_gate_energy,_peak,_results):
               f'{_best_parameters[2]:.4f}',
               f'{_best_parameters[3]:.4f}',
               f'{_best_parameters[4]:.4f}',
-              f'{_cov[0][0]:.4f}',
-              f'{_cov[1][1]:.4f}',
-              f'{_cov[2][2]:.4f}',
-              f'{_cov[3][3]:.4f}',
-              f'{_cov[4][4]:.4f}',
+              f'{np.sqrt(_cov[0][0]):.4f}',
+              f'{np.sqrt(_cov[1][1]):.4f}',
+              f'{np.sqrt(_cov[2][2]):.4f}',
+              f'{np.sqrt(_cov[3][3]):.4f}',
+              f'{np.sqrt(_cov[4][4]):.4f}',
               sep=',',
               file=_f)
 
@@ -590,11 +590,11 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
             SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
         else:
             print(f'\nFit Results\n \
-                Mean: {_results[0][0]:.4f}\n \
-                Sigma: {_results[0][1]:.4f}\n \
-                Amplitude: {_results[0][2]:.4f}\n \
-                m: {_results[0][3]:.4f}\n \
-                q: {_results[0][4]:.4f}\n \
+                Mean: {_results[0][0]:.4f} +- {np.sqrt(_results[1][0,0]):.4f}\n \
+                Sigma: {_results[0][1]:.4f} +- {np.sqrt(_results[1][1,1]):.4f}\n \
+                Amplitude: {_results[0][2]:.4f} +- {np.sqrt(_results[1][2,2]):.4f}\n \
+                m: {_results[0][3]:.4f} +- {np.sqrt(_results[1][3,3]):.4f}\n \
+                q: {_results[0][4]:.4f} +- {np.sqrt(_results[1][4,4]):.4f}\n \
                 I_diff: {_results[2]:.4f}\n \
                 I: {_results[3]:.4f}')
     else:
@@ -614,7 +614,7 @@ def FitSinglePrimaryPeak(_level_scheme,_param=None,_limit=None):
                 - (_level_directory) directory containing the .dat file of a
                   specific pair of gate and gamma ray.
                 - (_gate_energy) energy of the gate.
-                - (_peak) energy of the peak to fit.
+                - (_peak) en +- {_results[1][0]:.4f}ergy of the peak to fit.
                 - (_param) initial guess of the fit parameters.
                 - (_limit) upper and lower limit of the fiting region.
                 - (_called_directly) this is a flag to check if the user is
@@ -750,13 +750,13 @@ if __name__ == '__main__':
     level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods')
     stop_load_time=time.time()
 
-    #FitSinglePrimaryPeak(level_scheme) # Uncomment this line and comment all the following to fit alle the primary gammarays
     # Second step - check if the user wants to run the code for every gammaray
     # (first if()), for one single level (second if()) or for one single
     # transition (third if()).
     if parser_arguments.run_all is not None:
         start_calc_time=time.time()
-        FitEntireLevelScheme(level_scheme)
+        #FitEntireLevelScheme(level_scheme)
+        FitSinglePrimaryPeak(level_scheme)
         stop_calc_time=time.time()
     elif parser_arguments.single_level is not None:
         start_calc_time=time.time()
