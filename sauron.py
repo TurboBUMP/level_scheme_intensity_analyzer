@@ -755,7 +755,7 @@ if __name__ == '__main__':
     # transition (third if()).
     if parser_arguments.run_all is not None:
         start_calc_time=time.time()
-        #FitEntireLevelScheme(level_scheme)
+        FitEntireLevelScheme(level_scheme)
         FitSinglePrimaryPeak(level_scheme)
         stop_calc_time=time.time()
     elif parser_arguments.single_level is not None:

@@ -68,28 +68,30 @@ def efficiency_error(energy):
 # This function take the level energy as argument and return an np.array
 # containing the energy of all the gammarays depopulating the level
 def find_outgoing(energy_level):
-    return np.asarray(lvl_scheme[lvl_scheme['LevelLITERATURE'].isin([energy_level])]['Egamma-LITERATURE'].reset_index())
+    return np.asarray(lvl_scheme[lvl_scheme['LevelLITERATURE']==energy_level]['Egamma-LITERATURE'])
 
 # This function take the level energy as argument and return an np.array
 # containing the energy of all the gammarays populating the level
 def find_incoming(energy_level):
-    return np.asarray(lvl_scheme[lvl_scheme['Level_final'].isin([energy_level])]['Egamma-LITERATURE'].reset_index())
+    return np.asarray(lvl_scheme[lvl_scheme['Level_final']==energy_level]['Egamma-LITERATURE'])
 
 # This function take the gammaray energy as argument and ... [TO BE COMPLETED]
 def gammaray_intensity_calc(gammaray_energy):
 
-    gate_list = np.asarray(intensity_file[intensity_file['TRANSITION'].isin([gammaray_energy])]['GATE'])
-    amplitude_list = np.asarray(intensity_file[intensity_file['TRANSITION'].isin([gammaray_energy])]['amplitude'])
-    sigma_list = np.asarray(intensity_file[intensity_file['TRANSITION'].isin([gammaray_energy])]['sigma'])
+    #if (lvl_scheme[lvl_scheme['Egamma-LITERATURE']==gammaray_energy]['Primary?']=='NO'):
+
+    gate_list = np.asarray(intensity_file[intensity_file['TRANSITION']==gammaray_energy]['GATE'])
+    amplitude_list = np.asarray(intensity_file[intensity_file['TRANSITION']==gammaray_energy]['amplitude'])
+    sigma_list = np.asarray(intensity_file[intensity_file['TRANSITION']==gammaray_energy]['sigma'])
     gammaray_intensity_list = np.asarray(amplitude_list*sigma_list*np.sqrt(np.pi*2)) # I = A*sigma*sqrt(2Pi)
-    gate_efficiency_list = np.asarray([efficiency(gate) for gate in gate_list]) # In teoria dovrei tenere conto dell'errore sull'efficienza per calcolare correttamente gli errori sulle intensità
+    gate_efficiency_list = np.asarray([efficiency(gate) for gate in gate_list])
     gammaray_efficiency = efficiency(gammaray_energy)
     gammaray_intensity_list = gammaray_intensity_list * gate_efficiency_list * gammaray_efficiency # Re-normalizing the intensity for the efficiencies of gate and gammaray
 
     # Ok, ora calcolo l'errore sull'intensità tenendo conto degli errori sulle ampiezze e sulle sigma dei picchi fittati
-    error_amplitude_list = np.asarray(intensity_file[intensity_file['TRANSITION'].isin([gammaray_energy])]['err_amplitude'])
-    error_sigma_list = np.asarray(intensity_file[intensity_file['TRANSITION'].isin([gammaray_energy])]['err_sigma'])
-    error_gate_efficiency_list = efficiency_error(gate_list)
+    error_amplitude_list = np.asarray(intensity_file[intensity_file['TRANSITION']==gammaray_energy]['err_amplitude'])
+    error_sigma_list = np.asarray(intensity_file[intensity_file['TRANSITION']==gammaray_energy]['err_sigma'])
+    error_gate_efficiency_list = np.asarray([efficiency_error(gate) for gate in gate_list])
     error_gammaray_efficiency = efficiency_error(gammaray_energy)
 
     error_gate_intensity_list = np.sqrt(2*np.pi)*np.sqrt((sigma_list*gate_efficiency_list*gammaray_efficiency*error_amplitude_list)**2
@@ -100,25 +102,41 @@ def gammaray_intensity_calc(gammaray_energy):
     
     return gammaray_intensity_list.sum(),error_gammaray_intensity
 
-## This function take the energy level as argument and return two np.array: 
-## 1- array containing the outgoing gammaray list
-## 2- array containing the outgoing gammaray intensity list
-#def level_outgoing_intensity_calc(energy_level):
-#
-#    outgoing_gammaray_list = find_outgoing(energy_level)
-#    outgoing_gammaray_intensity_list = np.asarray([gammaray_intensity_calc(gammaray) for gammaray in outgoing_gammaray_list])
-#
-#    return outgoing_gammaray_list, outgoing_gammaray_intensity_list
-#
-## This function take the energy level as argument and return two np.array: 
-## 1- array containing the incoming gammaray list
-## 2- array containing the incoming gammaray intensity list
-#def level_incoming_intensity_calc(energy_level):
-#
-#    incoming_gammaray_list = find_incoming(energy_level)
-#    incoming_gammaray_intensity_list = np.asarray([gammaray_intensity_calc(gammaray) for gammaray in incoming_gammaray_list])
-#
-#    return incoming_gammaray_list, incoming_gammaray_intensity_list
+
+def level_intensity_calculator(level_energy):
+
+    list_of_incoming_gammarays = find_incoming(level_energy)
+    list_of_outgoing_gammarays = find_outgoing(level_energy)
+
+    list_of_incoming_intensity = []
+    list_of_incoming_errors = []
+    list_of_outgoing_intensity = []
+    list_of_outgoing_errors = []
+
+    for in_g in list_of_incoming_gammarays:
+        res = gammaray_intensity_calc(in_g)
+        #print(f'incoming: {in_g} keV, I: {res[0]:.4f}, Error: {res[1]:.4f}')
+        list_of_incoming_intensity.append(res[0])
+        list_of_incoming_errors.append(res[1])
+
+    for ou_g in list_of_outgoing_gammarays:
+        res = gammaray_intensity_calc(ou_g)
+        #print(f'outgoing: {ou_g} keV, I: {res[0]:.4f}, Error: {res[1]:.4f}')
+        list_of_outgoing_intensity.append(res[0])
+        list_of_outgoing_errors.append(res[1])
+
+    incoming_intensity = np.asarray(list_of_incoming_intensity).sum()
+    outgoing_intensity = np.asarray(list_of_outgoing_intensity).sum()
+    list_of_incoming_errors = np.asarray(list_of_incoming_errors)
+    list_of_outgoing_errors = np.asarray(list_of_outgoing_errors)
+    incoming_error = np.sqrt(np.sum(list_of_incoming_errors**2))
+    outgoing_error = np.sqrt(np.sum(list_of_outgoing_errors**2))
+
+    #print(f'the incoming intensity is: {incoming_intensity} +- {incoming_error}')
+    #print(f'the outgoing intensity is: {outgoing_intensity} +- {outgoing_error}')
+    
+    return incoming_intensity,incoming_error,outgoing_intensity,outgoing_error
+    
 
 #############################################
 
@@ -130,8 +148,11 @@ if __name__ == '__main__':
 
     with open('intensity_output.txt','w') as f:
 
-        #for gammaray in lvl_scheme['Egamma-LITERATURE']:
-
-        intensity = gammaray_intensity_calc(1157.004)
-        print(1157.004, ': ', intensity[0],' +- ', intensity[1])#, file=f)
-
+        level_set = sorted(set(lvl_scheme['LevelLITERATURE']))
+        
+        for level in level_set:
+            print(f'now doing: {level}')
+            r = level_intensity_calculator(level)
+            chi = (r[0]-r[2])**2/(r[1]**2+r[3]**2)
+            print(f'{level}\t,{r[0]:.4f}\t,{r[1]:.4f}\t,{r[2]:.4f}\t,{r[3]:.4f},\t {chi:.4f}',file=f)
+    #r = level_intensity_calculator(1157.0208)
