@@ -334,6 +334,10 @@ parser.add_argument('-sl',
                     action='store',
                     help='If passed SAURON will run for only the selected\
                         level')
+parser.add_argument('--primary',
+                    nargs='*',
+                    action='store',
+                    help='Use this argument if the gammaray you want to fit is a primary')
 parser.add_argument('-d',
                     '--level-directory', 
                     type=str, 
@@ -604,7 +608,7 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
 
     return _results
 
-def FitSinglePrimaryPeak(_level_scheme,_param=None,_limit=None):
+def FitSinglePrimaryPeak(_level_scheme,_gammaray_energy,_secondary_gammaray_energy,_param=None,_limit=None,_called_directly=0):
     '''
 
     FitSinglePeak(): wrap FitGauss() and runs it for the one selected peak.
@@ -627,69 +631,47 @@ def FitSinglePrimaryPeak(_level_scheme,_param=None,_limit=None):
         Returns: - (_reuslts) results of the FitGauss() function call.
 
     '''
-    os.chdir(spectra_directory) #così mi trovo dentro la cartella spectra/.
-    _primary_level_scheme=_level_scheme[_level_scheme[pc_name]=='YES']
-
+    _primary_level_scheme=_level_scheme[_level_scheme[grec_name]==_gammaray_energy].reset_index(drop=True)
+    _secondary_level_scheme=
     # Here cycling over all the primary gammarays
+    os.chdir(os.path.join(spectra_directory,str(_secondary_gammaray_energy)))
+    _hist=np.genfromtxt(str(_secondary_gammaray_energy)+'.dat')
+    _peak=_primary_gammaray[grec_name]
+    _level_directory=str(_primary_gammaray[stalc_name])
+    _gate_energy=_secondary_gammaray_energy
+    _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
+    _limit=[_peak-20,_peak+20]
+    _results=FitGauss(_hist,_param,_limit)
+
+    _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
+
+    if _called_directly==1:
+        if choice:=input('Do you want to save the results? [Y/n] ')!='n':
+            SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+            SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
+        else:
+            print(f'\nFit Results\n \
+                Mean: {_results[0][0]:.4f} +- {np.sqrt(_results[1][0,0]):.4f}\n \
+                Sigma: {_results[0][1]:.4f} +- {np.sqrt(_results[1][1,1]):.4f}\n \
+                Amplitude: {_results[0][2]:.4f} +- {np.sqrt(_results[1][2,2]):.4f}\n \
+                m: {_results[0][3]:.4f} +- {np.sqrt(_results[1][3,3]):.4f}\n \
+                q: {_results[0][4]:.4f} +- {np.sqrt(_results[1][4,4]):.4f}\n \
+                I_diff: {_results[2]:.4f}\n \
+                I: {_results[3]:.4f}')
+    else:
+        SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+        SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
+
+
+
+def FitBindingLevel(_level_scheme):
+    os.chdir(spectra_directory) #così mi trovo dentro la cartella spectra/. 
+    _primary_level_scheme=_level_scheme[_level_scheme[pc_name]=='YES'].reset_index(drop=True)      
+
     for _index,_primary_gammaray in _primary_level_scheme.iterrows():
         _ending_level=_primary_gammaray[stplc_name]
         for _secondary_index,_secondary_gammaray in _level_scheme[_level_scheme[stalc_name]==_ending_level].iterrows():
-            if((_primary_gammaray[grec_name],_secondary_gammaray[grec_name]) in gammaray_to_be_skipped):
-                pass
-            else:
-                os.chdir(os.path.join(spectra_directory,str(_secondary_gammaray[stplc_name])))
-                _hist=np.genfromtxt(str(_secondary_gammaray[grec_name])+'.dat')
-                _peak=_primary_gammaray[grec_name]
-                _level_directory=str(_primary_gammaray[stalc_name])
-                _gate_energy=_secondary_gammaray[grec_name]
-                _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
-                _limit=[_peak-20,_peak+20]
-                _results=FitGauss(_hist,_param,_limit)
-                #print(f'Results for {_primary_gammaray[grec_name]}')
-                #print(f'\nFit Results\n \
-                #    Mean: {_results[0][0]:.4f}\n \
-                #    Sigma: {_results[0][1]:.4f}\n \
-                #    Amplitude: {_results[0][2]:.4f}\n \
-                #    m: {_results[0][3]:.4f}\n \
-                #    q: {_results[0][4]:.4f}\n \
-                #    I_diff: {_results[2]:.4f}\n \
-                #    I: {_results[3]:.4f}')
-
-                _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=0)
-                SaveFitResults(_level_directory,_gate_energy,_peak,_results)
-                SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
-
-
-    #_primary_level_directory=os.path.join(_level_directory,'') # questa è la cartella 11131.6
-    #_final_level=_level_scheme[_level_scheme[grec_name]==_peak][stplc_name]
-    #print(_peak," finisce su ",final_level)
-    ##_filename=str(_gate_energy)+'.dat'
-    #_hist = np.genfromtxt()
-    #if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
-    #if _limit==None: _limit=[_peak-20,_peak+20]
-    #_results=FitGauss(_hist,_param,_limit)
-    #_fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
-    #if _called_directly==1:
-    #    if choice:=input('Do you want to save the results? [Y/n] ')!='n':
-    #        SaveFitResults(_level_directory,_gate_energy,_peak,_results)
-    #        SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
-    #    else:
-    #        print(f'\nFit Results\n \
-    #            Mean: {_results[0][0]:.4f}\n \
-    #            Sigma: {_results[0][1]:.4f}\n \
-    #            Amplitude: {_results[0][2]:.4f}\n \
-    #            m: {_results[0][3]:.4f}\n \
-    #            q: {_results[0][4]:.4f}\n \
-    #            I_diff: {_results[2]:.4f}\n \
-    #            I: {_results[3]:.4f}')
-    #else:
-    #    SaveFitResults(_level_directory,_gate_energy,_peak,_results)
-    #    SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
-
-
-    #return _results
-
-
+            FitSinglePrimaryPeak(_level_scheme,_primary_gammaray[grec_name],_secondary_gammaray[grec_name],_param=None,_limit=None,_called_directly=0)
 
 
 def FitSingleLevel(_level_scheme,_level_directory):
@@ -705,7 +687,7 @@ def FitSingleLevel(_level_scheme,_level_directory):
     os.chdir(spectra_directory)
     _energy_level=float(_level_directory)
     _subset_level_scheme_mask=_level_scheme[stalc_name]==_energy_level
-    _subset_level_scheme=_level_scheme[_subset_level_scheme_mask]
+    _subset_level_scheme=_level_scheme[_subset_level_scheme_mask].reset_index(drop=True)
     print(f'Now working on: {_level_directory}')
     for _filename in os.listdir(_level_directory):
         if _filename.endswith('.dat'):
@@ -738,6 +720,8 @@ def FitEntireLevelScheme(_level_scheme):
         if isdir(_level_directory):
             FitSingleLevel(_level_scheme,_level_directory)
 
+    FitBindingLevel(_level_scheme)
+
 
 ###################### END of Functions ########################################
 
@@ -756,12 +740,20 @@ if __name__ == '__main__':
     if parser_arguments.run_all is not None:
         start_calc_time=time.time()
         FitEntireLevelScheme(level_scheme)
-        FitSinglePrimaryPeak(level_scheme)
         stop_calc_time=time.time()
     elif parser_arguments.single_level is not None:
         start_calc_time=time.time()
         FitSingleLevel(level_scheme,
                        parser_arguments.level_directory)
+        stop_calc_time=time.time()
+    elif parser_arguments.primary is not None:
+        start_calc_time=time.time()
+        FitSinglePrimaryPeak(level_scheme,
+                             parser_arguments.peak,
+                             parser_arguments.gate,
+                             parser_arguments.param,
+                             parser_arguments.limit,
+                             1)
         stop_calc_time=time.time()
     else:
         start_calc_time=time.time()
