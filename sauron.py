@@ -338,6 +338,13 @@ parser.add_argument('--primary',
                     nargs='*',
                     action='store',
                     help='Use this argument if the gammaray you want to fit is a primary')
+parser.add_argument('-gd',
+                    '--gatedir',
+                    default=None,
+                    type=str,
+                    help='If the single peak to fit is a primary, us --gatedir '
+                        +'to specify in which directory is the gated '
+                        +'spectra to use.')
 parser.add_argument('-d',
                     '--level-directory', 
                     type=str, 
@@ -608,7 +615,7 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
 
     return _results
 
-def FitSinglePrimaryPeak(_level_scheme,_gammaray_energy,_secondary_gammaray_energy,_param=None,_limit=None,_called_directly=0):
+def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,_secondary_gammaray_energy,_gate_directory,_param=None,_limit=None,_called_directly=0):
     '''
 
     FitSinglePeak(): wrap FitGauss() and runs it for the one selected peak.
@@ -632,15 +639,12 @@ def FitSinglePrimaryPeak(_level_scheme,_gammaray_energy,_secondary_gammaray_ener
 
     '''
     _primary_level_scheme=_level_scheme[_level_scheme[grec_name]==_gammaray_energy].reset_index(drop=True)
-    _secondary_level_scheme=
-    # Here cycling over all the primary gammarays
-    os.chdir(os.path.join(spectra_directory,str(_secondary_gammaray_energy)))
+    os.chdir(os.path.join(spectra_directory,str(_gate_directory)))
     _hist=np.genfromtxt(str(_secondary_gammaray_energy)+'.dat')
-    _peak=_primary_gammaray[grec_name]
-    _level_directory=str(_primary_gammaray[stalc_name])
+    _peak=_gammaray_energy
     _gate_energy=_secondary_gammaray_energy
-    _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
-    _limit=[_peak-20,_peak+20]
+    if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
+    if _limit==None: _limit=[_peak-20,_peak+20]
     _results=FitGauss(_hist,_param,_limit)
 
     _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
@@ -671,7 +675,14 @@ def FitBindingLevel(_level_scheme):
     for _index,_primary_gammaray in _primary_level_scheme.iterrows():
         _ending_level=_primary_gammaray[stplc_name]
         for _secondary_index,_secondary_gammaray in _level_scheme[_level_scheme[stalc_name]==_ending_level].iterrows():
-            FitSinglePrimaryPeak(_level_scheme,_primary_gammaray[grec_name],_secondary_gammaray[grec_name],_param=None,_limit=None,_called_directly=0)
+            FitSinglePrimaryPeak(_level_scheme,
+                                 str(_primary_gammaray[stalc_name]),
+                                 _primary_gammaray[grec_name],
+                                 _secondary_gammaray[grec_name],
+                                 str(_secondary_gammaray[stplc_name]),
+                                 _param=None,
+                                 _limit=None,
+                                 _called_directly=0)
 
 
 def FitSingleLevel(_level_scheme,_level_directory):
@@ -749,8 +760,10 @@ if __name__ == '__main__':
     elif parser_arguments.primary is not None:
         start_calc_time=time.time()
         FitSinglePrimaryPeak(level_scheme,
+                             parser_arguments.level_directory,
                              parser_arguments.peak,
                              parser_arguments.gate,
+                             parser_arguments.gatedir,
                              parser_arguments.param,
                              parser_arguments.limit,
                              1)
