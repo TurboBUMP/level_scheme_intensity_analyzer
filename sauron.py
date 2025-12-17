@@ -337,7 +337,8 @@ parser.add_argument('-sl',
 parser.add_argument('--primary',
                     nargs='*',
                     action='store',
-                    help='Use this argument if the gammaray you want to fit is a primary')
+                    help='Use this argument if the gammaray you want to fit is'
+                        +'a primary')
 parser.add_argument('-gd',
                     '--gatedir',
                     default=None,
@@ -438,14 +439,14 @@ def FitGauss(_hist,_par_first_guess,_limit=[0,-1]):
                 - (_par_first_guess) first guess
                   of the parameters for the fitting function (curve_fit).
 
-        Returns: - (_best_parameters) the best parameters found with 
+        Returns: - (_best_parameters) the best parameters found with
                     curve_fit.
                  - (_cov) covariance matrix of the best parameters
                  - (_I) the sum of the bin contents inside the fit region
                  - (_I_diff) the difference between (_I) and the integral
-                    of the function calculate inside (_limit). This value is 
+                    of the function calculate inside (_limit). This value is
                     extremely helpfull to understand if a fit is good or not
-                 - zero for everything and 1000000000 for (_I_diff) if 
+                 - zero for everything and 1000000000 for (_I_diff) if
                     curve_fit cannot converge.
 
     '''
@@ -474,7 +475,8 @@ def FitGauss(_hist,_par_first_guess,_limit=[0,-1]):
     return [_best_parameters,_cov,_I_diff,_I]
 
 
-def DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=0):
+def DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,
+                   _show_flag=0):
 
     '''
 
@@ -587,13 +589,23 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
         Returns: - (_reuslts) results of the FitGauss() function call.
 
     '''
+    # Move into the right directory and upload the gammaray spectra gated on
+    # the _gate_energy
     os.chdir(spectra_directory)
     _level_directory=os.path.join(_level_directory,'')
     _filename=str(_gate_energy)+'.dat'
     _hist = np.genfromtxt(_level_directory+_filename)
+ 
+    # Check if the user passed _param and _limit from the command line
     if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
     if _limit==None: _limit=[_peak-20,_peak+20]
+
+    # Perform the fit 
     _results=FitGauss(_hist,_param,_limit)
+
+    # Draw the results and check if the user wants to save 'em.
+    # If the function is called from FitSingleLevel (_called_directly=0) then
+    # the results are automaticaly saved.
     _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
     if _called_directly==1:
         if choice:=input('Do you want to save the results? [Y/n] ')!='n':
@@ -615,39 +627,51 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
 
     return _results
 
-def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,_secondary_gammaray_energy,_gate_directory,_param=None,_limit=None,_called_directly=0):
+def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
+                         _secondary_gammaray_energy,_gate_directory,
+                         _param=None,_limit=None,_called_directly=0):
     '''
 
-    FitSinglePeak(): wrap FitGauss() and runs it for the one selected peak.
+    FitSinglePrimaryPeak(): wrap FitGauss() and runs it for the one selected
+        primary peak.
     
         Inputs: - (_level_scheme) a pandas dataFrame with the entire level
                   level scheme stored inside.
-                - (_level_directory) directory containing the .dat file of a
-                  specific pair of gate and gamma ray.
-                - (_gate_energy) energy of the gate.
-                - (_peak) en +- {_results[1][0]:.4f}ergy of the peak to fit.
+                - (_level_directory) directory to store the file in namely,
+                  the binding level directory
+                - (_gammaray_energy) energy of the peak to fit
+                - (_secondary_gammaray_energy) energy of the gate
                 - (_param) initial guess of the fit parameters.
                 - (_limit) upper and lower limit of the fiting region.
                 - (_called_directly) this is a flag to check if the user is
                   doing a single fit (in this case the main() will call
                   this function directly) or if they are doing more than
                   one fit (in this case the main() will call thi function
-                  from inside FitSingleLevel() or from inside 
+                  from inside FitBindingLevel() or from inside 
                   FitEntireLevelScheme().
 
         Returns: - (_reuslts) results of the FitGauss() function call.
 
     '''
-    _primary_level_scheme=_level_scheme[_level_scheme[grec_name]==_gammaray_energy].reset_index(drop=True)
+    # Move into the directory containing the gate spectra and upload the gated
+    # file.
+    mask=_level_scheme[grec_name]==_gammaray_energy
+    _primary_level_scheme=_level_scheme[mask].reset_index(drop=True)
     os.chdir(os.path.join(spectra_directory,str(_gate_directory)))
     _hist=np.genfromtxt(str(_secondary_gammaray_energy)+'.dat')
     _peak=_gammaray_energy
     _gate_energy=_secondary_gammaray_energy
+
+    # Check if the user passed _param and _limit from the command line
     if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
     if _limit==None: _limit=[_peak-20,_peak+20]
     _results=FitGauss(_hist,_param,_limit)
 
-    _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
+    # Draw the results and check if the user wants to save 'em.
+    # If the function is called from FitBindingLevel (_called_directly=0) then
+    # the results are automaticaly saved.
+    _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,
+                            _results,_show_flag=_called_directly)
 
     if _called_directly==1:
         if choice:=input('Do you want to save the results? [Y/n] ')!='n':
@@ -665,24 +689,6 @@ def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,_second
     else:
         SaveFitResults(_level_directory,_gate_energy,_peak,_results)
         SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
-
-
-
-def FitBindingLevel(_level_scheme):
-    os.chdir(spectra_directory) #così mi trovo dentro la cartella spectra/. 
-    _primary_level_scheme=_level_scheme[_level_scheme[pc_name]=='YES'].reset_index(drop=True)      
-
-    for _index,_primary_gammaray in _primary_level_scheme.iterrows():
-        _ending_level=_primary_gammaray[stplc_name]
-        for _secondary_index,_secondary_gammaray in _level_scheme[_level_scheme[stalc_name]==_ending_level].iterrows():
-            FitSinglePrimaryPeak(_level_scheme,
-                                 str(_primary_gammaray[stalc_name]),
-                                 _primary_gammaray[grec_name],
-                                 _secondary_gammaray[grec_name],
-                                 str(_secondary_gammaray[stplc_name]),
-                                 _param=None,
-                                 _limit=None,
-                                 _called_directly=0)
 
 
 def FitSingleLevel(_level_scheme,_level_directory):
@@ -705,6 +711,7 @@ def FitSingleLevel(_level_scheme,_level_directory):
             _gate_energy=_filename.replace('.dat','')
             _filename=os.path.join(_level_directory,_filename)
             for _index,_gammaray in _subset_level_scheme.iterrows():
+                # Check if the pair (_gammaray,_gate) needs to be skipped
                 if((_gammaray[grec_name],float(_gate_energy)) in gammaray_to_be_skipped):
                     pass
                 else:
@@ -714,6 +721,39 @@ def FitSingleLevel(_level_scheme,_level_directory):
                                               _gate_energy,
                                               _peak,
                                               _called_directly=0)
+
+
+def FitBindingLevel(_level_scheme):
+    '''
+
+    FitBindingLevel(): wrap FitGauss() and runs it for the capture level.
+ 
+        Inputs(): - (_level_scheme) the pandas dataFrame containing the level
+                    scheme.
+
+    '''
+
+    os.chdir(spectra_directory) #così mi trovo dentro la cartella spectra/. 
+    mask=_level_scheme[pc_name]=='YES'
+    _primary_level_scheme=_level_scheme[mask].reset_index(drop=True)      
+
+    for _index,_primary_gammaray in _primary_level_scheme.iterrows():
+        _ending_level=_primary_gammaray[stplc_name]
+        mask1=_level_scheme[stalc_name]==_ending_level
+        for _secondary_index,_secondary_gammaray in _level_scheme[mask1].iterrows():
+            # Check if the pair (_gammaray,_gate) needs to be skipped
+            if((_primary_gammaray[grec_name],float(_secondary_gammaray[grec_name])) 
+                   in gammaray_to_be_skipped):
+                pass
+            else:
+                FitSinglePrimaryPeak(_level_scheme,
+                                    str(_primary_gammaray[stalc_name]),
+                                    _primary_gammaray[grec_name],
+                                    _secondary_gammaray[grec_name],
+                                    str(_secondary_gammaray[stplc_name]),
+                                    _param=None,
+                                    _limit=None,
+                                    _called_directly=0)
 
 
 def FitEntireLevelScheme(_level_scheme):
@@ -726,6 +766,12 @@ def FitEntireLevelScheme(_level_scheme):
                         level scheme.
 
     '''
+    # Call the FitSingleLevel() function for every directory found inside the
+    # spectra directory and then call FitBindingLevel.
+    # As the code is extremely stupid, it will run the FitSingleLevel also on
+    # the capture level directory, but this shouldn't be a problem since it 
+    # won't find any gammaray populating the capture state, and thus it will
+    # skipp everything.
     os.chdir(spectra_directory)
     for _level_directory in os.listdir():
         if isdir(_level_directory):
@@ -746,8 +792,8 @@ if __name__ == '__main__':
     stop_load_time=time.time()
 
     # Second step - check if the user wants to run the code for every gammaray
-    # (first if()), for one single level (second if()) or for one single
-    # transition (third if()).
+    # (first if()), for one single level (second if()), for one single primary
+    # transition (third if()) or for one single secondary transition.
     if parser_arguments.run_all is not None:
         start_calc_time=time.time()
         FitEntireLevelScheme(level_scheme)
