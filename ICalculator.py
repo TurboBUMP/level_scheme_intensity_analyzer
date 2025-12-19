@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import pandas as pd
+import argparse
 import numpy as np
 import os 
 from os.path import join,isdir,isfile
@@ -15,6 +16,10 @@ start_level_colum = 0
 gamma_ray_energy_column = 5
 stop_level_column = 7
 
+stalc_name='LevelLITERATURE'
+grec_name='Egamma-LITERATURE'
+stplc_name='Level_final'
+
 lvl_scheme = pd.read_excel(
         "/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods",
         sheet_name=0,
@@ -25,6 +30,32 @@ lvl_scheme.reset_index()
 # Load the file containing all the FIT output for every gammaray
 intensity_file = pd.read_csv("/home/massimiliano/Desktop/Mordor/output.txt")
 intensity_file.reset_index()
+
+parser = argparse.ArgumentParser(prog='SAURON',
+                                 description='Search and Fit peaks program')
+parser.add_argument('-a',
+                    '--analysis',
+                    nargs='*',
+                    action='store',
+                    default=None,
+                    help='If passed, program run in analysis mode.\
+                        the energy of the level to be analysed will be asked')
+
+parser_arguments = parser.parse_args()
+
+# Class to print colored text on terminal
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    WHITE = '\033[37m'
+
 
 
 ## Parameters definition for the efficiency function
@@ -76,17 +107,15 @@ def find_incoming(energy_level):
     return np.asarray(lvl_scheme[lvl_scheme['Level_final']==energy_level]['Egamma-LITERATURE'])
 
 # This function take the gammaray energy as argument and ... [TO BE COMPLETED]
-def gammaray_intensity_calc(gammaray_energy):
-
-    #if (lvl_scheme[lvl_scheme['Egamma-LITERATURE']==gammaray_energy]['Primary?']=='NO'):
+def gammaray_intensity_calc(gammaray_energy,analyser=0):
 
     gate_list = np.asarray(intensity_file[intensity_file['TRANSITION']==gammaray_energy]['GATE'])
     amplitude_list = np.asarray(intensity_file[intensity_file['TRANSITION']==gammaray_energy]['amplitude'])
     sigma_list = np.asarray(intensity_file[intensity_file['TRANSITION']==gammaray_energy]['sigma'])
-    gammaray_intensity_list = np.asarray(amplitude_list*sigma_list*np.sqrt(np.pi*2)) # I = A*sigma*sqrt(2Pi)
+    gammaray_intensity_list = np.asarray(amplitude_list*np.abs(sigma_list)*np.sqrt(np.pi*2)) # I = A*sigma*sqrt(2Pi)
     gate_efficiency_list = np.asarray([efficiency(gate) for gate in gate_list])
     gammaray_efficiency = efficiency(gammaray_energy)
-    gammaray_intensity_list = gammaray_intensity_list * gate_efficiency_list * gammaray_efficiency # Re-normalizing the intensity for the efficiencies of gate and gammaray
+    gammaray_intensity_list = gammaray_intensity_list / gate_efficiency_list / gammaray_efficiency # Re-normalizing the intensity for the efficiencies of gate and gammaray
 
     # Ok, ora calcolo l'errore sull'intensità tenendo conto degli errori sulle ampiezze e sulle sigma dei picchi fittati
     error_amplitude_list = np.asarray(intensity_file[intensity_file['TRANSITION']==gammaray_energy]['err_amplitude'])
@@ -94,12 +123,46 @@ def gammaray_intensity_calc(gammaray_energy):
     error_gate_efficiency_list = np.asarray([efficiency_error(gate) for gate in gate_list])
     error_gammaray_efficiency = efficiency_error(gammaray_energy)
 
-    error_gate_intensity_list = np.sqrt(2*np.pi)*np.sqrt((sigma_list*gate_efficiency_list*gammaray_efficiency*error_amplitude_list)**2
-                                    +(amplitude_list*gate_efficiency_list*gammaray_efficiency*error_sigma_list)**2
-                                    +(amplitude_list*sigma_list*gammaray_efficiency*error_gate_efficiency_list)**2
-                                    +(amplitude_list*sigma_list*gate_efficiency_list*error_gammaray_efficiency)**2)
+    error_gate_intensity_list = np.sqrt(2*np.pi)*np.sqrt((error_amplitude_list*sigma_list/(gate_efficiency_list*gammaray_efficiency))**2
+                                                         +(error_sigma_list*amplitude_list/(gate_efficiency_list*gammaray_efficiency))**2
+                                                         +(amplitude_list*sigma_list*error_gate_efficiency_list/(gate_efficiency_list**2*gammaray_efficiency))**2
+                                                         +(amplitude_list*sigma_list*error_gammaray_efficiency/(gate_efficiency_list*gammaray_efficiency**2))**2)
     error_gammaray_intensity = np.sqrt(np.sum(error_gate_intensity_list**2))
-    
+    if analyser!=0:
+        print('')
+        print('************************************** IN **************************************')
+        print('GATE - I - sigma I - s/I%')
+        for gate,intensity,error in zip(gate_list,gammaray_intensity_list,error_gate_intensity_list):
+            if(intensity==0):
+                color=bcolors.WHITE
+                percentage=0
+            elif(error/intensity>0.2 and error/intensity<0.4):
+                color=bcolors.WARNING
+                percentage=error/intensity
+            elif(error/intensity>=0.4):
+                color=bcolors.FAIL
+                percentage=error/intensity
+            else:
+                color=bcolors.WHITE
+                percentage=error/intensity
+            print(f'{color}{gate}: {intensity:.1f}, {error:.1f}, {percentage:.1%}{bcolors.ENDC}')
+
+        if(gammaray_intensity_list.sum()==0):
+            color=bcolors.WHITE
+            percentage=0
+        elif(error_gammaray_intensity/gammaray_intensity_list.sum()>0.2\
+            and error_gammaray_intensity/gammaray_intensity_list.sum()<0.4):
+            color=bcolors.WARNING
+            percentage=error_gammaray_intensity/gammaray_intensity_list.sum()
+        elif(error_gammaray_intensity/gammaray_intensity_list.sum()>=0.4):
+            color=bcolors.FAIL
+            percentage=error_gammaray_intensity/gammaray_intensity_list.sum()
+        else:
+            color=bcolors.WHITE
+            percentage=error_gammaray_intensity/gammaray_intensity_list.sum()
+        print(f'\n[{color}{gammaray_energy}: {gammaray_intensity_list.sum():.1f}, {error_gammaray_intensity:.1f}, {percentage:.1%}{bcolors.ENDC}]')
+
+        
     return gammaray_intensity_list.sum(),error_gammaray_intensity
 
 
@@ -115,13 +178,11 @@ def level_intensity_calculator(level_energy):
 
     for in_g in list_of_incoming_gammarays:
         res = gammaray_intensity_calc(in_g)
-        #print(f'incoming: {in_g} keV, I: {res[0]:.4f}, Error: {res[1]:.4f}')
         list_of_incoming_intensity.append(res[0])
         list_of_incoming_errors.append(res[1])
 
     for ou_g in list_of_outgoing_gammarays:
         res = gammaray_intensity_calc(ou_g)
-        #print(f'outgoing: {ou_g} keV, I: {res[0]:.4f}, Error: {res[1]:.4f}')
         list_of_outgoing_intensity.append(res[0])
         list_of_outgoing_errors.append(res[1])
 
@@ -132,11 +193,69 @@ def level_intensity_calculator(level_energy):
     incoming_error = np.sqrt(np.sum(list_of_incoming_errors**2))
     outgoing_error = np.sqrt(np.sum(list_of_outgoing_errors**2))
 
-    #print(f'the incoming intensity is: {incoming_intensity} +- {incoming_error}')
-    #print(f'the outgoing intensity is: {outgoing_intensity} +- {outgoing_error}')
-    
     return incoming_intensity,incoming_error,outgoing_intensity,outgoing_error
     
+
+def level_analyser():
+    LINE_CLEAR='\x1b[2K'
+    LINE_UP='\033[1A'
+    SAVE_CURSOR='\033[s'
+    RESTORE_CURSOR='\033[u'
+    print(SAVE_CURSOR,end='\r')
+    
+    while (level_energy:=float(input('LEVEL: '))) not in lvl_scheme[stalc_name].values:
+        print(LINE_UP,end=LINE_CLEAR)
+        print(RESTORE_CURSOR,end='\r')
+
+    list_of_incoming_gammarays = find_incoming(level_energy)
+    list_of_outgoing_gammarays = find_outgoing(level_energy)
+
+    print('')
+    print('************************************** IN **************************************')
+    print('GAMMARAY - I - sigma I - s/I%')
+    for in_g in list_of_incoming_gammarays:
+        r = gammaray_intensity_calc(in_g)
+        if (r[1]/r[0]>0.20 and r[1]/r[0]<0.4):
+            color=bcolors.WARNING
+        elif (r[1]/r[0]>0.40):
+            color=bcolors.FAIL
+        else:
+            color=bcolors.WHITE
+        print(f'{color}{in_g}: {r[0]:.1f}, {r[1]:.1f}, {r[1]/r[0]:.1%}{bcolors.ENDC}')
+
+    print('')
+    print('************************************* OUT **************************************')
+    print('GAMMARAY - I - sigma I - s/I%')
+    for ou_g in list_of_outgoing_gammarays:
+        r = gammaray_intensity_calc(ou_g)
+        if (r[1]/r[0]>0.20 and r[1]/r[0]<0.4):
+            color=bcolors.WARNING
+        elif (r[1]/r[0]>0.4):
+            color=bcolors.FAIL
+        else:
+            color=bcolors.WHITE
+        print(f'{color}{ou_g}: {r[0]:.1f}, {r[1]:.1f}, {r[1]/r[0]:.1%}{bcolors.ENDC}')
+    print('')
+
+#    print(SAVE_CURSOR,end='\r')
+    while True:
+        gammaray_energy=input('GAMMARAY: ')
+        if gammaray_energy=='q':
+            exit()
+        try:
+            gammaray_energy=float(gammaray_energy)
+            if gammaray_energy in lvl_scheme[grec_name].values:
+                gammaray_intensity_calc(gammaray_energy,1)
+                print(' ')
+            else:
+                print('NO gammaray with selcted energy')
+#            print(SAVE_CURSOR,end='\r')
+        except:
+            pass
+#            print(LINE_UP,end=LINE_CLEAR)
+#            print(RESTORE_CURSOR,end='\r')
+
+        
 
 #############################################
 
@@ -146,13 +265,16 @@ def level_intensity_calculator(level_energy):
 
 if __name__ == '__main__':
 
-    with open('intensity_output.txt','w') as f:
+    if parser_arguments.analysis is not None:
+        level_analyser()
+    else:
+        with open('intensity_output.txt','w') as f:
 
-        level_set = sorted(set(lvl_scheme['LevelLITERATURE']))
-        
-        for level in level_set:
-            print(f'now doing: {level}')
-            r = level_intensity_calculator(level)
-            chi = (r[0]-r[2])**2/(r[1]**2+r[3]**2)
-            print(f'{level}\t,{r[0]:.4f}\t,{r[1]:.4f}\t,{r[2]:.4f}\t,{r[3]:.4f},\t {chi:.4f}',file=f)
-    #r = level_intensity_calculator(1157.0208)
+            level_set = sorted(set(lvl_scheme['LevelLITERATURE']))
+            
+            for level in level_set:
+                print(f'now doing: {level}')
+                r = level_intensity_calculator(level)
+                chi = (r[0]-r[2])**2/(r[1]**2+r[3]**2)
+                print(f'{level},\t{r[0]:.1f},\t{r[1]:.1f},\t{r[2]:.1f},\t{r[3]:.1f},\t {chi:.1f}',file=f)
+        #r = level_intensity_calculator(1157.0208)
