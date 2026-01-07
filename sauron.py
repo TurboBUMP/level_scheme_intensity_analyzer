@@ -321,7 +321,8 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (894.2,2477.0),
                           (6651.3,703.4),
                           (1384.4,6034.4),
-                          ]
+                          (4932.8,5037.5),
+                          (3048.3,5037.5)]
 
 
 import os
@@ -618,15 +619,15 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
     print('\n')
     print(f'Fit Results ----------------------------------------\n \
             Mean:      {_results[0][0]:.4f} +- {np.sqrt(_results[1][0][0]):.4f}\
-    | {_results[1][0][0]/_results[0][0]:.1%}\n \
+    | {np.sqrt(_results[1][0][0])/_results[0][0]:.1%}\n \
             Sigma:     {_results[0][1]:.4f} +- {np.sqrt(_results[1][1][1]):.4f}\
-    | {_results[1][1][1]/_results[0][1]:.1%}\n \
+    | {np.sqrt(_results[1][1][1])/_results[0][1]:.1%}\n \
             Amplitude: {_results[0][2]:.4f} +- {np.sqrt(_results[1][2][2]):.4f}\
-    | {_results[1][2][2]/_results[0][2]:.1%}\n \
+    | {np.sqrt(_results[1][2][2])/_results[0][2]:1%}\n \
             m:         {_results[0][3]:.4f} +- {np.sqrt(_results[1][3][3]):.4f}\
-    | {_results[1][3][3]/_results[0][3]:.1%}\n \
+    | {np.sqrt(_results[1][3][3])/_results[0][3]:.1%}\n \
             q:         {_results[0][4]:.4f} +- {np.sqrt(_results[1][4][4]):.4f}\
-    | {_results[1][4][4]/_results[0][4]:.1%}\n \
+    | {np.sqrt(_results[1][4][4])/_results[0][4]:.1%}\n \
             I_diff:    {_results[2]:.4f}\n \
             I:         {_results[3]:.4f}\n\
             ----------------------------------------\n')
@@ -634,7 +635,8 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
     # Draw the results and check if the user wants to save 'em.
     # If the function is called from FitSingleLevel (_called_directly=0) then
     # the results are automaticaly saved.
-    _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
+    _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,
+                            _results,_show_flag=_called_directly)
     if _called_directly==1:
         if choice:=input('Do you want to save the results? [Y/n] ')!='n':
             SaveFitResults(_level_directory,_gate_energy,_peak,_results)
