@@ -195,17 +195,13 @@ def level_intensity_calculator(level_energy):
 
     return incoming_intensity,incoming_error,outgoing_intensity,outgoing_error
     
-
 def level_analyser():
+
     LINE_CLEAR='\x1b[2K'
     LINE_UP='\033[1A'
-    SAVE_CURSOR='\033[s'
-    RESTORE_CURSOR='\033[u'
-    print(SAVE_CURSOR,end='\r')
-    
-    while (level_energy:=float(input('LEVEL: '))) not in lvl_scheme[stalc_name].values:
+
+    while ((level_energy:=float(input('LEVEL: '))) not in lvl_scheme[stalc_name].values):
         print(LINE_UP,end=LINE_CLEAR)
-        print(RESTORE_CURSOR,end='\r')
 
     list_of_incoming_gammarays = find_incoming(level_energy)
     list_of_outgoing_gammarays = find_outgoing(level_energy)
@@ -237,24 +233,40 @@ def level_analyser():
         print(f'{color}{ou_g}: {r[0]:.1f}, {r[1]:.1f}, {r[1]/r[0]:.1%}{bcolors.ENDC}')
     print('')
 
-#    print(SAVE_CURSOR,end='\r')
-    while True:
-        gammaray_energy=input('GAMMARAY: ')
-        if gammaray_energy=='q':
-            exit()
-        try:
-            gammaray_energy=float(gammaray_energy)
-            if gammaray_energy in lvl_scheme[grec_name].values:
-                gammaray_intensity_calc(gammaray_energy,1)
-                print(' ')
-            else:
-                print('NO gammaray with selcted energy')
-#            print(SAVE_CURSOR,end='\r')
-        except:
-            pass
-#            print(LINE_UP,end=LINE_CLEAR)
-#            print(RESTORE_CURSOR,end='\r')
+import time
+def gamma_analyser():
 
+    LINE_CLEAR='\x1b[2K'
+    LINE_UP='\033[1A'
+
+    while((gammaray_energy:=float(input('GAMMARAY: '))) not in lvl_scheme[grec_name].values):
+        print(LINE_UP,end=LINE_CLEAR)
+
+    print(f'Appena prima della funzione gammaray_energy vale {gammaray_energy}')
+    time.sleep(1)
+
+    gammaray_intensity_calc(gammaray_energy,1)
+    print(' ')
+
+
+def analyser():
+    
+    LINE_CLEAR='\x1b[2K'
+    LINE_UP='\033[1A'
+
+    while (True):
+        command=input('COMMAND [l/g/q]: ') 
+        if (command not in ['l','g','q']):
+            print(LINE_UP,end=LINE_CLEAR)
+
+        elif(command == 'q'):
+            exit()
+
+        elif command=='l':
+            level_analyser() 
+        else:
+            gamma_analyser()
+                 
         
 
 #############################################
@@ -266,7 +278,7 @@ def level_analyser():
 if __name__ == '__main__':
 
     if parser_arguments.analysis is not None:
-        level_analyser()
+        analyser()
     else:
         with open('intensity_output.txt','w') as f:
 
