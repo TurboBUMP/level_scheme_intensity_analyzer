@@ -6,6 +6,7 @@ import numpy as np
 import os 
 from os.path import join,isdir,isfile
 
+np.seterr(divide='ignore', invalid='ignore')
 
 # Load the spectra excel file in a pandas dataFrame called lvl_scheme
 # Use start_level_colum, gamma_ray_energy_column and stop_level_column to define the columns used in the excel file: 
@@ -20,16 +21,24 @@ stalc_name='LevelLITERATURE'
 grec_name='Egamma-LITERATURE'
 stplc_name='Level_final'
 
-lvl_scheme = pd.read_excel(
-        "/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods",
-        sheet_name=0,
-        usecols=[start_level_colum,gamma_ray_energy_column,stop_level_column])
-lvl_scheme.reset_index()
+def load_scheme():
+    lvl_scheme = pd.read_excel(
+            "/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods",
+            sheet_name=0,
+            usecols=[start_level_colum,gamma_ray_energy_column,stop_level_column])
+    lvl_scheme.reset_index()
+    return lvl_scheme
+
+lvl_scheme = load_scheme()
 
 
 # Load the file containing all the FIT output for every gammaray
-intensity_file = pd.read_csv("/home/massimiliano/Desktop/Mordor/output.txt")
-intensity_file.reset_index()
+def load_intensity():
+    intensity_file = pd.read_csv("/home/massimiliano/Desktop/Mordor/output.txt")
+    intensity_file.reset_index()
+    return intensity_file
+
+intensity_file = load_intensity()
 
 parser = argparse.ArgumentParser(prog='SAURON',
                                  description='Search and Fit peaks program')
@@ -224,13 +233,18 @@ def level_analyser():
     print('GAMMARAY - I - sigma I - s/I%')
     for ou_g in list_of_outgoing_gammarays:
         r = gammaray_intensity_calc(ou_g)
-        if (r[1]/r[0]>0.20 and r[1]/r[0]<0.4):
-            color=bcolors.WARNING
-        elif (r[1]/r[0]>0.4):
-            color=bcolors.FAIL
-        else:
-            color=bcolors.WHITE
-        print(f'{color}{ou_g}: {r[0]:.1f}, {r[1]:.1f}, {r[1]/r[0]:.1%}{bcolors.ENDC}')
+        try:
+            _ratio=r[1]/r[0]
+            if (_ratio>0.20 and _ratio<0.4):
+                color=bcolors.WARNING
+            elif (_ratio>0.4):
+                color=bcolors.FAIL
+            else:
+                color=bcolors.WHITE
+            print(f'{color}{ou_g}: {r[0]:.1f}, {r[1]:.1f}, {_ratio:.1%}{bcolors.ENDC}')
+        except:
+            print(f'{color}{ou_g}: {r[0]:.1f}, {r[1]:.1f}, {bcolors.ENDC}')
+            
     print('')
 
 import time
@@ -242,9 +256,6 @@ def gamma_analyser():
     while((gammaray_energy:=float(input('GAMMARAY: '))) not in lvl_scheme[grec_name].values):
         print(LINE_UP,end=LINE_CLEAR)
 
-    print(f'Appena prima della funzione gammaray_energy vale {gammaray_energy}')
-    time.sleep(1)
-
     gammaray_intensity_calc(gammaray_energy,1)
     print(' ')
 
@@ -255,13 +266,15 @@ def analyser():
     LINE_UP='\033[1A'
 
     while (True):
-        command=input('COMMAND [l/g/q]: ') 
-        if (command not in ['l','g','q']):
+        command=input('COMMAND [l/g/r/q]: ') 
+        if (command not in ['l','g','q','r']):
             print(LINE_UP,end=LINE_CLEAR)
-
         elif(command == 'q'):
             exit()
-
+        elif(command == 'r'):
+            print('Loading intensity file ...')
+            load_intensity()
+            print(LINE_UP,end=LINE_CLEAR)
         elif command=='l':
             level_analyser() 
         else:
@@ -288,5 +301,4 @@ if __name__ == '__main__':
                 print(f'now doing: {level}')
                 r = level_intensity_calculator(level)
                 chi = (r[0]-r[2])**2/(r[1]**2+r[3]**2)
-                print(f'{level},\t{r[0]:.1f},\t{r[1]:.1f},\t{r[2]:.1f},\t{r[3]:.1f},\t {chi:.1f}',file=f)
-        #r = level_intensity_calculator(1157.0208)
+                print(f'{level},\t{r[0]:.1f},\t{r[1]:.1f},\t{r[1]/r[0]:.0%},\t{r[2]:.1f},\t{r[3]:.1f},\t{r[3]/r[2]:.0%},\t{chi:.1f}',file=f)
