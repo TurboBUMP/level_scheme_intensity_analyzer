@@ -235,6 +235,10 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (747.63,1324.0),
                           (747.63,6721.0),
                           (733.0,6721.0),
+                          (6721.0,733.0),
+                          (6721.0,1107.98),
+                          (6721.0,3252.07),
+                          (3252.07,6721.0),
                           (1107.98,6721.0),
                           (703.4,1113.6),
                           (2596.1,1113.6),
@@ -322,7 +326,18 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (6651.3,703.4),
                           (1384.4,6034.4),
                           (4932.8,5037.5),
-                          (3048.3,5037.5)]
+                          (3048.3,5037.5),
+                          (1878.7,5892.5),
+                          (1788.5,6034.4),
+                          (1788.5,1753.1),
+                          (1788.5,476.8),
+                          (697.6,678.6),
+                          (532.1,6034.4),
+                          (1064.1,5135.8),
+                          (1016.9,1064.1),
+                          (1016.9,6199.9),
+                          (1218.8,6199.9),
+                          (6577.1,891.1)]
 
 
 import os
@@ -616,22 +631,34 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
     _results=FitGauss(_hist,_param,_limit)
 
     # Print results
-    print('\n')
-    print(f'Fit Results ----------------------------------------\n \
-            Mean:      {_results[0][0]:.4f} +- {np.sqrt(_results[1][0][0]):.4f}\
-    | {np.sqrt(_results[1][0][0])/_results[0][0]:.1%}\n \
-            Sigma:     {_results[0][1]:.4f} +- {np.sqrt(_results[1][1][1]):.4f}\
-    | {np.sqrt(_results[1][1][1])/_results[0][1]:.1%}\n \
-            Amplitude: {_results[0][2]:.4f} +- {np.sqrt(_results[1][2][2]):.4f}\
-    | {np.sqrt(_results[1][2][2])/_results[0][2]:1%}\n \
-            m:         {_results[0][3]:.4f} +- {np.sqrt(_results[1][3][3]):.4f}\
-    | {np.sqrt(_results[1][3][3])/_results[0][3]:.1%}\n \
-            q:         {_results[0][4]:.4f} +- {np.sqrt(_results[1][4][4]):.4f}\
-    | {np.sqrt(_results[1][4][4])/_results[0][4]:.1%}\n \
-            I_diff:    {_results[2]:.4f}\n \
-            I:         {_results[3]:.4f}\n\
-            ----------------------------------------\n')
-
+    try:
+        print('\n')
+        print(f'Fit Results --------------------------------------------------------\n \
+                Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\
+        | {np.sqrt(float(_results[1][0][0]))/float(_results[0][0]):5.0%}\n \
+                Sigma:     {float(_results[0][1]):10.3} +- {np.sqrt(float(_results[1][1][1])):10.3}\
+        | {np.sqrt(float(_results[1][1][1]))/float(_results[0][1]):5.0%}\n \
+                Amplitude: {float(_results[0][2]):10.3} +- {np.sqrt(float(_results[1][2][2])):10.3}\
+        | {np.sqrt(float(_results[1][2][2]))/float(_results[0][2]):5.0%}\n \
+                m:         {float(_results[0][3]):10.3} +- {np.sqrt(float(_results[1][3][3])):10.3}\
+        | {np.sqrt(float(_results[1][3][3]))/float(_results[0][3]):5.0%}\n \
+                q:         {float(_results[0][4]):10.3} +- {np.sqrt(float(_results[1][4][4])):10.3}\
+        | {np.sqrt(float(_results[1][4][4]))/float(_results[0][4]):5.0%}\n \
+                I_diff:    {float(_results[2]):10.3}\n \
+                I:         {float(_results[3]):10.3}\n '+
+                '           --------------------------------------------------------\n')
+    except:
+        print('\n')
+        print(f'Fit Results --------------------------------------------------------\n \
+                Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\n \
+                Sigma:     {float(_results[0][1]):10.3} +- {np.sqrt(float(_results[1][1][1])):10.3}\n \
+                Amplitude: {float(_results[0][2]):10.3} +- {np.sqrt(float(_results[1][2][2])):10.3}\n \
+                m:         {float(_results[0][3]):10.3} +- {np.sqrt(float(_results[1][3][3])):10.3}\n \
+                q:         {float(_results[0][4]):10.3} +- {np.sqrt(float(_results[1][4][4])):10.3}\n \
+                I_diff:    {float(_results[2]):10.3}\n \
+                I:         {float(_results[3]):10.3}\n '+
+                '           --------------------------------------------------------\n')
+ 
     # Draw the results and check if the user wants to save 'em.
     # If the function is called from FitSingleLevel (_called_directly=0) then
     # the results are automaticaly saved.
@@ -693,6 +720,34 @@ def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
     # Draw the results and check if the user wants to save 'em.
     # If the function is called from FitBindingLevel (_called_directly=0) then
     # the results are automaticaly saved.
+    try:
+        print('\n')
+        print(f'Fit Results --------------------------------------------------------\n \
+                Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\
+        | {np.sqrt(float(_results[1][0][0]))/float(_results[0][0]):5.0%}\n \
+                Sigma:     {float(_results[0][1]):10.3} +- {np.sqrt(float(_results[1][1][1])):10.3}\
+        | {np.sqrt(float(_results[1][1][1]))/float(_results[0][1]):5.0%}\n \
+                Amplitude: {float(_results[0][2]):10.3} +- {np.sqrt(float(_results[1][2][2])):10.3}\
+        | {np.sqrt(float(_results[1][2][2]))/float(_results[0][2]):5.0%}\n \
+                m:         {float(_results[0][3]):10.3} +- {np.sqrt(float(_results[1][3][3])):10.3}\
+        | {np.sqrt(float(_results[1][3][3]))/float(_results[0][3]):5.0%}\n \
+                q:         {float(_results[0][4]):10.3} +- {np.sqrt(float(_results[1][4][4])):10.3}\
+        | {np.sqrt(float(_results[1][4][4]))/float(_results[0][4]):5.0%}\n \
+                I_diff:    {float(_results[2]):10.3}\n \
+                I:         {float(_results[3]):10.3}\n '+
+                '           --------------------------------------------------------\n')
+    except:
+        print('\n')
+        print(f'Fit Results --------------------------------------------------------\n \
+                Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\n \
+                Sigma:     {float(_results[0][1]):10.3} +- {np.sqrt(float(_results[1][1][1])):10.3}\n \
+                Amplitude: {float(_results[0][2]):10.3} +- {np.sqrt(float(_results[1][2][2])):10.3}\n \
+                m:         {float(_results[0][3]):10.3} +- {np.sqrt(float(_results[1][3][3])):10.3}\n \
+                q:         {float(_results[0][4]):10.3} +- {np.sqrt(float(_results[1][4][4])):10.3}\n \
+                I_diff:    {float(_results[2]):10.3}\n \
+                I:         {float(_results[3]):10.3}\n '+
+                '           --------------------------------------------------------\n')
+
     _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,
                             _results,_show_flag=_called_directly)
 
@@ -700,17 +755,6 @@ def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
         if choice:=input('Do you want to save the results? [Y/n] ')!='n':
             SaveFitResults(_level_directory,_gate_energy,_peak,_results)
             SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
-        else:
-            print('\n')
-            print(f'Fit Results ----------------------------------------\n \
-                    Mean:      {_results[0][0]:.4f} +- {np.sqrt(_results[1][0][0]):.4f}\n \
-                    Sigma:     {_results[0][1]:.4f} +- {np.sqrt(_results[1][1][1]):.4f}\n \
-                    Amplitude: {_results[0][2]:.4f} +- {np.sqrt(_results[1][2][2]):.4f}\n \
-                    m:         {_results[0][3]:.4f} +- {np.sqrt(_results[1][3][3]):.4f}\n \
-                    q:         {_results[0][4]:.4f} +- {np.sqrt(_results[1][4][4]):.4f}\n \
-                    I_diff:    {_results[2]:.4f}\n \
-                    I:         {_results[3]:.4f}\n\
-                    ----------------------------------------\n')
     else:
         SaveFitResults(_level_directory,_gate_energy,_peak,_results)
         SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
