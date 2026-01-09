@@ -43,13 +43,12 @@ sauron -d 3711.96 -g 1836.6 -p 667.3 --param 667 1 1000 -0.1 0 --limit 657 674
 sauron -d 3711.96 -g 1836.6 -p 2554.9 --param 2554 1 1000 -0.1 0 --limit 2547 2562   
 sauron -d 3711.96 -g 2499 -p 2554.9 --param 2554 1 40 -0.1 0 --limit 2534 2574
 sauron -d 3711.96 -g 2957.6 -p 2554.9 --param 2554 1 40 -0.1 0 --limit 2534 2574
-sauron -d 3711.96 -g 3138.4 -p 667.3 --param 667 1 70 -0.1 0 --limit 645 686
+sauron -d 3711.96 -g 3138.4 -p 667.3 --limit 655 687
 sauron -d 3711.96 -g 7418.8 -p 667.3 --param 667 2 100 -0.1 0 --limit 657 677    
 sauron -d 3776.27 -g 1524.4 -p 1119.7 --param 1119 2 100 -0.1 0 --limit 1099 1124   
 sauron -d 3776.27 -g 1816.3 -p 475.2 --param 475 1 100 -0.1 0 --limit 455 494
 sauron -d 3776.27 -g 2896.7 -p 1119.7 --param 1119 2 100 -0.1 0 --limit 1099 1124   
 sauron -d 3913.8 -g 1374.8 -p 869.47 --param 869 2 2000 -0.1 0 --limit 859 874    
-sauron -d 3913.8 -g 2758.5 -p 202.1 --param 202 1 100 -0.1 0 --limit 198 205
 sauron -d 3913.8 -g 651.07 -p 202.1 --param 202 1 100 -0.1 0 --limit 198 205
 sauron -d 3913.8 -g 651.07 -p 1630.4 --param 1630 1 100 -0.1 0 --limit 1610 1640
 sauron -d 4196.1 -g 1353.1 -p 894.2 --param 894 1 200 0.1 0.1 --limit 889 910 
@@ -105,3 +104,39 @@ sauron -d 4196.1 -g 900.8 -p 519.7 --param 518 1 50 0.1 1 --limit 515 521
 sauron -d 4584.08 -g 645.7 -p 1276.0 --limit 1274 1280
 sauron -d 4584.08 -g 2088.20 -p 1276.0 --limit 1256 1280
 sauron -d 4584.08 -g 1191.2 -p 1276.0 --limit 1256 1280
+sauron -d 6093.8 -g 5037.5 -p 4932.8 --limit 4920 4943
+sauron -d 6093.8 -g 5037.5 -p 3048.3 --limit 3043 3052
+sauron -d 5892.5 -g 5238.8 -p 1878.7 --param 1879 1 100 0 1 --limit 1873 1885
+sauron -d 5096.87 -g 6034.4 -p 1788.5 --limit 1785 1810
+sauron -d 5096.87 -g 476.8 -p 1788.5 --limit 1784 1800
+sauron -d 5096.87 -g 6034.4 -p 532.1 --limit 520 552
+sauron -d 5995.68 -g 5135.8 -p 1064.1 --limit 1044 1071
+sauron -d 4930.74 -g 1064.1 -p 1016.9 --limit 1008 1036
+sauron -d 4930.74 -g 6199.9 -p 1016.9 --limit 1008 1036
+sauron -d 4930.74 -g 6199.9 -p 1218.8 --limit 1212 1228
+sauron --primary -d 11131.6 -gd 0.0 -g 4408.91 -p 6721.0 --param 6721 1 50 0 1 --limit 6700 6740
+sauron -d 4196.1 -g 1101.3 -p 1912.18 --limit 1908 1917
+sauron -d 4196.1 -g 1353.1 -p 519.7 --limit 514 521
+sauron -d 3922.71 -g 1419.3 -p 878.25 --limit 873 895
+sauron -d 3922.71 -g 1419.3 -p 637.68 --limit 632 650
+sauron -d 5342.2 -g 5789.5 -p 1419.3 --limit 1400 1423
+sauron -d 5775.76 -g 5355.7 -p 1852.3 --limit 1832 1857
+sauron -d 6981.69 -g 4149.7 -p 3057.9 --limit 3036 3064
+sauron -d 3913.8 -g 3066.9 -p 1630.4 --limit 1612 1645
+sauron -d 3913.8 -g 1428.0 -p 1630.4 --limit 1625 1650
+sauron -d 3913.8 -g 1658.8 -p 1630.4 --limit 1625 1650
+sauron -d 3913.8 -g 1016.9 -p 1630.4 --limit 1626 1650
+sauron -d 3913.8 -g 2758.5 -p 202.1 --limit 194 204
+sauron -d 3913.8 -g 7215.8 -p 869.47 --limit 849 875
+sauron -d 3913.8 -g 7215.8 -p 628.71 --limit 608 635
+sauron -d 3913.8 -g 2178.6 -p 605.8 --limit 595 615
+sauron -d 3913.8 -g 1016.9 -p 556.8 --limit 546 566
+sauron -d 3913.8 -g 3066.9 -p 556.8 --limit 546 566
+sauron -d 5289.25 -g 5841.9 -p 1374.8 --limit 1370 1394
+sauron -d 5733.3 -g 5397.8 -p 1819.3 --limit 1813 1839
+sauron -d 5935.8 -g 5195.5 -p 2158.5 --limit 2155 2178
+sauron -d 3711.96 -g 686.9 -p 667.3 --limit 655 687
+sauron -d 3711.96 -g 2499.0 -p 667.3 --limit 654 687
+sauron -d 3307.872 -g 1007.7 -p 651.353 --limit 642 671
+sauron -d 3307.872 -g 2193.2 -p 651.353 --limit 631 660
+sauron -d 4884.02 -g 6247.2 -p 1582.8 --limit 1579 1602

@@ -54,20 +54,21 @@ parser_arguments = parser.parse_args()
 
 # Class to print colored text on terminal
 class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    WHITE = '\033[37m'
+    HEADER='\033[95m'
+    OKBLUE='\033[94m'
+    OKCYAN='\033[96m'
+    OKGREEN='\033[92m'
+    WARNING='\033[93m'
+    FAIL='\033[91m'
+    ENDC='\033[0m'
+    BOLD='\033[1m'
+    UNDERLINE='\033[4m'
+    WHITE='\033[37m'
 
+class cursor:
+    LINE_CLEAR='\x1b[2K'
+    LINE_UP='\033[1A'
 
-
-## Parameters definition for the efficiency function
 #efficiency_fit_parameters = [-0.423449,
 #                             -0.832414,
 #                             -0.714755,
@@ -206,11 +207,10 @@ def level_intensity_calculator(level_energy):
     
 def level_analyser():
 
-    LINE_CLEAR='\x1b[2K'
-    LINE_UP='\033[1A'
 
     while ((level_energy:=float(input('LEVEL: '))) not in lvl_scheme[stalc_name].values):
-        print(LINE_UP,end=LINE_CLEAR)
+        print(cursor.LINE_UP,end=cursor.LINE_CLEAR)
+
 
     list_of_incoming_gammarays = find_incoming(level_energy)
     list_of_outgoing_gammarays = find_outgoing(level_energy)
@@ -250,11 +250,8 @@ def level_analyser():
 import time
 def gamma_analyser():
 
-    LINE_CLEAR='\x1b[2K'
-    LINE_UP='\033[1A'
-
     while((gammaray_energy:=float(input('GAMMARAY: '))) not in lvl_scheme[grec_name].values):
-        print(LINE_UP,end=LINE_CLEAR)
+        print(cursor.LINE_UP,end=cursor.LINE_CLEAR)
 
     gammaray_intensity_calc(gammaray_energy,1)
     print(' ')
@@ -262,19 +259,12 @@ def gamma_analyser():
 
 def analyser():
     
-    LINE_CLEAR='\x1b[2K'
-    LINE_UP='\033[1A'
-
     while (True):
-        command=input('COMMAND [l/g/r/q]: ') 
-        if (command not in ['l','g','q','r']):
-            print(LINE_UP,end=LINE_CLEAR)
+        command=input('COMMAND [l/g/q]: ') 
+        if (command not in ['l','g','q']):
+            print(cursor.LINE_UP,end=cursor.LINE_CLEAR)
         elif(command == 'q'):
             exit()
-        elif(command == 'r'):
-            print('Loading intensity file ...')
-            load_intensity()
-            print(LINE_UP,end=LINE_CLEAR)
         elif command=='l':
             level_analyser() 
         else:
