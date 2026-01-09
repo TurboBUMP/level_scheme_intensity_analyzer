@@ -69,34 +69,6 @@ class cursor:
     LINE_CLEAR='\x1b[2K'
     LINE_UP='\033[1A'
 
-#efficiency_fit_parameters = [-0.423449,
-#                             -0.832414,
-#                             -0.714755,
-#                             +0.274499,
-#                             +0.034013,
-#                             -0.0159099]
-#efficiency_fit_parameters_error = [0.0581693,
-#                                   0.0520197,
-#                                   0.0258968,
-#                                   0.0107855,
-#                                   0.00310721,
-#                                   0.000739547]
-#
-#
-############ FUNCTION DEFINITION #############
-#
-## Efficiency function (see MecFarland et al., "Behavior of Several Germanium Detector Full Energy Peak"
-## as reference for this function)
-## The parameters were fitted with the efficiencyFIT.C ROOT macro.
-#def efficiency(energy,args=[]):
-#    efficiency = np.exp(args[0]
-#            +args[1]*np.log(energy/200)
-#            +args[2]*np.log(energy/200)**2
-#            +args[3]*np.log(energy/200)**3
-#            +args[4]*np.log(energy/200)**4
-#            +args[5]*np.log(energy/200)**5)
-#    return efficiency
-eff_vector = np.genfromtxt('../44Ca_ILL/efficiencyResults.txt',delimiter=' ',comments='#')
 
 def efficiency(energy):
     mask = np.isin(eff_vector[:,0],int(energy))
@@ -204,9 +176,9 @@ def level_intensity_calculator(level_energy):
     outgoing_error = np.sqrt(np.sum(list_of_outgoing_errors**2))
 
     return incoming_intensity,incoming_error,outgoing_intensity,outgoing_error
-    
-def level_analyser():
 
+
+def level_analyser():
 
     while ((level_energy:=float(input('LEVEL: '))) not in lvl_scheme[stalc_name].values):
         print(cursor.LINE_UP,end=cursor.LINE_CLEAR)
@@ -286,9 +258,13 @@ if __name__ == '__main__':
         with open('intensity_output.txt','w') as f:
 
             level_set = sorted(set(lvl_scheme['LevelLITERATURE']))
-            
+            print(f'{bcolors.WHITE}{'LEVEL':>6},{'IN':>12},{'ERR':>9},{'%':>5},{'OUT':>12},{'ERR':>9},{'%':>5},{'Chi2':>5}{bcolors.ENDC}',file=f)
+
             for level in level_set:
                 print(f'now doing: {level}')
                 r = level_intensity_calculator(level)
                 chi = (r[0]-r[2])**2/(r[1]**2+r[3]**2)
-                print(f'{level},\t{r[0]:.1f},\t{r[1]:.1f},\t{r[1]/r[0]:.0%},\t{r[2]:.1f},\t{r[3]:.1f},\t{r[3]/r[2]:.0%},\t{chi:.1f}',file=f)
+                current_line_color=bcolors.WHITE
+                if chi>9:
+                    current_line_color=bcolors.FAIL
+                print(f'{current_line_color}{float(level):6.0f},{r[0]:12.0f},{r[1]:9.0f},{r[1]/r[0]:5.0%},{r[2]:12.0f},{r[3]:9.0f},{r[3]/r[2]:5.0%},{chi:5.0f}{bcolors.ENDC}',file=f)
