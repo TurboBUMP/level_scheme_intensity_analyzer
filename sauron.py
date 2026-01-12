@@ -294,6 +294,7 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1226.9,704.5),
                           (989.0,6480.2),
                           (1342.8,898.0),
+                          (1349.4,898.0),
                           (171.3,898.0),
                           (874.3,898.0),
                           (974.4,898.0),
@@ -387,6 +388,10 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1520.2,5833.6),
                           (2158.5,5935.8),
                           (3301.33,1107.98),
+                          (1549.0,4281.9),
+                          (4281.9,1549.0),
+                          (2934.8,4281.9),
+                          (4564.7,4281.9),
                           (6577.1,891.1)]
 
 
@@ -907,7 +912,7 @@ if __name__ == '__main__':
     # First step - load the level scheme ----> EXTREMELY SLOW
     # need to change read_excel() with something faster
     start_load_time=time.time()
-    level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods')
+    level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/Mordor/intensities44CaCompressed.ods')
     stop_load_time=time.time()
 
     # Second step - check if the user wants to run the code for every gammaray

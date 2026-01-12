@@ -23,7 +23,7 @@ stplc_name='Level_final'
 
 def load_scheme():
     lvl_scheme = pd.read_excel(
-            "/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods",
+            "/home/massimiliano/Desktop/Mordor/intensities44CaCompressed.ods",
             sheet_name=0,
             usecols=[start_level_colum,gamma_ray_energy_column,stop_level_column])
     lvl_scheme.reset_index()
@@ -69,6 +69,7 @@ class cursor:
     LINE_CLEAR='\x1b[2K'
     LINE_UP='\033[1A'
 
+eff_vector = np.genfromtxt('../44Ca_ILL/efficiencyResults.txt',delimiter=' ',comments='#')
 
 def efficiency(energy):
     mask = np.isin(eff_vector[:,0],int(energy))
