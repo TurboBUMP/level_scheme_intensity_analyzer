@@ -40,7 +40,7 @@ def load_intensity():
 
 intensity_file = load_intensity()
 
-parser = argparse.ArgumentParser(prog='SAURON',
+parser = argparse.ArgumentParser(prog='ICalculator',
                                  description='Search and Fit peaks program')
 parser.add_argument('-a',
                     '--analysis',
