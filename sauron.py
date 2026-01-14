@@ -361,8 +361,8 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (894.2,2477.0),
                           (6651.3,703.4),
                           (1384.4,6034.4),
-                          (4932.8,5037.5),
-                          (3048.3,5037.5),
+                          (4932.8,5037.4),
+                          (3048.3,5037.4),
                           (1878.7,5238.8),
                           (1788.5,6034.4),
                           (1788.5,1753.1),
@@ -412,6 +412,11 @@ parser.add_argument('-ra',
                         scheme. This will save time because the program\
                         won\'t have to reload the csv file for every\
                         gammaray')
+parser.add_argument('--special',
+                    nargs='*',
+                    action='store',
+                    help='Use this option to fit special peaks defined inside'
+                    +'the single-spectra file.')
 parser.add_argument('-sl',
                     '--single-level',
                     nargs='*',
@@ -458,6 +463,13 @@ parser.add_argument('-l',
                     type=int,
                     default=(None,None),
                     help='Lower and upper limit for fit window')
+parser.add_argument('--dont-ask',
+                    nargs='*',
+                    action='store',
+                    help='Use this argument to tell the program you don\'t want'
+                    +' to be asked to save the results.'
+                    +'This is useful when calling calling long sequences of'
+                    +'sauron command (e.g. from a script)')
 parser_arguments = parser.parse_args()
 
 import pandas as pd
@@ -617,11 +629,12 @@ def SaveFitResults(_level_directory,_gate_energy,_peak,_results):
     _output_filename=os.path.join(_level_directory,str(_gate_energy)+'-'+str(_peak)+'.out.txt')
     _best_parameters,_cov,_I_diff,_I=_results
     with open(_output_filename,'w') as _f:
-        print('Integral Diff,Integral,TRANSITION,GATE,'
+        print('STARTING LEVEL,Integral Diff,Integral,TRANSITION,GATE,'
                +'mean,sigma,amplitude,m,q,'
                +'err_mean,err_sigma,err_amplitude,err_m,err_q',
               file=_f)
-        print(f'{_I_diff:.4f}',
+        print(f'{float(_level_directory.replace('/',''))}',
+              f'{_I_diff:.4f}',
               f'{_I:.4f}',
               f'{_peak:.4f}',
               f'{float(_gate_energy):.4f}',
@@ -690,6 +703,7 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
     # Print results
     try:
         print('\n')
+        print(f'LEVEL: {_level_directory.replace('/','')}  GATE: {_gate_energy}  TRANSITION: {_peak}')
         print(f'Fit Results --------------------------------------------------------\n \
                 Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\
         | {np.sqrt(float(_results[1][0][0]))/float(_results[0][0]):5.0%}\n \
@@ -706,6 +720,7 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
                 '           --------------------------------------------------------\n')
     except:
         print('\n')
+        print(f'LEVEL: {_level_directory.replace('/','')}  GATE: {_gate_energy}  TRANSITION: {_peak}')
         print(f'Fit Results --------------------------------------------------------\n \
                 Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\n \
                 Sigma:     {float(_results[0][1]):10.3} +- {np.sqrt(float(_results[1][1][1])):10.3}\n \
@@ -733,6 +748,7 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
 
 
     return _results
+
 
 def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
                          _secondary_gammaray_energy,_gate_directory,
@@ -906,6 +922,30 @@ def FitEntireLevelScheme(_level_scheme):
     FitBindingLevel(_level_scheme)
 
 
+def FitSpecial(_level_scheme):
+    special_file = '/home/massimiliano/Desktop/Mordor/single-spectra.txt'
+    with open(special_file,'r') as file:
+        for line in file:
+            _level_directory = line.split('-d ')[1].split('-')[0].replace(' ','')
+            _gate_energy = line.split('-g ')[1].split('-')[0].replace(' ','')
+            _gammaray_energy = float(line.split('-p ')[1].split('-')[0].replace(' ',''))
+            _gate_directory = line.split('-gd ')[1].split('-')[0].replace(' ','') if '-gd' in line else None
+            _limit = [float(elem) for elem in line.split('--limit')[1].split('-')[0].split(' ')[1:3]] if '--limit' in line else None
+            _param = [float(elem) for elem in line.split('--param')[1].split(' ')[1:6]] if '--param' in line else None
+            _called_directly=0 if '--dont-ask' in line else 1# Da modifica qui ci va uno zero 
+
+            if '--primary' in line:
+                FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
+                                     _gate_energy,_gate_directory,_param,_limit,_called_directly)
+            else:
+                FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_gammaray_energy,_param,_limit,_called_directly)
+
+                    
+
+
+
+
+
 ###################### END of Functions ########################################
 
 
@@ -924,6 +964,10 @@ if __name__ == '__main__':
         start_calc_time=time.time()
         FitEntireLevelScheme(level_scheme)
         stop_calc_time=time.time()
+    if parser_arguments.special is not None:
+        start_calc_time=time.time()
+        FitSpecial(level_scheme)
+        stop_calc_time=time.time()
     elif parser_arguments.single_level is not None:
         start_calc_time=time.time()
         FitSingleLevel(level_scheme,
@@ -931,6 +975,11 @@ if __name__ == '__main__':
         stop_calc_time=time.time()
     elif parser_arguments.primary is not None:
         start_calc_time=time.time()
+        if parser_arguments.dont-ask is not None:
+            called_directly=1
+        else:
+            called_directly=0
+            
         FitSinglePrimaryPeak(level_scheme,
                              parser_arguments.level_directory,
                              parser_arguments.peak,
@@ -938,17 +987,22 @@ if __name__ == '__main__':
                              parser_arguments.gatedir,
                              parser_arguments.param,
                              parser_arguments.limit,
-                             1)
+                             called_directly)
         stop_calc_time=time.time()
     else:
         start_calc_time=time.time()
+        if parser_arguments.dont_ask is not None:
+            called_directly=0
+        else:
+            called_directly=1
+
         FitSinglePeak(level_scheme,
                       parser_arguments.level_directory,
                       parser_arguments.gate,
                       parser_arguments.peak,
                       parser_arguments.param,
                       parser_arguments.limit,
-                      1)
+                      called_directly)
         stop_calc_time=time.time()
 
     # Tird step - calculate execution times
