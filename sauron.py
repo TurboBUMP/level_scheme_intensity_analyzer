@@ -466,6 +466,7 @@ parser.add_argument('-l',
 parser.add_argument('--dont-ask',
                     nargs='*',
                     action='store',
+                    default=None,
                     help='Use this argument to tell the program you don\'t want'
                     +' to be asked to save the results.'
                     +'This is useful when calling calling long sequences of'
@@ -610,7 +611,7 @@ def DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,
     return _fig,_ax
 
 
-def SaveFitResults(_level_directory,_gate_energy,_peak,_results):
+def SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level):
     '''
     SaveFitResults(): function that save the fit results on the appropriate
     output file.
@@ -629,11 +630,12 @@ def SaveFitResults(_level_directory,_gate_energy,_peak,_results):
     _output_filename=os.path.join(_level_directory,str(_gate_energy)+'-'+str(_peak)+'.out.txt')
     _best_parameters,_cov,_I_diff,_I=_results
     with open(_output_filename,'w') as _f:
-        print('STARTING LEVEL,Integral Diff,Integral,TRANSITION,GATE,'
+        print('START LEVEL,STOP LEVEL,Integral Diff,Integral,TRANSITION,GATE,'
                +'mean,sigma,amplitude,m,q,'
                +'err_mean,err_sigma,err_amplitude,err_m,err_q',
               file=_f)
         print(f'{float(_level_directory.replace('/',''))}',
+              f'{_stop_level}',
               f'{_I_diff:.4f}',
               f'{_I:.4f}',
               f'{_peak:.4f}',
@@ -688,6 +690,7 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
     '''
     # Move into the right directory and upload the gammaray spectra gated on
     # the _gate_energy
+    _stop_level = float(_level_scheme[(_level_scheme[grec_name]==float(_peak)) & (_level_scheme[stalc_name]==float(_level_directory))][stplc_name])
     os.chdir(spectra_directory)
     _level_directory=os.path.join(_level_directory,'')
     _filename=str(_gate_energy)+'.dat'
@@ -738,12 +741,12 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
                             _results,_show_flag=_called_directly)
     if _called_directly==1:
         if choice:=input('Do you want to save the results? [Y/n] ')!='n':
-            SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+            SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level)
             SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
         else:
             pass
     else:
-        SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+        SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level)
         SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
 
 
@@ -784,6 +787,7 @@ def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
     _hist=np.genfromtxt(str(_secondary_gammaray_energy)+'.dat')
     _peak=_gammaray_energy
     _gate_energy=_secondary_gammaray_energy
+    _stop_level = float(_level_scheme[(_level_scheme[grec_name]==float(_peak)) & (_level_scheme[stalc_name]==float(_level_directory))][stplc_name])
 
     # Check if the user passed _param and _limit from the command line
     if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
@@ -826,10 +830,10 @@ def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
 
     if _called_directly==1:
         if choice:=input('Do you want to save the results? [Y/n] ')!='n':
-            SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+            SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level)
             SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
     else:
-        SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+        SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level)
         SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
 
 
@@ -926,6 +930,7 @@ def FitSpecial(_level_scheme):
     special_file = '/home/massimiliano/Desktop/Mordor/single-spectra.txt'
     with open(special_file,'r') as file:
         for line in file:
+            print(line)
             _level_directory = line.split('-d ')[1].split('-')[0].replace(' ','')
             _gate_energy = line.split('-g ')[1].split('-')[0].replace(' ','')
             _gammaray_energy = float(line.split('-p ')[1].split('-')[0].replace(' ',''))
@@ -975,7 +980,7 @@ if __name__ == '__main__':
         stop_calc_time=time.time()
     elif parser_arguments.primary is not None:
         start_calc_time=time.time()
-        if parser_arguments.dont-ask is not None:
+        if parser_arguments.dont_ask is not None:
             called_directly=1
         else:
             called_directly=0

@@ -1,2 +1,2 @@
-Integral Diff,Integral,TRANSITION,GATE,mean,sigma,amplitude,m,q,err_mean,err_sigma,err_amplitude,err_m,err_q
-0.0000,118.2568,1417.0000,7829.3000,1417.5765,0.9515,49.5821,-0.0119,36.8385,0.1367,0.1376,6.1682,0.0894,126.7400
+START LEVEL,STOP LEVEL,Integral Diff,Integral,TRANSITION,GATE,mean,sigma,amplitude,m,q,err_mean,err_sigma,err_amplitude,err_m,err_q
+3301.36,1883.516,0.0000,118.2568,1417.0000,7829.3000,1417.5765,0.9515,49.5821,-0.0119,36.8385,0.1367,0.1376,6.1682,0.0894,126.7400
