@@ -902,31 +902,20 @@ def FitBindingLevel(_level_scheme):
                                     _called_directly=0)
 
 
-def FitEntireLevelScheme(_level_scheme):
+def FitSpecial(_level_scheme):
     '''
-
-        FitEntireLevelScheme(): call FitSingleLevel() on every level directory
-        present inside the spectra/ folder.
+        
+        FitSpecial(): read the single-spectra file and performs the fits of
+        every special casefollowing the condition specified for each one 
+        directly inside the file.
+        FitSpecial is not a fancy function. It performs a line-by-line reading
+        of the single-spectra file. Each line is saved as a string and the
+        program will look for in-line conditions like -g -d -p and so on.
     
             Inputs(): - (_level_scheme) the pandas dataFrame containing the 
                         level scheme.
 
     '''
-    # Call the FitSingleLevel() function for every directory found inside the
-    # spectra directory and then call FitBindingLevel.
-    # As the code is extremely stupid, it will run the FitSingleLevel also on
-    # the capture level directory, but this shouldn't be a problem since it 
-    # won't find any gammaray populating the capture state, and thus it will
-    # skipp everything.
-    os.chdir(spectra_directory)
-    for _level_directory in os.listdir():
-        if isdir(_level_directory):
-            FitSingleLevel(_level_scheme,_level_directory)
-
-    FitBindingLevel(_level_scheme)
-
-
-def FitSpecial(_level_scheme):
     special_file = '/home/massimiliano/Desktop/Mordor/single-spectra.txt'
     with open(special_file,'r') as file:
         for line in file:
@@ -944,6 +933,37 @@ def FitSpecial(_level_scheme):
                                      _gate_energy,_gate_directory,_param,_limit,_called_directly)
             else:
                 FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_gammaray_energy,_param,_limit,_called_directly)
+
+
+def FitEntireLevelScheme(_level_scheme):
+    '''
+
+        FitEntireLevelScheme(): call FitSingleLevel() on every level directory
+        present inside the spectra/ folder.
+    
+            Inputs(): - (_level_scheme) the pandas dataFrame containing the 
+                        level scheme.
+
+    '''
+    # Call the FitSingleLevel() function for every directory found inside the
+    # spectra directory and then call FitBindingLevel.
+    # As the code is extremely stupid, it will run the FitSingleLevel also on
+    # the capture level directory, but this shouldn't be a problem since it 
+    # won't find any gammaray populating the capture state, and thus it will
+    # skipp everything.
+    # After that also the capture state will be analysed by the call to the
+    # function FitBindingLevel().
+    # The last step is the fit of all special cases contained inside the
+    # single-spectra file
+    os.chdir(spectra_directory)
+    for _level_directory in os.listdir():
+        if isdir(_level_directory):
+            print('------------------------------>',_level_directory)
+            FitSingleLevel(_level_scheme,_level_directory)
+    FitBindingLevel(_level_scheme)
+    FitSpecial(_level_scheme)
+
+
 
                     
 

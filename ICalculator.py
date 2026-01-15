@@ -92,15 +92,11 @@ def find_incoming(energy_level):
     return lvl_scheme[lvl_scheme['Level_final']==energy_level]
 
 # This function take the gammaray energy and the level energy as arguments and return the calculated intensity with its error
-def gammaray_intensity_calc(gammaray_energy,level,primary,analyser=0):
-
-#    print(intensity_file[(intensity_file['TRANSITION']==gammaray_energy)])
-#    print(intensity_file[intensity_file['STOP LEVEL']==float(level)])
-#    print(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['STOP LEVEL']==float(level))]['GATE'])
+def gammaray_intensity_calc(gammaray_energy,start_level,stop_level,primary,analyser=0):
     if primary=='YES':
-        gate_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['STOP LEVEL']==float(level))]['GATE'])
+        gate_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['STOP LEVEL']==float(stop_level))]['GATE'])
     else:
-        gate_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['START LEVEL']==float(level))]['GATE'])
+        gate_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['START LEVEL']==float(start_level))]['GATE'])
     amplitude_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['amplitude'])
     sigma_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['sigma'])
     gammaray_intensity_list = np.asarray(amplitude_list*np.abs(sigma_list)*np.sqrt(np.pi*2)) # I = A*sigma*sqrt(2Pi)
@@ -167,17 +163,23 @@ def level_intensity_calculator(level_energy):
     list_of_outgoing_intensity = []
     list_of_outgoing_errors = []
 
-    for index,in_g in list_of_incoming_gammarays.iterrows():
-        res = gammaray_intensity_calc(in_g[grec_name],in_g[stalc_name],in_g[pc_name])
-        print(res)
-        list_of_incoming_intensity.append(res[0])
-        list_of_incoming_errors.append(res[1])
-    print('IN-OUT')
-    for index,ou_g in list_of_outgoing_gammarays.iterrows():
-        res = gammaray_intensity_calc(ou_g[grec_name],ou_g[stalc_name],in_g[pc_name])
-        print(res)
-        list_of_outgoing_intensity.append(res[0])
-        list_of_outgoing_errors.append(res[1])
+    if not list_of_incoming_gammarays.empty:
+        for index,in_g in list_of_incoming_gammarays.iterrows():
+            res = gammaray_intensity_calc(in_g[grec_name],in_g[stalc_name],in_g[stplc_name],in_g[pc_name])
+            list_of_incoming_intensity.append(res[0])
+            list_of_incoming_errors.append(res[1])
+    else: 
+        print(f'{level_energy} has no incoming gammarays')
+        res = [0,0]
+
+    if not list_of_outgoing_gammarays.empty:
+        for index,ou_g in list_of_outgoing_gammarays.iterrows():
+            res = gammaray_intensity_calc(ou_g[grec_name],ou_g[stalc_name],ou_g[stplc_name],ou_g[pc_name])
+            list_of_outgoing_intensity.append(res[0])
+            list_of_outgoing_errors.append(res[1])
+    else: 
+        print(f'{level_energy} has no outcoming gammarays')
+        res = [0,0]
 
     incoming_intensity = np.asarray(list_of_incoming_intensity).sum()
     outgoing_intensity = np.asarray(list_of_outgoing_intensity).sum()
@@ -200,8 +202,8 @@ def level_analyser():
     print('')
     print('************************************** IN **************************************')
     print('GAMMARAY - I - sigma I - s/I%')
-    for in_g in list_of_incoming_gammarays:
-        r = gammaray_intensity_calc(in_g)
+    for index,in_g in list_of_incoming_gammarays.iterrows():
+        r = gammaray_intensity_calc(in_g[grec_name],in_g[stalc_name],in_g[stplc_name],in_g[pc_name])
         if (r[1]/r[0]>0.20 and r[1]/r[0]<0.4):
             color=bcolors.WARNING
         elif (r[1]/r[0]>0.40):
@@ -213,8 +215,8 @@ def level_analyser():
     print('')
     print('************************************* OUT **************************************')
     print('GAMMARAY - I - sigma I - s/I%')
-    for ou_g in list_of_outgoing_gammarays:
-        r = gammaray_intensity_calc(ou_g)
+    for index,ou_g in list_of_outgoing_gammarays.iterrows():
+        r = gammaray_intensity_calc(ou_g[grec_name],ou_g[stalc_name],ou_g[stplc_name],ou_g[pc_name])
         try:
             _ratio=r[1]/r[0]
             if (_ratio>0.20 and _ratio<0.4):
@@ -229,13 +231,24 @@ def level_analyser():
             
     print('')
 
-import time
+
 def gamma_analyser():
 
     while((gammaray_energy:=float(input('GAMMARAY: '))) not in lvl_scheme[grec_name].values):
         print(cursor.LINE_UP,end=cursor.LINE_CLEAR)
 
-    gammaray_intensity_calc(gammaray_energy,1)
+    if lvl_scheme[lvl_scheme[grec_name]==gammaray_energy].shape[0] >= 2:
+        while((level_energy:=float(input('There are more gammarays with this energy.\nSelect the corresponding LEVEL: '))) not in lvl_scheme[stalc_name].values):
+            print(cursor.LINE_UP,end=cursor.LINE_CLEAR)
+            print(cursor.LINE_UP,end=cursor.LINE_CLEAR)
+    else:
+        level_energy=lvl_scheme[lvl_scheme[grec_name]==gammaray_energy][stalc_name].values[0]
+
+    start_level = lvl_scheme[(lvl_scheme[grec_name]==gammaray_energy) & (lvl_scheme[stalc_name]==level_energy)][stalc_name].values[0]
+    stop_level = lvl_scheme[(lvl_scheme[grec_name]==gammaray_energy) & (lvl_scheme[stalc_name]==level_energy)][stplc_name].values[0]
+    primary = lvl_scheme[(lvl_scheme[grec_name]==gammaray_energy) & (lvl_scheme[stalc_name]==level_energy)][pc_name].values[0]
+
+    gammaray_intensity_calc(gammaray_energy,start_level,stop_level,primary,1)
     print(' ')
 
 
@@ -263,6 +276,9 @@ def analyser():
 if __name__ == '__main__':
 
 #    print(gammaray_intensity_calc(5238.8,5892.5,'YES'))
+#    print(gammaray_intensity_calc(2178.6,5892.5,'NO'))
+#    print(level_intensity_calculator(5892.5))
+
     if parser_arguments.analysis is not None:
         analyser()
     else:
