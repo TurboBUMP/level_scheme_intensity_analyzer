@@ -690,7 +690,7 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
     '''
     # Move into the right directory and upload the gammaray spectra gated on
     # the _gate_energy
-    _stop_level = float(_level_scheme[(_level_scheme[grec_name]==float(_peak)) & (_level_scheme[stalc_name]==float(_level_directory))][stplc_name])
+    _stop_level = float(_level_scheme[(_level_scheme[grec_name]==float(_peak)) & (_level_scheme[stalc_name]==float(_level_directory))][stplc_name].values[0])
     os.chdir(spectra_directory)
     _level_directory=os.path.join(_level_directory,'')
     _filename=str(_gate_energy)+'.dat'
@@ -787,7 +787,7 @@ def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
     _hist=np.genfromtxt(str(_secondary_gammaray_energy)+'.dat')
     _peak=_gammaray_energy
     _gate_energy=_secondary_gammaray_energy
-    _stop_level = float(_level_scheme[(_level_scheme[grec_name]==float(_peak)) & (_level_scheme[stalc_name]==float(_level_directory))][stplc_name])
+    _stop_level = float(_level_scheme[(_level_scheme[grec_name]==float(_peak)) & (_level_scheme[stalc_name]==float(_level_directory))][stplc_name].values[0])
 
     # Check if the user passed _param and _limit from the command line
     if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
@@ -1001,9 +1001,9 @@ if __name__ == '__main__':
     elif parser_arguments.primary is not None:
         start_calc_time=time.time()
         if parser_arguments.dont_ask is not None:
-            called_directly=1
-        else:
             called_directly=0
+        else:
+            called_directly=1
             
         FitSinglePrimaryPeak(level_scheme,
                              parser_arguments.level_directory,
