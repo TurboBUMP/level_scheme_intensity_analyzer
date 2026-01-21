@@ -71,6 +71,7 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (263.53,1244.75),
                           (263.53,1276),
                           (263.53,1494.6),
+                          (651.353,1007.7),
                           (651.353,1575.9),
                           (263.53,1788.5),
                           (263.53,1989.17),
@@ -79,6 +80,8 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1024.738,2033.8),
                           (263.53,2088),
                           (651.353,2150.9),
+                          (651.353,2193.2),
+                          (651.353,2903.4),
                           (263.53,2150.9),
                           (263.53,2193.2),
                           (263.53,3672.8),
@@ -91,13 +94,18 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1777.973,1839.7),
                           (368.208,1420.2),
                           (1017.5,1825.9),
+                          (1825.9,5628.9),
+                          (1839.7,5628.9),
+                          (1491.1,5628.9),
                           (368.208,2534.7),
                           (1017.5,2534.7),
                           (368.208,519.7),
                           (1017.5,519.7),
                           (667.3,1384.4),
+                          (667.3,686.9),
                           (2554.9,1384.4),
                           (667.3,1518.2),
+                          (667.3,483.4),
                           (2554.9,1518.2),
                           (667.3,1577.4),
                           (2554.9,1577.4),
@@ -106,6 +114,8 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (667.3,1836.6),
                           (2554.9,1836.6),
                           (667.3,202.1),
+                          (667.3,2063.2),
+                          (667.3,2499.0),
                           (2554.9,2063.2),
                           (667.3,211.3),
                           (404.26,211.3),
@@ -126,13 +136,18 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (2554.9,7418.8),
                           (3775.3,1250.2),
                           (1119.7,1520.2),
+                          (475.2,1520.2),
                           (475.2,1524.4),
+                          (475.2,1683.0),
+                          (1214.74,1683.0),
                           (1119.7,1524.4),
                           (3775.3,1524.4),
+                          (3775.3,1597.7),
                           (475.2,1771.9),
                           (3775.3,1771.9),
                           (3775.3,1816.3),
                           (475.2,1816.3),
+                          (475.2,2158.5),
                           (1119.7,1816.3),
                           (3775.3,1998.6),
                           (1119.7,2896.7),
@@ -140,12 +155,24 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (475.2,703.4),
                           (1119.7,703.4),
                           (3775.3,703.4),
+                          (3775.3,874.3),
+                          (556.8,1016.9),
+                          (556.8,1374.8),
+                          (556.8,1428.0),
+                          (556.8,1481.7),
                           (869.47,1374.8),
                           (556.8,1658.8),
+                          (1630.4,1658.8),
+                          (1374.8,5841.9),
+                          (605.8,1374.8),
+                          (605.8,1428.0),
                           (605.8,1819.3),
                           (556.8,1819.3),
                           (556.8,1860.2),
                           (605.8,1860.2),
+                          (605.8,2178.6),
+                          (202.1,1819.3),
+                          (1819.3,5397.8),
                           (202.1,1860.2),
                           (202.1,1867.4),
                           (556.8,1867.4),
@@ -153,12 +180,17 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (556.8,2297.5),
                           (202.1,2758.5),
                           (556.8,2758.5),
+                          (556.8,3066.9),
                           (202.1,651.07),
                           (1630.4,651.07),
                           (202.1,670.4),
+                          (202.1,2934.8),
+                          (202.1,3066.9),
                           (556.8,670.4),
                           (605.8,670.4),
                           (1630.4,670.4),
+                          (1630.4,3066.9),
+                          (1630.4,1867.4),
                           (211.3,1419.3),
                           (211.3,2289.2),
                           (211.3,2746.5),
@@ -167,6 +199,7 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1727.5,2969.2),
                           (4196.1,1093.2),
                           (887.5,1093.2),
+                          (483.4,1093.2),
                           (1912.18,1101.3),
                           (4196.1,1101.3),
                           (483.4,1101.3),
@@ -175,9 +208,11 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (887.5,1212.5),
                           (894.2,1212.5),
                           (1538.8,1212.5),
+                          (483.4,1212.5),
                           (894.2,1353.1),
                           (483.4,1353.1),
                           (4196.1,1353.1),
+                          (519.7,1353.1),
                           (894.2,1397.4),
                           (519.7,1397.4),
                           (483.4,1397.4),
@@ -212,6 +247,8 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (682.34,1142.9),
                           (1701.9,1142.9),
                           (1314.1,1142.9),
+                          (5628.9,1142.9),
+                          (5628.9,1825.9),
                           (682.34,1416.7),
                           (646.5,1416.7),
                           (682.34,2313.6),
@@ -221,8 +258,13 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1701.9,2491.7),
                           (1314.1,2491.7),
                           (722.6,1194.1),
+                          (1194.1,5537.44),
                           (686.9,1335.0),
+                          (1091.1,1690.5),
                           (1091.1,1335.0),
+                          (1091.1,2451.1),
+                          (1091.1,6731.9),
+                          (1091.1,697.6),
                           (722.6,1691.6),
                           (2115.5,1691.6),
                           (722.6,2451.1),
@@ -234,15 +276,22 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (747.63,1324.0),
                           (747.63,6721.0),
                           (733.0,6721.0),
+                          (6721.0,733.0),
+                          (6721.0,1107.98),
+                          (6721.0,3252.07),
+                          (3252.07,6721.0),
                           (1107.98,6721.0),
                           (703.4,1113.6),
                           (2596.1,1113.6),
+                          (1113.6,5537.44),
                           (703.4,171.3),
                           (2596.1,171.3),
                           (703.4,6651.3),
                           (670.4,1455.1),
                           (1283.4,1455.1),
                           (1276.0,1455.1),
+                          (1276.0,645.7),
+                          (1276.0,2088.2),
                           (1207.2,532.1),
                           (670.4,1191.2),
                           (670.4,1626.8),
@@ -257,6 +306,7 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1226.9,704.5),
                           (989.0,6480.2),
                           (1342.8,898.0),
+                          (1349.4,898.0),
                           (171.3,898.0),
                           (874.3,898.0),
                           (974.4,898.0),
@@ -271,6 +321,7 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (4801.7,972.6),
                           (1222.5,1050.9),
                           (1582.8,1050.9),
+                          (1582.8,6247.2),
                           (1524.2,1050.9),
                           (2722.4,496.4),
                           (1961.0,496.4),
@@ -309,8 +360,65 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (2466.2,5355.7),
                           (1606.6,5355.7),
                           (1209.6,5355.7),
+                          (1852.3,5355.7),
                           (4625.0,5348.1),
-                          (1867.4,5348.1)]
+                          (5348.1,4625.0),
+                          (1867.4,5348.1),
+                          (263.53,2903.4),
+                          (637.68,1419.3),
+                          (878.25,1419.3),
+                          (1640.7,1419.3),
+                          (5789.5,1419.3),
+                          (299.5,2969.2),
+                          (1538.8,1101.3),
+                          (894.2,2477.0),
+                          (6651.3,703.4),
+                          (1384.4,6034.4),
+                          (4932.8,5037.4),
+                          (3808.2,5037.4),
+                          (5037.4,3808.2),
+                          (3048.3,5037.4),
+                          (3807.1,5040.4),
+                          (5040.4,3807.1),
+                          (1878.7,5238.8),
+                          (1788.5,6034.4),
+                          (1788.5,1753.1),
+                          (1788.5,476.8),
+                          (697.6,678.6),
+                          (532.1,6034.4),
+                          (1064.1,5135.8),
+                          (1630.4,1016.9),
+                          (605.8,7215.8),
+                          (628.71,7215.8),
+                          (1630.4,7215.8),
+                          (869.47,7215.8),
+                          (1630.4,2934.8),
+                          (1016.9,1064.1),
+                          (1016.9,6199.9),
+                          (1218.8,6199.9),
+                          (1912.18,1101.3),
+                          (2937.8,1773.3),
+                          (1419.3,5789.5),
+                          (3057.9,4149.7),
+                          (1428.0,1630.4),
+                          (2758.5,4457.9),
+                          (2313.6,4457.9),
+                          (1520.2,5833.6),
+                          (1620.4,5833.6),
+                          (1635.0,5833.6),
+                          (1989.17,5833.6),
+                          (2640.1,5833.6),
+                          (4140.1,5833.6),
+                          (2158.5,5935.8),
+                          (3301.33,1107.98),
+                          (1549.0,4281.9),
+                          (4281.9,1549.0),
+                          (2934.8,4281.9),
+                          (4564.7,4281.9),
+                          (3731.0,5116.1),
+                          (3176.2,5673.0),
+                          (667.9,6103.45),
+                          (6577.1,891.1)]
 
 
 import os
@@ -328,12 +436,29 @@ parser.add_argument('-ra',
                         scheme. This will save time because the program\
                         won\'t have to reload the csv file for every\
                         gammaray')
+parser.add_argument('--special',
+                    nargs='*',
+                    action='store',
+                    help='Use this option to fit special peaks defined inside'
+                    +'the single-spectra file.')
 parser.add_argument('-sl',
                     '--single-level',
                     nargs='*',
                     action='store',
                     help='If passed SAURON will run for only the selected\
                         level')
+parser.add_argument('--primary',
+                    nargs='*',
+                    action='store',
+                    help='Use this argument if the gammaray you want to fit is'
+                        +'a primary')
+parser.add_argument('-gd',
+                    '--gatedir',
+                    default=None,
+                    type=str,
+                    help='If the single peak to fit is a primary, us --gatedir '
+                        +'to specify in which directory is the gated '
+                        +'spectra to use.')
 parser.add_argument('-d',
                     '--level-directory', 
                     type=str, 
@@ -362,6 +487,14 @@ parser.add_argument('-l',
                     type=int,
                     default=(None,None),
                     help='Lower and upper limit for fit window')
+parser.add_argument('--dont-ask',
+                    nargs='*',
+                    action='store',
+                    default=None,
+                    help='Use this argument to tell the program you don\'t want'
+                    +' to be asked to save the results.'
+                    +'This is useful when calling calling long sequences of'
+                    +'sauron command (e.g. from a script)')
 parser_arguments = parser.parse_args()
 
 import pandas as pd
@@ -427,14 +560,14 @@ def FitGauss(_hist,_par_first_guess,_limit=[0,-1]):
                 - (_par_first_guess) first guess
                   of the parameters for the fitting function (curve_fit).
 
-        Returns: - (_best_parameters) the best parameters found with 
+        Returns: - (_best_parameters) the best parameters found with
                     curve_fit.
                  - (_cov) covariance matrix of the best parameters
                  - (_I) the sum of the bin contents inside the fit region
                  - (_I_diff) the difference between (_I) and the integral
-                    of the function calculate inside (_limit). This value is 
+                    of the function calculate inside (_limit). This value is
                     extremely helpfull to understand if a fit is good or not
-                 - zero for everything and 1000000000 for (_I_diff) if 
+                 - zero for everything and 1000000000 for (_I_diff) if
                     curve_fit cannot converge.
 
     '''
@@ -463,7 +596,8 @@ def FitGauss(_hist,_par_first_guess,_limit=[0,-1]):
     return [_best_parameters,_cov,_I_diff,_I]
 
 
-def DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=0):
+def DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,
+                   _show_flag=0):
 
     '''
 
@@ -501,7 +635,7 @@ def DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_sh
     return _fig,_ax
 
 
-def SaveFitResults(_level_directory,_gate_energy,_peak,_results):
+def SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level):
     '''
     SaveFitResults(): function that save the fit results on the appropriate
     output file.
@@ -520,21 +654,23 @@ def SaveFitResults(_level_directory,_gate_energy,_peak,_results):
     _output_filename=os.path.join(_level_directory,str(_gate_energy)+'-'+str(_peak)+'.out.txt')
     _best_parameters,_cov,_I_diff,_I=_results
     with open(_output_filename,'w') as _f:
-        print('Integral Diff,Integral,TRANSITION,GATE,'
-               +'mean,sigma,amplitude,m,q,'
-               +'err_mean,err_sigma,err_amplitude,err_m,err_q',
+        print('START LEVEL,STOP LEVEL,Integral Diff,Integral,TRANSITION,GATE,'
+               +'mean,fwhm,amplitude,m,q,'
+               +'err_mean,err_fwhm,err_amplitude,err_m,err_q',
               file=_f)
-        print(f'{_I_diff:.4f}',
+        print(f'{float(_level_directory.replace('/',''))}',
+              f'{_stop_level}',
+              f'{_I_diff:.4f}',
               f'{_I:.4f}',
               f'{_peak:.4f}',
               f'{float(_gate_energy):.4f}',
               f'{_best_parameters[0]:.4f}',
-              f'{_best_parameters[1]:.4f}',
-              f'{_best_parameters[2]:.4f}',
-              f'{_best_parameters[3]:.4f}',
+              f'{_best_parameters[1]*2.355:.4f}', # Saving fwhm instead of 
+              f'{_best_parameters[2]:.4f}',       # sigma to be consistent
+              f'{_best_parameters[3]:.4f}',       # with Cubix fit results
               f'{_best_parameters[4]:.4f}',
               f'{np.sqrt(_cov[0][0]):.4f}',
-              f'{np.sqrt(_cov[1][1]):.4f}',
+              f'{np.sqrt(_cov[1][1])*2.355:.4f}',
               f'{np.sqrt(_cov[2][2]):.4f}',
               f'{np.sqrt(_cov[3][3]):.4f}',
               f'{np.sqrt(_cov[4][4]):.4f}',
@@ -576,120 +712,153 @@ def FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_peak,_param=None,
         Returns: - (_reuslts) results of the FitGauss() function call.
 
     '''
+    # Move into the right directory and upload the gammaray spectra gated on
+    # the _gate_energy
+    _stop_level = float(_level_scheme[(_level_scheme[grec_name]==float(_peak)) & (_level_scheme[stalc_name]==float(_level_directory))][stplc_name].values[0])
     os.chdir(spectra_directory)
     _level_directory=os.path.join(_level_directory,'')
     _filename=str(_gate_energy)+'.dat'
     _hist = np.genfromtxt(_level_directory+_filename)
+ 
+    # Check if the user passed _param and _limit from the command line
     if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
     if _limit==None: _limit=[_peak-20,_peak+20]
+
+    # Perform the fit
     _results=FitGauss(_hist,_param,_limit)
-    _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
+
+    # Print results
+    try:
+        print('\n')
+        print(f'LEVEL: {_level_directory.replace('/','')}  GATE: {_gate_energy}  TRANSITION: {_peak}')
+        print(f'Fit Results --------------------------------------------------------\n \
+                Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\
+        | {np.sqrt(float(_results[1][0][0]))/float(_results[0][0]):5.0%}\n \
+                Sigma:     {float(_results[0][1]):10.3} +- {np.sqrt(float(_results[1][1][1])):10.3}\
+        | {np.sqrt(float(_results[1][1][1]))/float(_results[0][1]):5.0%}\n \
+                Amplitude: {float(_results[0][2]):10.3} +- {np.sqrt(float(_results[1][2][2])):10.3}\
+        | {np.sqrt(float(_results[1][2][2]))/float(_results[0][2]):5.0%}\n \
+                m:         {float(_results[0][3]):10.3} +- {np.sqrt(float(_results[1][3][3])):10.3}\
+        | {np.sqrt(float(_results[1][3][3]))/float(_results[0][3]):5.0%}\n \
+                q:         {float(_results[0][4]):10.3} +- {np.sqrt(float(_results[1][4][4])):10.3}\
+        | {np.sqrt(float(_results[1][4][4]))/float(_results[0][4]):5.0%}\n \
+                I_diff:    {float(_results[2]):10.3}\n \
+                I:         {float(_results[3]):10.3}\n '+
+                '           --------------------------------------------------------\n')
+    except:
+        print('\n')
+        print(f'LEVEL: {_level_directory.replace('/','')}  GATE: {_gate_energy}  TRANSITION: {_peak}')
+        print(f'Fit Results --------------------------------------------------------\n \
+                Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\n \
+                Sigma:     {float(_results[0][1]):10.3} +- {np.sqrt(float(_results[1][1][1])):10.3}\n \
+                Amplitude: {float(_results[0][2]):10.3} +- {np.sqrt(float(_results[1][2][2])):10.3}\n \
+                m:         {float(_results[0][3]):10.3} +- {np.sqrt(float(_results[1][3][3])):10.3}\n \
+                q:         {float(_results[0][4]):10.3} +- {np.sqrt(float(_results[1][4][4])):10.3}\n \
+                I_diff:    {float(_results[2]):10.3}\n \
+                I:         {float(_results[3]):10.3}\n '+
+                '           --------------------------------------------------------\n')
+ 
+    # Draw the results and check if the user wants to save 'em.
+    # If the function is called from FitSingleLevel (_called_directly=0) then
+    # the results are automaticaly saved.
+    _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,
+                            _results,_show_flag=_called_directly)
     if _called_directly==1:
         if choice:=input('Do you want to save the results? [Y/n] ')!='n':
-            SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+            SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level)
             SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
         else:
-            print(f'\nFit Results\n \
-                Mean: {_results[0][0]:.4f} +- {np.sqrt(_results[1][0,0]):.4f}\n \
-                Sigma: {_results[0][1]:.4f} +- {np.sqrt(_results[1][1,1]):.4f}\n \
-                Amplitude: {_results[0][2]:.4f} +- {np.sqrt(_results[1][2,2]):.4f}\n \
-                m: {_results[0][3]:.4f} +- {np.sqrt(_results[1][3,3]):.4f}\n \
-                q: {_results[0][4]:.4f} +- {np.sqrt(_results[1][4,4]):.4f}\n \
-                I_diff: {_results[2]:.4f}\n \
-                I: {_results[3]:.4f}')
+            pass
     else:
-        SaveFitResults(_level_directory,_gate_energy,_peak,_results)
+        SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level)
         SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
 
 
     return _results
 
-def FitSinglePrimaryPeak(_level_scheme,_param=None,_limit=None):
+
+def FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
+                         _secondary_gammaray_energy,_gate_directory,
+                         _param=None,_limit=None,_called_directly=0):
     '''
 
-    FitSinglePeak(): wrap FitGauss() and runs it for the one selected peak.
+    FitSinglePrimaryPeak(): wrap FitGauss() and runs it for the one selected
+        primary peak.
     
         Inputs: - (_level_scheme) a pandas dataFrame with the entire level
                   level scheme stored inside.
-                - (_level_directory) directory containing the .dat file of a
-                  specific pair of gate and gamma ray.
-                - (_gate_energy) energy of the gate.
-                - (_peak) en +- {_results[1][0]:.4f}ergy of the peak to fit.
+                - (_level_directory) directory to store the file in namely,
+                  the binding level directory
+                - (_gammaray_energy) energy of the peak to fit
+                - (_secondary_gammaray_energy) energy of the gate
                 - (_param) initial guess of the fit parameters.
                 - (_limit) upper and lower limit of the fiting region.
                 - (_called_directly) this is a flag to check if the user is
                   doing a single fit (in this case the main() will call
                   this function directly) or if they are doing more than
                   one fit (in this case the main() will call thi function
-                  from inside FitSingleLevel() or from inside 
+                  from inside FitBindingLevel() or from inside 
                   FitEntireLevelScheme().
 
         Returns: - (_reuslts) results of the FitGauss() function call.
 
     '''
-    os.chdir(spectra_directory) #così mi trovo dentro la cartella spectra/.
-    _primary_level_scheme=_level_scheme[_level_scheme[pc_name]=='YES']
+    # Move into the directory containing the gate spectra and upload the gated
+    # file.
+    mask=_level_scheme[grec_name]==_gammaray_energy
+    _primary_level_scheme=_level_scheme[mask].reset_index(drop=True)
+    os.chdir(os.path.join(spectra_directory,str(_gate_directory)))
+    _hist=np.genfromtxt(str(_secondary_gammaray_energy)+'.dat')
+    _peak=_gammaray_energy
+    _gate_energy=_secondary_gammaray_energy
+    _stop_level = float(_level_scheme[(_level_scheme[grec_name]==float(_peak)) & (_level_scheme[stalc_name]==float(_level_directory))][stplc_name].values[0])
 
-    # Here cycling over all the primary gammarays
-    for _index,_primary_gammaray in _primary_level_scheme.iterrows():
-        _ending_level=_primary_gammaray[stplc_name]
-        for _secondary_index,_secondary_gammaray in _level_scheme[_level_scheme[stalc_name]==_ending_level].iterrows():
-            if((_primary_gammaray[grec_name],_secondary_gammaray[grec_name]) in gammaray_to_be_skipped):
-                pass
-            else:
-                os.chdir(os.path.join(spectra_directory,str(_secondary_gammaray[stplc_name])))
-                _hist=np.genfromtxt(str(_secondary_gammaray[grec_name])+'.dat')
-                _peak=_primary_gammaray[grec_name]
-                _level_directory=str(_primary_gammaray[stalc_name])
-                _gate_energy=_secondary_gammaray[grec_name]
-                _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
-                _limit=[_peak-20,_peak+20]
-                _results=FitGauss(_hist,_param,_limit)
-                #print(f'Results for {_primary_gammaray[grec_name]}')
-                #print(f'\nFit Results\n \
-                #    Mean: {_results[0][0]:.4f}\n \
-                #    Sigma: {_results[0][1]:.4f}\n \
-                #    Amplitude: {_results[0][2]:.4f}\n \
-                #    m: {_results[0][3]:.4f}\n \
-                #    q: {_results[0][4]:.4f}\n \
-                #    I_diff: {_results[2]:.4f}\n \
-                #    I: {_results[3]:.4f}')
+    # Check if the user passed _param and _limit from the command line
+    if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
+    if _limit==None: _limit=[_peak-20,_peak+20]
+    _results=FitGauss(_hist,_param,_limit)
 
-                _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=0)
-                SaveFitResults(_level_directory,_gate_energy,_peak,_results)
-                SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
+    # Draw the results and check if the user wants to save 'em.
+    # If the function is called from FitBindingLevel (_called_directly=0) then
+    # the results are automaticaly saved.
+    try:
+        print('\n')
+        print(f'Fit Results --------------------------------------------------------\n \
+                Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\
+        | {np.sqrt(float(_results[1][0][0]))/float(_results[0][0]):5.0%}\n \
+                Sigma:     {float(_results[0][1]):10.3} +- {np.sqrt(float(_results[1][1][1])):10.3}\
+        | {np.sqrt(float(_results[1][1][1]))/float(_results[0][1]):5.0%}\n \
+                Amplitude: {float(_results[0][2]):10.3} +- {np.sqrt(float(_results[1][2][2])):10.3}\
+        | {np.sqrt(float(_results[1][2][2]))/float(_results[0][2]):5.0%}\n \
+                m:         {float(_results[0][3]):10.3} +- {np.sqrt(float(_results[1][3][3])):10.3}\
+        | {np.sqrt(float(_results[1][3][3]))/float(_results[0][3]):5.0%}\n \
+                q:         {float(_results[0][4]):10.3} +- {np.sqrt(float(_results[1][4][4])):10.3}\
+        | {np.sqrt(float(_results[1][4][4]))/float(_results[0][4]):5.0%}\n \
+                I_diff:    {float(_results[2]):10.3}\n \
+                I:         {float(_results[3]):10.3}\n '+
+                '           --------------------------------------------------------\n')
+    except:
+        print('\n')
+        print(f'Fit Results --------------------------------------------------------\n \
+                Mean:      {float(_results[0][0]):10.3} +- {np.sqrt(float(_results[1][0][0])):10.3}\n \
+                Sigma:     {float(_results[0][1]):10.3} +- {np.sqrt(float(_results[1][1][1])):10.3}\n \
+                Amplitude: {float(_results[0][2]):10.3} +- {np.sqrt(float(_results[1][2][2])):10.3}\n \
+                m:         {float(_results[0][3]):10.3} +- {np.sqrt(float(_results[1][3][3])):10.3}\n \
+                q:         {float(_results[0][4]):10.3} +- {np.sqrt(float(_results[1][4][4])):10.3}\n \
+                I_diff:    {float(_results[2]):10.3}\n \
+                I:         {float(_results[3]):10.3}\n '+
+                '           --------------------------------------------------------\n')
 
+    _fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,
+                            _results,_show_flag=_called_directly)
 
-    #_primary_level_directory=os.path.join(_level_directory,'') # questa è la cartella 11131.6
-    #_final_level=_level_scheme[_level_scheme[grec_name]==_peak][stplc_name]
-    #print(_peak," finisce su ",final_level)
-    ##_filename=str(_gate_energy)+'.dat'
-    #_hist = np.genfromtxt()
-    #if _param==None: _param=[_peak,2,_hist[int(_peak),1],-0.1,10]
-    #if _limit==None: _limit=[_peak-20,_peak+20]
-    #_results=FitGauss(_hist,_param,_limit)
-    #_fig,_ax=DrawFitResults(_hist,_level_directory,_gate_energy,_peak,_limit,_results,_show_flag=_called_directly)
-    #if _called_directly==1:
-    #    if choice:=input('Do you want to save the results? [Y/n] ')!='n':
-    #        SaveFitResults(_level_directory,_gate_energy,_peak,_results)
-    #        SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
-    #    else:
-    #        print(f'\nFit Results\n \
-    #            Mean: {_results[0][0]:.4f}\n \
-    #            Sigma: {_results[0][1]:.4f}\n \
-    #            Amplitude: {_results[0][2]:.4f}\n \
-    #            m: {_results[0][3]:.4f}\n \
-    #            q: {_results[0][4]:.4f}\n \
-    #            I_diff: {_results[2]:.4f}\n \
-    #            I: {_results[3]:.4f}')
-    #else:
-    #    SaveFitResults(_level_directory,_gate_energy,_peak,_results)
-    #    SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
-
-
-    #return _results
-
-
+    if _called_directly==1:
+        if choice:=input('Do you want to save the results? [Y/n] ')!='n':
+            SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level)
+            SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
+    else:
+        SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level)
+        SaveFigReuslts(_level_directory,_gate_energy,_peak,_fig,_ax)
 
 
 def FitSingleLevel(_level_scheme,_level_directory):
@@ -705,13 +874,14 @@ def FitSingleLevel(_level_scheme,_level_directory):
     os.chdir(spectra_directory)
     _energy_level=float(_level_directory)
     _subset_level_scheme_mask=_level_scheme[stalc_name]==_energy_level
-    _subset_level_scheme=_level_scheme[_subset_level_scheme_mask]
+    _subset_level_scheme=_level_scheme[_subset_level_scheme_mask].reset_index(drop=True)
     print(f'Now working on: {_level_directory}')
     for _filename in os.listdir(_level_directory):
         if _filename.endswith('.dat'):
             _gate_energy=_filename.replace('.dat','')
             _filename=os.path.join(_level_directory,_filename)
             for _index,_gammaray in _subset_level_scheme.iterrows():
+                # Check if the pair (_gammaray,_gate) needs to be skipped
                 if((_gammaray[grec_name],float(_gate_energy)) in gammaray_to_be_skipped):
                     pass
                 else:
@@ -721,6 +891,72 @@ def FitSingleLevel(_level_scheme,_level_directory):
                                               _gate_energy,
                                               _peak,
                                               _called_directly=0)
+
+
+def FitBindingLevel(_level_scheme):
+    '''
+
+    FitBindingLevel(): wrap FitGauss() and runs it for the capture level.
+ 
+        Inputs(): - (_level_scheme) the pandas dataFrame containing the level
+                    scheme.
+
+    '''
+
+    os.chdir(spectra_directory) #così mi trovo dentro la cartella spectra/. 
+    mask=_level_scheme[pc_name]=='YES'
+    _primary_level_scheme=_level_scheme[mask].reset_index(drop=True)      
+
+    for _index,_primary_gammaray in _primary_level_scheme.iterrows():
+        _ending_level=_primary_gammaray[stplc_name]
+        mask1=_level_scheme[stalc_name]==_ending_level
+        for _secondary_index,_secondary_gammaray in _level_scheme[mask1].iterrows():
+            # Check if the pair (_gammaray,_gate) needs to be skipped
+            if((_primary_gammaray[grec_name],float(_secondary_gammaray[grec_name])) 
+                   in gammaray_to_be_skipped):
+                pass
+            else:
+                FitSinglePrimaryPeak(_level_scheme,
+                                    str(_primary_gammaray[stalc_name]),
+                                    _primary_gammaray[grec_name],
+                                    _secondary_gammaray[grec_name],
+                                    str(_secondary_gammaray[stplc_name]),
+                                    _param=None,
+                                    _limit=None,
+                                    _called_directly=0)
+
+
+def FitSpecial(_level_scheme):
+    '''
+        
+        FitSpecial(): read the single-spectra file and performs the fits of
+        every special casefollowing the condition specified for each one 
+        directly inside the file.
+        FitSpecial is not a fancy function. It performs a line-by-line reading
+        of the single-spectra file. Each line is saved as a string and the
+        program will look for in-line conditions like -g -d -p and so on.
+    
+            Inputs(): - (_level_scheme) the pandas dataFrame containing the 
+                        level scheme.
+
+    '''
+    special_file = '/home/massimiliano/Desktop/Mordor/single-spectra.txt'
+    with open(special_file,'r') as file:
+        for line in file:
+            print(line)
+            _level_directory = line.split('-d ')[1].split('-')[0].replace(' ','')
+            _gate_energy = line.split('-g ')[1].split('-')[0].replace(' ','')
+            _gammaray_energy = float(line.split('-p ')[1].split('-')[0].replace(' ',''))
+            _gate_directory = line.split('-gd ')[1].split('-')[0].replace(' ','') if '-gd' in line else None
+            _limit = [float(elem) for elem in line.split('--limit')[1].split('-')[0].split(' ')[1:3]] if '--limit' in line else None
+            _param = [float(elem) for elem in line.split('--param')[1].split(' ')[1:6]] if '--param' in line else None
+            _called_directly=0 if '--dont-ask' in line else 1# Da modifica qui ci va uno zero 
+
+            if '--primary' in line:
+                FitSinglePrimaryPeak(_level_scheme,_level_directory,_gammaray_energy,
+                                     _gate_energy,_gate_directory,_param,_limit,_called_directly)
+            else:
+                FitSinglePeak(_level_scheme,_level_directory,_gate_energy,_gammaray_energy,_param,_limit,_called_directly)
 
 
 def FitEntireLevelScheme(_level_scheme):
@@ -733,10 +969,30 @@ def FitEntireLevelScheme(_level_scheme):
                         level scheme.
 
     '''
+    # Call the FitSingleLevel() function for every directory found inside the
+    # spectra directory and then call FitBindingLevel.
+    # As the code is extremely stupid, it will run the FitSingleLevel also on
+    # the capture level directory, but this shouldn't be a problem since it 
+    # won't find any gammaray populating the capture state, and thus it will
+    # skipp everything.
+    # After that also the capture state will be analysed by the call to the
+    # function FitBindingLevel().
+    # The last step is the fit of all special cases contained inside the
+    # single-spectra file
     os.chdir(spectra_directory)
     for _level_directory in os.listdir():
         if isdir(_level_directory):
+            print('------------------------------>',_level_directory)
             FitSingleLevel(_level_scheme,_level_directory)
+    FitBindingLevel(_level_scheme)
+    FitSpecial(_level_scheme)
+
+
+
+                    
+
+
+
 
 
 ###################### END of Functions ########################################
@@ -747,31 +1003,55 @@ if __name__ == '__main__':
     # First step - load the level scheme ----> EXTREMELY SLOW
     # need to change read_excel() with something faster
     start_load_time=time.time()
-    level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/44Ca_ILL/intensities44CaCompressed.ods')
+    level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/Mordor/intensities44CaCompressed.ods')
     stop_load_time=time.time()
 
     # Second step - check if the user wants to run the code for every gammaray
-    # (first if()), for one single level (second if()) or for one single
-    # transition (third if()).
+    # (first if()), for one single level (second if()), for one single primary
+    # transition (third if()) or for one single secondary transition.
     if parser_arguments.run_all is not None:
         start_calc_time=time.time()
         FitEntireLevelScheme(level_scheme)
-        FitSinglePrimaryPeak(level_scheme)
+        stop_calc_time=time.time()
+    elif parser_arguments.special is not None:
+        start_calc_time=time.time()
+        FitSpecial(level_scheme)
         stop_calc_time=time.time()
     elif parser_arguments.single_level is not None:
         start_calc_time=time.time()
         FitSingleLevel(level_scheme,
                        parser_arguments.level_directory)
         stop_calc_time=time.time()
+    elif parser_arguments.primary is not None:
+        start_calc_time=time.time()
+        if parser_arguments.dont_ask is not None:
+            called_directly=0
+        else:
+            called_directly=1
+            
+        FitSinglePrimaryPeak(level_scheme,
+                             parser_arguments.level_directory,
+                             parser_arguments.peak,
+                             parser_arguments.gate,
+                             parser_arguments.gatedir,
+                             parser_arguments.param,
+                             parser_arguments.limit,
+                             called_directly)
+        stop_calc_time=time.time()
     else:
         start_calc_time=time.time()
+        if parser_arguments.dont_ask is not None:
+            called_directly=0
+        else:
+            called_directly=1
+
         FitSinglePeak(level_scheme,
                       parser_arguments.level_directory,
                       parser_arguments.gate,
                       parser_arguments.peak,
                       parser_arguments.param,
                       parser_arguments.limit,
-                      1)
+                      called_directly)
         stop_calc_time=time.time()
 
     # Tird step - calculate execution times
