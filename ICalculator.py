@@ -99,7 +99,7 @@ def gammaray_intensity_calc(gammaray_energy,start_level,stop_level,primary,analy
         gate_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['START LEVEL']==float(start_level))]['GATE'])
 
     amplitude_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['amplitude'])
-    sigma_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['sigma'])
+    sigma_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['fwhm'])/2.355 # Here the 2.355 is necessary since the output.txt file contains the fwhm and not the sigma
     gammaray_intensity_list = np.asarray(amplitude_list*np.abs(sigma_list)*np.sqrt(np.pi*2)) # I = A*sigma*sqrt(2Pi)
     gate_efficiency_list = np.asarray([efficiency(gate) for gate in gate_list])
     gammaray_efficiency = efficiency(gammaray_energy)
@@ -107,7 +107,7 @@ def gammaray_intensity_calc(gammaray_energy,start_level,stop_level,primary,analy
 
     # Ok, ora calcolo l'errore sull'intensità tenendo conto degli errori sulle ampiezze e sulle sigma dei picchi fittati
     error_amplitude_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['err_amplitude'])
-    error_sigma_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['err_sigma'])
+    error_sigma_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['err_fwhm'])/2.355
     error_gate_efficiency_list = np.asarray([efficiency_error(gate) for gate in gate_list])
     error_gammaray_efficiency = efficiency_error(gammaray_energy)
 

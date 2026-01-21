@@ -655,8 +655,8 @@ def SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level):
     _best_parameters,_cov,_I_diff,_I=_results
     with open(_output_filename,'w') as _f:
         print('START LEVEL,STOP LEVEL,Integral Diff,Integral,TRANSITION,GATE,'
-               +'mean,sigma,amplitude,m,q,'
-               +'err_mean,err_sigma,err_amplitude,err_m,err_q',
+               +'mean,fwhm,amplitude,m,q,'
+               +'err_mean,err_fwhm,err_amplitude,err_m,err_q',
               file=_f)
         print(f'{float(_level_directory.replace('/',''))}',
               f'{_stop_level}',
@@ -665,12 +665,12 @@ def SaveFitResults(_level_directory,_gate_energy,_peak,_results,_stop_level):
               f'{_peak:.4f}',
               f'{float(_gate_energy):.4f}',
               f'{_best_parameters[0]:.4f}',
-              f'{_best_parameters[1]:.4f}',
-              f'{_best_parameters[2]:.4f}',
-              f'{_best_parameters[3]:.4f}',
+              f'{_best_parameters[1]*2.355:.4f}', # Saving fwhm instead of 
+              f'{_best_parameters[2]:.4f}',       # sigma to be consistent
+              f'{_best_parameters[3]:.4f}',       # with Cubix fit results
               f'{_best_parameters[4]:.4f}',
               f'{np.sqrt(_cov[0][0]):.4f}',
-              f'{np.sqrt(_cov[1][1]):.4f}',
+              f'{np.sqrt(_cov[1][1])*2.355:.4f}',
               f'{np.sqrt(_cov[2][2]):.4f}',
               f'{np.sqrt(_cov[3][3]):.4f}',
               f'{np.sqrt(_cov[4][4]):.4f}',
@@ -1013,7 +1013,7 @@ if __name__ == '__main__':
         start_calc_time=time.time()
         FitEntireLevelScheme(level_scheme)
         stop_calc_time=time.time()
-    if parser_arguments.special is not None:
+    elif parser_arguments.special is not None:
         start_calc_time=time.time()
         FitSpecial(level_scheme)
         stop_calc_time=time.time()
