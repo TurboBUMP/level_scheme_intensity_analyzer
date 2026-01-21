@@ -97,6 +97,7 @@ def gammaray_intensity_calc(gammaray_energy,start_level,stop_level,primary,analy
         gate_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['STOP LEVEL']==float(stop_level))]['GATE'])
     else:
         gate_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['START LEVEL']==float(start_level))]['GATE'])
+
     amplitude_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['amplitude'])
     sigma_list = np.asarray(intensity_file[(intensity_file['TRANSITION']==gammaray_energy) & (intensity_file['GATE'].isin(gate_list))]['sigma'])
     gammaray_intensity_list = np.asarray(amplitude_list*np.abs(sigma_list)*np.sqrt(np.pi*2)) # I = A*sigma*sqrt(2Pi)
@@ -132,7 +133,7 @@ def gammaray_intensity_calc(gammaray_energy,start_level,stop_level,primary,analy
             else:
                 color=bcolors.WHITE
                 percentage=error/intensity
-            print(f'{color}{gate}: {intensity:.1f}, {error:.1f}, {percentage:.1%}{bcolors.ENDC}')
+            print(f'{color}{gate:8}: {intensity:12.1f}, {error:12.1f}, {percentage:4.1%}{bcolors.ENDC}')
 
         if(gammaray_intensity_list.sum()==0):
             color=bcolors.WHITE
@@ -147,7 +148,7 @@ def gammaray_intensity_calc(gammaray_energy,start_level,stop_level,primary,analy
         else:
             color=bcolors.WHITE
             percentage=error_gammaray_intensity/gammaray_intensity_list.sum()
-        print(f'\n[{color}{gammaray_energy}: {gammaray_intensity_list.sum():.1f}, {error_gammaray_intensity:.1f}, {percentage:.1%}{bcolors.ENDC}]')
+        print(f'\n[{color}{gammaray_energy:8}: {gammaray_intensity_list.sum():12.1f}, {error_gammaray_intensity:12.1f}, {percentage:4.1%}{bcolors.ENDC}]')
 
         
     return gammaray_intensity_list.sum(),error_gammaray_intensity
@@ -203,20 +204,24 @@ def level_analyser():
     print('************************************** IN **************************************')
     print('GAMMARAY - I - sigma I - s/I%')
     for index,in_g in list_of_incoming_gammarays.iterrows():
-        r = gammaray_intensity_calc(in_g[grec_name],in_g[stalc_name],in_g[stplc_name],in_g[pc_name])
-        if (r[1]/r[0]>0.20 and r[1]/r[0]<0.4):
-            color=bcolors.WARNING
-        elif (r[1]/r[0]>0.40):
-            color=bcolors.FAIL
-        else:
-            color=bcolors.WHITE
-        print(f'{color}{in_g}: {r[0]:.1f}, {r[1]:.1f}, {r[1]/r[0]:.1%}{bcolors.ENDC}')
+        r = gammaray_intensity_calc(in_g[grec_name],in_g[stalc_name],in_g[stplc_name],in_g[pc_name],0)
+        try:
+            if (r[1]/r[0]>0.20 and r[1]/r[0]<0.4):
+                color=bcolors.WARNING#
+            elif (r[1]/r[0]>0.40):
+                color=bcolors.FAIL
+            else:
+                color=bcolors.WHITE
+            print(f'{color}{in_g[grec_name]:8}: {r[0]:12.1f}, {r[1]:12.1f}, {r[1]/r[0]:4.1%}{bcolors.ENDC}')
+        except:
+            print(f'{color}{in_g[grec_name]:8}: {r[0]:12.1f}, {r[1]:12.1f}, {bcolors.ENDC}')
+
 
     print('')
     print('************************************* OUT **************************************')
     print('GAMMARAY - I - sigma I - s/I%')
     for index,ou_g in list_of_outgoing_gammarays.iterrows():
-        r = gammaray_intensity_calc(ou_g[grec_name],ou_g[stalc_name],ou_g[stplc_name],ou_g[pc_name])
+        r = gammaray_intensity_calc(ou_g[grec_name],ou_g[stalc_name],ou_g[stplc_name],ou_g[pc_name],0)
         try:
             _ratio=r[1]/r[0]
             if (_ratio>0.20 and _ratio<0.4):
@@ -225,17 +230,18 @@ def level_analyser():
                 color=bcolors.FAIL
             else:
                 color=bcolors.WHITE
-            print(f'{color}{ou_g}: {r[0]:.1f}, {r[1]:.1f}, {_ratio:.1%}{bcolors.ENDC}')
+            print(f'{color}{ou_g[grec_name]:8}: {r[0]:12.1f}, {r[1]:12.1f}, {_ratio:4.1%}{bcolors.ENDC}')
         except:
-            print(f'{color}{ou_g}: {r[0]:.1f}, {r[1]:.1f}, {bcolors.ENDC}')
+            print(f'{color}{ou_g[grec_name]:8}: {r[0]:12.1f}, {r[1]:12.1f}, {bcolors.ENDC}')
             
     print('')
 
 
 def gamma_analyser():
 
-    while((gammaray_energy:=float(input('GAMMARAY: '))) not in lvl_scheme[grec_name].values):
+    while((gammaray_energy:=input('GAMMARAY: ')) not in str(lvl_scheme[grec_name].values)):
         print(cursor.LINE_UP,end=cursor.LINE_CLEAR)
+    gammaray_energy=float(gammaray_energy)
 
     if lvl_scheme[lvl_scheme[grec_name]==gammaray_energy].shape[0] >= 2:
         while((level_energy:=float(input('There are more gammarays with this energy.\nSelect the corresponding LEVEL: '))) not in lvl_scheme[stalc_name].values):
@@ -275,10 +281,6 @@ def analyser():
 
 if __name__ == '__main__':
 
-#    print(gammaray_intensity_calc(5238.8,5892.5,'YES'))
-#    print(gammaray_intensity_calc(2178.6,5892.5,'NO'))
-#    print(level_intensity_calculator(5892.5))
-
     if parser_arguments.analysis is not None:
         analyser()
     else:
@@ -294,4 +296,4 @@ if __name__ == '__main__':
                 current_line_color=bcolors.WHITE
                 if chi>9:
                     current_line_color=bcolors.FAIL
-                print(f'{current_line_color}{float(level):6.0f},{r[0]:12.0f},{r[1]:9.0f},{r[1]/r[0]:5.0%},{r[2]:12.0f},{r[3]:9.0f},{r[3]/r[2]:5.0%},{chi:5.0f}{bcolors.ENDC}',file=f)
+                print(f'{current_line_color}{float(level):10.4f},{r[0]:12.0f},{r[1]:9.0f},{r[1]/r[0]:5.0%},{r[2]:12.0f},{r[3]:9.0f},{r[3]/r[2]:5.0%},{chi:5.0f}{bcolors.ENDC}',file=f)
