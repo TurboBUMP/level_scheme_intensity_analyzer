@@ -83,9 +83,12 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (651.353,2193.2),
                           (651.353,2903.4),
                           (263.53,2150.9),
+                          (1024.738,2150.9),
                           (263.53,2193.2),
                           (263.53,3672.8),
                           (1024.738,605.8),
+                          (1024.738,3265.5),
+                          (651.353,3265.5),
                           (263.53,887.5),
                           (2200.1,2037.9),
                           (1074.13,556.8),
@@ -469,6 +472,27 @@ gammaray_to_be_skipped = [(1157.004,4932.8),
                           (1050.6,1142.9),
                           (1092.8,5722.2),
                           (6506.0,4624.9),
+                          (898.0,1025.0),
+                          (1353.1,1025.0),
+                          (1872.7,1025.0),
+                          (1771.9,1025.0),
+                          (1836.6,1025.0),
+                          (4391.5,1025.0),
+                          (5025.4,1547.2),
+                          (1981.9,1547.2),
+                          (1250.2,1547.2),
+                          (1961.0,1567.6),
+                          (4556.1,1567.6),
+                          (727.2,1188.5),
+                          (974.4,1922.8),
+                          (1606.1,1922.8),
+                          (1992.8,1922.8),
+                          (2767.2,1922.8),
+                          (2767.2,898.0),
+                          (3493.4,1922.8),
+                          (894.2,2378.1),
+                          (483.4,2378.1),
+                          (1017.5,2897.2),
                           (6577.1,891.1)]
 
 
@@ -487,6 +511,10 @@ parser.add_argument('-ra',
                         scheme. This will save time because the program\
                         won\'t have to reload the csv file for every\
                         gammaray')
+parser.add_argument('--binding',
+                    nargs='*',
+                    action='store',
+                    help='Use this option to fit all the primary peaks')
 parser.add_argument('--special',
                     nargs='*',
                     action='store',
@@ -1088,6 +1116,10 @@ if __name__ == '__main__':
                              parser_arguments.param,
                              parser_arguments.limit,
                              called_directly)
+        stop_calc_time=time.time()
+    elif parser_arguments.binding is not None:
+        start_calc_time=time.time()
+        FitBindingLevel(level_scheme)
         stop_calc_time=time.time()
     else:
         start_calc_time=time.time()
