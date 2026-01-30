@@ -145,6 +145,7 @@ sauron -d 4358.44 -g 1214.3 -p 682.34 --limit 677 702 --dont-ask
 sauron -d 4358.44 -g 738.0 -p 682.34 --limit 675 684 --dont-ask
 sauron -d 4358.44 -g 1214.3 -p 646.5 --limit 640 650 --dont-ask
 sauron -d 4358.44 -g 1852.4 -p 646.5 --limit 640 663 --dont-ask
+sauron -d 4358.44 -g 3956.0 -p 1701.9 --limit 1687 1707 --dont-ask
 sauron -d 4358.44 -g 6772.3 -p 646.5 --limit 630 649 --dont-ask
 sauron -d 5096.87 -g 678.6 -p 738.0 --limit 718 745 --dont-ask
 sauron -d 5775.76 -g 5355.7 -p 1416.7 --limit 1396 1425 --dont-ask
@@ -155,3 +156,10 @@ sauron -d 5548.68 -g 1025.0 -p 1836.6 --limit 1833 1843 --dont-ask
 sauron -d 5025.73 -g 1547.2 -p 1981.9 --limit 1978 1986 --dont-ask
 sauron -d 6575.2 -g 4556.1 -p 1567.6 --limit 1555 1587 --dont-ask
 sauron -d 3307.872 -g 2150.9 -p 1024.738 --limit 1017 1044 --dont-ask
+sauron -d 4358.44 -g 2150.5 -p 1701.9 --limit 1687 1707 --dont-ask
+sauron -d 5548.68 -g 1911.6 -p 898.0 --limit 890 910 --param 901 2 100 0 0 --dont-ask
+sauron -d 5733.3 -g 1724.5 -p 1537.8 --limit 1530 1550 --dont-ask
+sauron -d 5289.25 -g 2168.5 -p 1931.2 --limit 1927 1936 --dont-ask
+sauron -d 5289.25 -g 2168.5 -p 704.5 --limit 700 706 --dont-ask
+sauron -d 5130.22 -g 1791.1 -p 1773.3 --limit 1755 1775 --dont-ask
+sauron -d 4196.1 -g 3261.7 -p 887.5 --limit 885 892 --dont-ask
