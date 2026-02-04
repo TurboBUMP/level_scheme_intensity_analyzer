@@ -180,3 +180,5 @@ sauron -d 3922.71 -g 2223.3 -p 1640.7 --limit 1636 1645 --dont-ask
 sauron -d 3922.71 -g 1649.9 -p 637.68 --limit 630 647 --dont-ask
 sauron -d 3922.71 -g 3535.1 -p 637.68 --limit 617 647 --dont-ask
 sauron -d 3922.71 -g 2223.3 -p 637.68 --limit 631 645 --dont-ask
+sauron -d 5397.0 -g 1182.7 -p 1481.7 --limit 1475 1501 --dont-ask
+sauron -d 5096.87 -g 1715.7 -p 697.6 --limit 692 700 --dont-ask
