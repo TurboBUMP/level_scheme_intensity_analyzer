@@ -181,4 +181,19 @@ sauron -d 3922.71 -g 1649.9 -p 637.68 --limit 630 647 --dont-ask
 sauron -d 3922.71 -g 3535.1 -p 637.68 --limit 617 647 --dont-ask
 sauron -d 3922.71 -g 2223.3 -p 637.68 --limit 631 645 --dont-ask
 sauron -d 5397.0 -g 1182.7 -p 1481.7 --limit 1475 1501 --dont-ask
+sauron --primary -gd 6093.9 -d 11131.6 -g 2222.9 -p 2815.9 --limit 2805 2827 --dont-ask
+sauron --primary -gd 3922.71 -d 11131.6 -g 4032.0 -p 3175.9 --limit 3163 3181 --dont-ask
+sauron -d 7703.6 -g 3427.9 -p 3507.9 --limit 3500 3527 --dont-ask
+sauron -d 7703.6 -g 3427.9 -p 2675.9 --limit 2673 2680 --param 2676 1 100 0 0 --dont-ask
+sauron -d 7703.6 -g 3427.9 -p 3052.4 --limit 3041 3072 --dont-ask
+sauron -d 7458.9 -g 3672.5 -p 2168.5 --limit 2155 2188 --dont-ask
+sauron --primary -gd 3922.71 -d 11131.6 -g 3535.1 -p 3672.5 --limit 3661 3692 --dont-ask
+sauron --primary -gd 3357.29 -d 11131.6 -g 3622.0 -p 4149.7 --limit 4129 4165 --dont-ask
+sauron -d 6672.92 -g 4457.9 -p 2662.0 --limit 2660 2682 --dont-ask
+sauron -d 6579.6 -g 4551.7 -p 1448.5 --limit 1432 1468 --dont-ask
+sauron --primary -gd 5300.5 -d 11131.6 -g 1277.8 -p 4551.7 --limit 4531 4560 --dont-ask
+auron -d 6211.4 -g 4919.9 -p 2534.7 --limit 2525 2554 --dont-ask
+sauron -d 6146.14 -g 4984.4 -p 1017.0 --limit 1005 1037 --dont-ask
+sauron -d 6146.14 -g 4984.4 -p 2861.5 --limit 2850 2882 --dont-ask
+sauron -d 6849.48 -g 4281.9 -p 1549.0 --limit 1515 1560 --dont-ask
 sauron -d 5096.87 -g 1715.7 -p 697.6 --limit 692 700 --dont-ask
