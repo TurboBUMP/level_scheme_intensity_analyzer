@@ -1,0 +1,2 @@
+START LEVEL,STOP LEVEL,Integral Diff,Integral,TRANSITION,GATE,mean,fwhm,amplitude,m,q,err_mean,err_fwhm,err_amplitude,err_m,err_q
+4358.44,3044.292,0.0000,92.1983,1314.1000,3122.5000,1313.3894,1.3455,64.3789,-0.0568,87.4247,0.2606,0.4146,16.9186,0.2132,280.2158
