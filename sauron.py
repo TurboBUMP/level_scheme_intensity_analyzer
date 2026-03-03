@@ -54,7 +54,7 @@ grec_name='Egamma-LITERATURE'
 stop_level_column = 7
 stplc_name='Level_final'
 
-spectra_directory='/home/massimiliano/Desktop/Mordor/spectra/'
+spectra_directory='spectra/'
 
 # 'gammaray_to_be_skipped' is a list of pairs that stores all the pairs of 
 # gate-and-spectra that (for some reasons) need to be skipped.
@@ -1004,6 +1004,8 @@ from os.path import isfile,isdir
 import argparse
 import time
 
+spectra_directory=os.path.join(os.getcwd(),'spectra/')
+
 parser = argparse.ArgumentParser(prog='SAURON',
                                  description='Search and Fit peaks program')
 parser.add_argument('-ra',
@@ -1528,7 +1530,7 @@ def FitSpecial(_level_scheme):
                         level scheme.
 
     '''
-    special_file = '/home/massimiliano/Desktop/Mordor/single-spectra.txt'
+    special_file = 'single-spectra.txt'
     with open(special_file,'r') as file:
         for line in file:
             #print(line)
@@ -1589,7 +1591,7 @@ if __name__ == '__main__':
     # First step - load the level scheme ----> EXTREMELY SLOW
     # need to change read_excel() with something faster
     start_load_time=time.time()
-    level_scheme=LoadLevelScheme('/home/massimiliano/Desktop/Mordor/intensities44CaCompressed.ods')
+    level_scheme=LoadLevelScheme('intensities44CaCompressed.ods')
     stop_load_time=time.time()
 
     # Second step - check if the user wants to run the code for every gammaray

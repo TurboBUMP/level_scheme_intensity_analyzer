@@ -78,7 +78,7 @@ class cursor:
     LINE_CLEAR='\x1b[2K'
     LINE_UP='\033[1A'
 
-eff_vector = np.genfromtxt('../44Ca_ILL/efficiencyResults.txt',delimiter=' ',comments='#')
+eff_vector = np.genfromtxt('./efficiencyResults.txt',delimiter=' ',comments='#')
 
 def efficiency(energy):
     mask = np.isin(eff_vector[:,0],int(energy))
