@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import pandas as pd
 import argparse
@@ -26,7 +26,7 @@ pc_name='Primary?'
 
 def load_scheme():
     lvl_scheme = pd.read_excel(
-            "/home/massimiliano/Desktop/Mordor/intensities44CaCompressed.ods",
+            "./intensities44CaCompressed.ods",
             sheet_name=0,
             usecols=[start_level_colum,primary_column,gamma_ray_energy_column,stop_level_column])
     lvl_scheme.reset_index()
@@ -37,7 +37,7 @@ lvl_scheme = load_scheme()
 
 # Load the file containing all the FIT output for every gammaray
 def load_intensity():
-    intensity_file = pd.read_csv("/home/massimiliano/Desktop/Mordor/output.txt")
+    intensity_file = pd.read_csv("./output.txt")
     intensity_file.reset_index()
     return intensity_file
 
