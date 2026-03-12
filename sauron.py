@@ -45,13 +45,13 @@
 start_level_colum = 0 
 stalc_name='LevelLITERATURE'
 
-primary_colum = 4
+primary_colum = 5
 pc_name = 'Primary?'
 
-gamma_ray_energy_column = 5
+gamma_ray_energy_column = 6
 grec_name='Egamma-LITERATURE'
 
-stop_level_column = 7
+stop_level_column = 8
 stplc_name='Level_final'
 
 

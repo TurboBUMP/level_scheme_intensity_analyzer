@@ -15,9 +15,9 @@ np.seterr(divide='ignore', invalid='ignore')
 # --> gamma_ray_energy_column: column containing the energy of the gammaray
 # --> stop_level_column: column containing the energy of the level populated by the gammaray
 start_level_colum = 0
-primary_column = 4
-gamma_ray_energy_column = 5
-stop_level_column = 7
+primary_column = 5
+gamma_ray_energy_column = 6
+stop_level_column = 8
 
 stalc_name='LevelLITERATURE'
 grec_name='Egamma-LITERATURE'
