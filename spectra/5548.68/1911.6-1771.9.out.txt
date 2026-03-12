@@ -1,2 +1,0 @@
-START LEVEL,STOP LEVEL,Integral Diff,Integral,TRANSITION,GATE,mean,fwhm,amplitude,m,q,err_mean,err_fwhm,err_amplitude,err_m,err_q # Fit made with Cubix
-5548.68,3776.27,0.0000,374.3891,1771.9000,1911.6000,1772.17,3.541991,99.29868,0,0,0.399372,0.6513391,21.81741,0,0
