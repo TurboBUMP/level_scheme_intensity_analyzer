@@ -60,11 +60,11 @@ parser.add_argument('-e',
                     help='Draw efficiency curve')
 
 parser.add_argument('-c',
-                 '--CalcEff',
-                 nargs='*',
-                 action='store',
-                 default='None',
-                 help='Calculate efficiency for given energy')
+                    '--CalcEff',
+                    nargs='*',
+                    action='store',
+                    default=None,
+                    help='Calculate efficiency for given energy')
 
 parser_arguments = parser.parse_args()
 
