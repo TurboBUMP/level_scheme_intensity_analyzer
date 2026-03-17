@@ -59,6 +59,13 @@ parser.add_argument('-e',
                     default=None,
                     help='Draw efficiency curve')
 
+parser.add_argument('-c',
+                 '--CalcEff',
+                 nargs='*',
+                 action='store',
+                 default='None',
+                 help='Calculate efficiency for given energy')
+
 parser_arguments = parser.parse_args()
 
 # Class to print colored text on terminal
@@ -305,6 +312,9 @@ if __name__ == '__main__':
         plt.plot(energies,eff_error/eff*100)
         plt.plot(energies,eff_error_perc)
         plt.show()
+
+    if parser_arguments.CalcEff is not None:
+        print(efficiency(float(parser_arguments.CalcEff[0])))
 
     else:
         with open('intensity_output.txt','w') as f:
