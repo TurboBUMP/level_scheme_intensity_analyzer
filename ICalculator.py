@@ -28,7 +28,7 @@ pc_name='Primary?'
 def load_scheme():
     print('Loading file ...')
     lvl_scheme = pd.read_excel(
-            "./intensities44CaCompressed.ods",
+            "./intensities44Ca.ods",
             sheet_name=0,
             usecols=[start_level_colum,primary_column,gamma_ray_energy_column,stop_level_column])
     lvl_scheme.reset_index()
