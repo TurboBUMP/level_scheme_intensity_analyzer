@@ -6,6 +6,7 @@ import numpy as np
 import os 
 import matplotlib.pyplot as plt
 from os.path import join,isdir,isfile
+from alive_progress import alive_bar
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -25,6 +26,7 @@ stplc_name='Level_final'
 pc_name='Primary?'
 
 def load_scheme():
+    print('Loading file ...')
     lvl_scheme = pd.read_excel(
             "./intensities44CaCompressed.ods",
             sheet_name=0,
@@ -190,7 +192,7 @@ def level_intensity_calculator(level_energy):
             list_of_incoming_intensity.append(res[0])
             list_of_incoming_errors.append(res[1])
     else: 
-        print(f'{level_energy} has no incoming gammarays')
+        #print(f'{level_energy} has no incoming gammarays')
         res = [0,0]
 
     if not list_of_outgoing_gammarays.empty:
@@ -199,7 +201,7 @@ def level_intensity_calculator(level_energy):
             list_of_outgoing_intensity.append(res[0])
             list_of_outgoing_errors.append(res[1])
     else: 
-        print(f'{level_energy} has no outcoming gammarays')
+        #print(f'{level_energy} has no outcoming gammarays')
         res = [0,0]
 
     incoming_intensity = np.asarray(list_of_incoming_intensity).sum()
@@ -320,13 +322,16 @@ if __name__ == '__main__':
         with open('intensity_output.txt','w') as f:
 
             level_set = sorted(set(lvl_scheme['LevelLITERATURE']))
-            print(f'{bcolors.WHITE}{'LEVEL':>6},{'IN':>12},{'ERR':>9},{'%':>5},{'OUT':>12},{'ERR':>9},{'%':>5},{'Chi2':>5}{bcolors.ENDC}',file=f)
+            print(f'{bcolors.WHITE}{'LEVEL':>6},{'IN':>12},{'ERR':>9},{'%':>5},{'OUT':>12},{'ERR':>9},{'%':>5},{'Chi2':>5},{'Delta%':>10}{bcolors.ENDC}',file=f)
 
-            for level in level_set:
-                print(f'now doing: {level}')
-                r = level_intensity_calculator(level)
-                chi = (r[0]-r[2])**2/(r[1]**2+r[3]**2)
-                current_line_color=bcolors.WHITE
-                if chi>9:
-                    current_line_color=bcolors.FAIL
-                print(f'{current_line_color}{float(level):10.4f},{r[0]:12.0f},{r[1]:9.0f},{r[1]/r[0]:5.0%},{r[2]:12.0f},{r[3]:9.0f},{r[3]/r[2]:5.0%},{chi:5.0f}{bcolors.ENDC}',file=f)
+            with alive_bar(len(level_set)) as bar:
+                for level in level_set:
+                    #print(f'now doing: {level}')
+                    r = level_intensity_calculator(level)
+                    chi = (r[0]-r[2])**2/(r[1]**2+r[3]**2)
+                    delta = (r[0]-r[2])/r[2]
+                    current_line_color=bcolors.WHITE
+                    if chi>9:
+                        current_line_color=bcolors.FAIL
+                    print(f'{current_line_color}{float(level):10.4f},{r[0]:12.0f},{r[1]:9.0f},{r[1]/r[0]:5.0%},{r[2]:12.0f},{r[3]:9.0f},{r[3]/r[2]:5.0%},{chi:5.0f},{delta:10.0%}{bcolors.ENDC}',file=f)
+                    bar()
