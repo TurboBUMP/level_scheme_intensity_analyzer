@@ -171,6 +171,11 @@ parser_arguments=parser.parse_args()
 ################################################################################
 ################################ FUNCTIONS #####################################
 
+def LoadToBeSkipped(_filename:str):
+    _gammaray_to_be_skipped = np.genfromtxt(_filename,dtype=float,delimiter=',')
+    return _gammaray_to_be_skipped
+
+    
 def LoadLevelScheme(_filename) -> pd.DataFrame: 
     '''
 
@@ -712,6 +717,7 @@ if __name__ == '__main__':
     start_load_time=time.time()
     level_scheme,file_loading_time=LoadLevelScheme(
         '/home/massimiliano/Desktop/Mordor/intensities44CaCompressed.ods')
+    gammaray_to_be_skipped = LoadToBeSkipped('to_be_skipped.txt')
     stop_load_time=time.time()
 
     # Second step - check if the user wants to run the code for every gammaray
