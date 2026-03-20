@@ -28,6 +28,7 @@ grec_name='Egamma-LITERATURE'
 stop_level_column = 8
 stplc_name='Level_final'
 
+project_directory=os.getcwd()
 spectra_directory=os.path.join(os.getcwd(),'spectra')
 
 ################################ END VARIABLES #################################
@@ -481,23 +482,26 @@ def FitBindingLevel(_level_scheme:pd.DataFrame,_gammaray_to_be_skipped,
     mask=_level_scheme[pc_name]=='YES'
     _primary_level_scheme=_level_scheme[mask].reset_index(drop=True)      
 
-    for _index,_primary_gammaray in _primary_level_scheme.iterrows():
-        _ending_level=_primary_gammaray[stplc_name]
-        mask1=_level_scheme[stalc_name]==_ending_level
-        for _secondary_index,_secondary_gammaray in _level_scheme[mask1].iterrows():
-            # Check if the pair (_gammaray,_gate) needs to be skipped
-            if((_primary_gammaray[grec_name],float(_secondary_gammaray[grec_name])) 
-                   in _gammaray_to_be_skipped):
-                pass
-            else:
-                FitSinglePrimaryPeak(_level_scheme,
-                                    str(_primary_gammaray[stalc_name]),
-                                    _primary_gammaray[grec_name],
-                                    _secondary_gammaray[grec_name],
-                                    _secondary_gammaray[stplc_name],
-                                    _param=None,
-                                    _limit=None,
-                                    _called_directly=_called_directly)
+    with alive_bar(_primary_level_scheme.shape[0],
+                   title='Primary',spinner='wait4') as bar:
+        for _index,_primary_gammaray in _primary_level_scheme.iterrows():
+            _ending_level=_primary_gammaray[stplc_name]
+            mask1=_level_scheme[stalc_name]==_ending_level
+            for _secondary_index,_secondary_gammaray in _level_scheme[mask1].iterrows():
+                # Check if the pair (_gammaray,_gate) needs to be skipped
+                if((_primary_gammaray[grec_name],float(_secondary_gammaray[grec_name])) 
+                       in _gammaray_to_be_skipped):
+                    pass
+                else:
+                    FitSinglePrimaryPeak(_level_scheme,
+                                        str(_primary_gammaray[stalc_name]),
+                                        _primary_gammaray[grec_name],
+                                        _secondary_gammaray[grec_name],
+                                        _secondary_gammaray[stplc_name],
+                                        _param=None,
+                                        _limit=None,
+                                        _called_directly=_called_directly)
+            bar()
 
 
 def FitSpecial(_level_scheme:pd.DataFrame):
@@ -514,26 +518,35 @@ def FitSpecial(_level_scheme:pd.DataFrame):
                         level scheme.
 
     '''
+
+    os.chdir(project_directory)
     special_file = 'single-spectra.txt'
 
-    with open(special_file,'r') as file:
+    with open(special_file,'rb') as file:
+        counter=0
         for line in file:
-            _level_directory=line.split('-d ')[1].split('-')[0].replace(' ','')
-            _gate_energy=line.split('-g ')[1].split('-')[0].replace(' ','')
-            _gammaray_energy=float(line.split('-p ')[1].split('-')[0].replace(' ',''))
-            _gate_directory=line.split('-gd ')[1].split('-')[0].replace(' ','') if '-gd' in line else None
-            _limit=[float(elem) for elem in line.split('--limit')[1].split('-')[0].split(' ')[1:3]] if '--limit' in line else None
-            _param=[float(elem) for elem in line.split('--param')[1].split(' ')[1:6]] if '--param' in line else None
-            _called_directly=0 if '--dont-ask' in line else 1# Da modifica qui ci va uno zero 
+            counter+=1
 
-            if '--primary' in line:
-                FitSinglePrimaryPeak(_level_scheme,_level_directory,
-                                     _gammaray_energy,_gate_energy,
-                                     _gate_directory,_param,_limit,
-                                     _called_directly)
-            else:
-                FitSinglePeak(_level_scheme,_level_directory,_gate_energy,
-                              _gammaray_energy,_param,_limit,_called_directly)
+    with open(special_file,'r') as file:
+        with alive_bar(counter,title='Special',spinner='wait4') as bar:
+            for line in file:
+                _level_directory=line.split('-d ')[1].split('-')[0].replace(' ','')
+                _gate_energy=line.split('-g ')[1].split('-')[0].replace(' ','')
+                _gammaray_energy=float(line.split('-p ')[1].split('-')[0].replace(' ',''))
+                _gate_directory=line.split('-gd ')[1].split('-')[0].replace(' ','') if '-gd' in line else None
+                _limit=[float(elem) for elem in line.split('--limit')[1].split('-')[0].split(' ')[1:3]] if '--limit' in line else None
+                _param=[float(elem) for elem in line.split('--param')[1].split(' ')[1:6]] if '--param' in line else None
+                _called_directly=0 if '--dont-ask' in line else 1# Da modifica qui ci va uno zero 
+
+                if '--primary' in line:
+                    FitSinglePrimaryPeak(_level_scheme,_level_directory,
+                                         _gammaray_energy,_gate_energy,
+                                         _gate_directory,_param,_limit,
+                                         _called_directly)
+                else:
+                    FitSinglePeak(_level_scheme,_level_directory,_gate_energy,
+                                  _gammaray_energy,_param,_limit,_called_directly)
+                bar()
 
 
 def FitEntireLevelScheme(_level_scheme:pd.DataFrame,
@@ -558,17 +571,14 @@ def FitEntireLevelScheme(_level_scheme:pd.DataFrame,
     # The last step is the fit of all special cases contained inside the
     # single-spectra file
     os.chdir(spectra_directory)
-    with alive_bar(len(os.listdir())) as bar:
+    with alive_bar(len(os.listdir()),spinner='wait4') as bar:
         for _level_directory in os.listdir():
             if isdir(_level_directory):
                 FitSingleLevel(_level_scheme,_gammaray_to_be_skipped,
                                _level_directory,_called_directly=0)
             bar()
-    with alive_bar(2) as bar:
-        FitBindingLevel(_level_scheme,_gammaray_to_be_skipped)
-        bar()
-        FitSpecial(_level_scheme)
-        bar()
+    FitBindingLevel(_level_scheme,_gammaray_to_be_skipped)
+    FitSpecial(_level_scheme)
 
 ################################ FUNCTIONS #####################################
 ################################################################################
