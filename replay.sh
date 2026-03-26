@@ -15,7 +15,7 @@ fi
 for DIR in $(ls spectra); do
   if [ -d spectra/${DIR} ]; then
     for file in $(ls spectra/$DIR | grep ".out.txt"); do
-      echo "writing ${DIR}/${file} to output.txt"
+      #echo "writing ${DIR}/${file} to output.txt"
       cat ./spectra/${DIR}/${file} | tee -a ./output.txt >>/dev/null
     done
   fi

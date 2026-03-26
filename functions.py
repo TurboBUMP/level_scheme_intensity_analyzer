@@ -530,6 +530,7 @@ def FitSpecial(_level_scheme:pd.DataFrame):
     with open(special_file,'r') as file:
         with alive_bar(counter,title='Special',spinner='wait4') as bar:
             for line in file:
+                print(line)
                 _level_directory=line.split('-d ')[1].split('-')[0].replace(' ','')
                 _gate_energy=line.split('-g ')[1].split('-')[0].replace(' ','')
                 _gammaray_energy=float(line.split('-p ')[1].split('-')[0].replace(' ',''))
