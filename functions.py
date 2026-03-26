@@ -1,5 +1,7 @@
 import os
 
+from decorators import timer
+
 from alive_progress import alive_bar
 
 import pandas as pd
@@ -37,11 +39,14 @@ spectra_directory=os.path.join(os.getcwd(),'spectra')
 ################################################################################
 ################################ FUNCTIONS #####################################
 
-def LoadToBeSkipped(_filename:str):
+
+@timer
+def LoadGammarayToBeSkipped(_filename:str):
     _gammaray_to_be_skipped = np.genfromtxt(_filename,dtype=float,delimiter=',')
     return _gammaray_to_be_skipped
 
 
+@timer
 def LoadLevelScheme(_filename) -> pd.DataFrame:
     '''
 
@@ -467,6 +472,7 @@ def FitSingleLevel(_level_scheme:pd.DataFrame,_gammaray_to_be_skipped,
                                               _called_directly=_called_directly)
 
 
+@timer
 def FitBindingLevel(_level_scheme:pd.DataFrame,_gammaray_to_be_skipped,
                     _called_directly:bool=0):
     '''
@@ -504,6 +510,7 @@ def FitBindingLevel(_level_scheme:pd.DataFrame,_gammaray_to_be_skipped,
             bar()
 
 
+@timer
 def FitSpecial(_level_scheme:pd.DataFrame):
     '''
         
@@ -530,7 +537,6 @@ def FitSpecial(_level_scheme:pd.DataFrame):
     with open(special_file,'r') as file:
         with alive_bar(counter,title='Special',spinner='wait4') as bar:
             for line in file:
-                print(line)
                 _level_directory=line.split('-d ')[1].split('-')[0].replace(' ','')
                 _gate_energy=line.split('-g ')[1].split('-')[0].replace(' ','')
                 _gammaray_energy=float(line.split('-p ')[1].split('-')[0].replace(' ',''))
@@ -550,6 +556,7 @@ def FitSpecial(_level_scheme:pd.DataFrame):
                 bar()
 
 
+@timer
 def FitEntireLevelScheme(_level_scheme:pd.DataFrame,
                          _gammaray_to_be_skipped):
     '''
@@ -580,6 +587,7 @@ def FitEntireLevelScheme(_level_scheme:pd.DataFrame,
             bar()
     FitBindingLevel(_level_scheme,_gammaray_to_be_skipped)
     FitSpecial(_level_scheme)
+
 
 ################################ FUNCTIONS #####################################
 ################################################################################

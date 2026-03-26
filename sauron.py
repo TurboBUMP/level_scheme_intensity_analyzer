@@ -51,7 +51,7 @@ import time
 
 import argparse
 
-from functions import LoadLevelScheme,LoadToBeSkipped
+from functions import LoadLevelScheme,LoadGammarayToBeSkipped
 from functions import FitSinglePeak
 from functions import FitSingleLevel
 from functions import FitSinglePrimaryPeak
@@ -149,28 +149,23 @@ if __name__ == '__main__':
     # First step - load the level scheme ----> EXTREMELY SLOW
     start_load_time=time.time()
     level_scheme=LoadLevelScheme('intensities44Ca.ods')
-    gammaray_to_be_skipped = LoadToBeSkipped('to_be_skipped.txt')
+    gammaray_to_be_skipped = LoadGammarayToBeSkipped('gammaray_to_be_skipped.txt')
     stop_load_time=time.time()
 
     # Second step - check if the user wants to run the code for every gammaray
     # (first if()), for one single level (second if()), for one single primary
     # transition (third if()) or for one single secondary transition.
     if parser_arguments.run_all is not None:
-        start_calc_time=time.time()
         warnings.filterwarnings('ignore')
         FitEntireLevelScheme(level_scheme,gammaray_to_be_skipped)
-        stop_calc_time=time.time()
     elif parser_arguments.special is not None:
-        start_calc_time=time.time()
+        warnings.filterwarnings('ignore')
         FitSpecial(level_scheme)
-        stop_calc_time=time.time()
     elif parser_arguments.single_level is not None:
-        start_calc_time=time.time()
         FitSingleLevel(level_scheme,gammaray_to_be_skipped,
                        parser_arguments.level_directory)
-        stop_calc_time=time.time()
     elif parser_arguments.primary is not None:
-        start_calc_time=time.time()
+        warnings.filterwarnings('ignore')
         if parser_arguments.dont_ask is not None:
             called_directly=0
         else:
@@ -184,13 +179,9 @@ if __name__ == '__main__':
                              parser_arguments.param,
                              parser_arguments.limit,
                              called_directly)
-        stop_calc_time=time.time()
     elif parser_arguments.binding is not None:
-        start_calc_time=time.time()
         FitBindingLevel(level_scheme,gammaray_to_be_skipped)
-        stop_calc_time=time.time()
     else:
-        start_calc_time=time.time()
         if parser_arguments.dont_ask is not None:
             called_directly=0
         else:
@@ -203,17 +194,4 @@ if __name__ == '__main__':
                       parser_arguments.param,
                       parser_arguments.limit,
                       called_directly)
-        stop_calc_time=time.time()
 
-    # Tird step - calculate execution times
-    load_time=stop_load_time-start_load_time
-    calc_time=stop_calc_time-start_calc_time
-    total_time=stop_calc_time-start_load_time
-
-    print('\n')
-    print(f'****************************************')
-    print(f'  ----  Loading time: {load_time//60:.0f} m {load_time-load_time//60:.0f} s')
-    print(f'  ----  Fit time: {calc_time//60:.0f} m {calc_time-calc_time//60:.0f} s')
-    print(f'  ----  Total time: {total_time//60:.0f} m {total_time-total_time//60:.0f} s')
-    print(f'****************************************')
-    print('\n')
