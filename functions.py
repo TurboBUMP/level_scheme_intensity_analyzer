@@ -99,6 +99,25 @@ def GaussPol1(_x,_mean,_sigma,_amplitude,_m,_q) -> np.ndarray:
     return np.asarray(Gauss(_x,_mean,_sigma,_amplitude) + _m*_x + _q)
 
 
+def MultGaussPol1(_x,*args):
+    '''
+
+    TO BE DEFINED
+
+    '''
+    _number_of_peak=int((len(args)-2)/3)
+    _mean_list=args[0:_number_of_peak]
+    _sigma_list=args[_number_of_peak:_number_of_peak*2]
+    _amplitude_list=args[_number_of_peak*2:_number_of_peak*3]
+    _m=args[-2]
+    _q=args[-1]
+
+    _results=GaussPol1(_x,0,1,0,_m,_q)
+    for _mean,_sigma,_amplitude in zip(_mean_list,_sigma_list,_amplitude_list):
+        _results+=Gauss(_x,_mean,_sigma,_amplitude)
+    return _results
+
+
 def FitGauss(_hist,_init_parameters,_limit=[0,-1]):
     ''' 
 
@@ -149,6 +168,40 @@ def FitGauss(_hist,_init_parameters,_limit=[0,-1]):
               [0,0,0,0,0]]
 
     return [_best_parameters,_cov,_I_diff,_I]
+
+
+def FitMultGaussPol1(_hist,_args,_limit):
+    '''
+
+    FitMultGaussPol1(): multiple gaussian function + common 1st degree
+    polinomial background
+    
+    '''
+
+    _lower,_upper=_limit
+    _lower=int(_lower)
+    _upper=int(_upper)
+
+    try:
+
+        _best_parameters,_cov=curve_fit(MultGaussPol1,
+                                        _hist[_lower:_upper,0],
+                                        _hist[_lower:_upper,1],
+                                        p0=_args)
+                                 
+    #_I_hist=np.sum(_hist[_lower:_upper,1])
+    #_I_fit=quad(GaussPol1,_lower,_upper,args=tuple(_best_parameters))[0]
+    #_I_diff=int(_I_fit-_I_hist)
+    #_I=quad(Gauss,_lower,_upper,args=tuple(_best_parameters[0:3]))[0]
+
+    except:
+
+        _I=0
+        _I_diff=1000000000
+        _best_parameters=[a*0 for a in args]
+        _cov=[[0 for ii in args] for jj in args]
+
+    return [_best_parameters,_cov]
 
 
 def DrawFitResults(_hist,_level_directory:str,_gate_energy:float,_peak:float,
