@@ -76,6 +76,8 @@ def LoadLevelScheme(_filename) -> pd.DataFrame:
 
     return _lvlScheme
 
+def Pol1(_x,_m,_q) -> np.ndarray:
+    return _x*_m+_q
 
 def Gauss(_x,_mean,_sigma,_amplitude) -> np.ndarray:
     ''' 
@@ -105,15 +107,17 @@ def MultGaussPol1(_x,*args):
     TO BE DEFINED
 
     '''
-    _number_of_peak=int((len(args)-2)/3)
-    _mean_list=args[0:_number_of_peak]
-    _sigma_list=args[_number_of_peak:_number_of_peak*2]
-    _amplitude_list=args[_number_of_peak*2:_number_of_peak*3]
+    
+    _number_of_peaks=int((len(args)-2)/3)
+    _mean_list=args[0:_number_of_peaks]
+    _sigma_list=args[_number_of_peaks:_number_of_peaks*2]
+    _amplitude_list=args[_number_of_peaks*2:_number_of_peaks*3]
     _m=args[-2]
     _q=args[-1]
 
-    _results=GaussPol1(_x,0,1,0,_m,_q)
+    _results=Pol1(_x,_m,_q)
     for _mean,_sigma,_amplitude in zip(_mean_list,_sigma_list,_amplitude_list):
+        print(_mean,_sigma,_amplitude,_m,_q)
         _results+=Gauss(_x,_mean,_sigma,_amplitude)
     return _results
 
@@ -182,24 +186,24 @@ def FitMultGaussPol1(_hist,_args,_limit):
     _lower=int(_lower)
     _upper=int(_upper)
 
-    try:
-
-        _best_parameters,_cov=curve_fit(MultGaussPol1,
-                                        _hist[_lower:_upper,0],
-                                        _hist[_lower:_upper,1],
-                                        p0=_args)
-                                 
+    #try:
+    _best_parameters,_cov=curve_fit(MultGaussPol1,
+                                    _hist[_lower:_upper,0],
+                                    _hist[_lower:_upper,1],
+                                    p0=_args,bounds=(0,np.inf))
+ 
+    #while input("Which peak do you want to save? ") is not int:
     #_I_hist=np.sum(_hist[_lower:_upper,1])
     #_I_fit=quad(GaussPol1,_lower,_upper,args=tuple(_best_parameters))[0]
     #_I_diff=int(_I_fit-_I_hist)
     #_I=quad(Gauss,_lower,_upper,args=tuple(_best_parameters[0:3]))[0]
 
-    except:
+    #except:
 
-        _I=0
-        _I_diff=1000000000
-        _best_parameters=[a*0 for a in args]
-        _cov=[[0 for ii in args] for jj in args]
+    #    _I=0
+    #    _I_diff=1000000000
+    #    _best_parameters=[a*0 for a in _args]
+    #    _cov=[[0 for ii in _args] for jj in _args]
 
     return [_best_parameters,_cov]
 
